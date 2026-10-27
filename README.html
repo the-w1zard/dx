@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Built-in API Extensions</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-dark">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:false,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="built-in-api-extensions">Built-in API Extensions</h1>
+<p>Extensions to native JavaScript objects that improve developer experience by adding commonly needed operations while preserving the original APIs.</p>
+<p>The package extends native classes and exposes their implementations through <code>globalThis</code>, allowing them to be accessed without importing each class individually.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
+<li><a href="#u82--array">U82 — Array</a></li>
+<li><a href="#s2--string">S2 — String</a></li>
+<li><a href="#p2--promise">P2 — Promise</a></li>
+<li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
+<li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
+<li><a href="#o2--object">O2 — Object</a></li>
+<li><a href="#set2--set">SET2 — Set</a></li>
+</ul>
+<h2 id="global-apis">Global APIs</h2>
+<table>
+<thead>
+<tr>
+<th>Global</th>
+<th>Extends</th>
+<th>Implementation</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N2</code></td>
+<td><code>Number</code></td>
+<td><code>N2I</code></td>
+<td>Numeric operations, range mapping, formatting, and validation</td>
+</tr>
+<tr>
+<td><code>M2</code></td>
+<td><code>Map</code></td>
+<td><code>M2I</code></td>
+<td>Map access helpers, transformations, grouping, and comparison</td>
+</tr>
+<tr>
+<td><code>I2</code></td>
+<td>Iterator</td>
+<td><code>I2I</code></td>
+<td>Lazy iterator pipelines and collection operations</td>
+</tr>
+<tr>
+<td><code>ER2</code></td>
+<td><code>Error</code></td>
+<td><code>ER2I</code></td>
+<td>Error normalization, cloning, serialization, and wrapping</td>
+</tr>
+<tr>
+<td><code>D2</code></td>
+<td><code>Date</code></td>
+<td><code>D2I</code></td>
+<td>Date arithmetic, boundaries, comparisons, and formatting</td>
+</tr>
+<tr>
+<td><code>A2</code></td>
+<td><code>Array</code></td>
+<td><code>A2I</code></td>
+<td>Array manipulation, selection, grouping, and aggregation</td>
+</tr>
+<tr>
+<td><code>SET2</code></td>
+<td><code>Set</code></td>
+<td><code>SET2I</code></td>
+<td>Extended set operations</td>
+</tr>
+<tr>
+<td><code>O2</code></td>
+<td><code>Object</code></td>
+<td><code>O2I</code></td>
+<td>Extended object operations</td>
+</tr>
+<tr>
+<td><code>WM2</code></td>
+<td><code>WeakMap</code></td>
+<td><code>WM2I</code></td>
+<td>Extended weak-map operations</td>
+</tr>
+<tr>
+<td><code>WS2</code></td>
+<td><code>WeakSet</code></td>
+<td><code>WS2I</code></td>
+<td>Extended weak-set operations</td>
+</tr>
+<tr>
+<td><code>P2</code></td>
+<td><code>Promise</code></td>
+<td><code>P2I</code></td>
+<td>Extended promise operations</td>
+</tr>
+<tr>
+<td><code>S2</code></td>
+<td><code>String</code></td>
+<td><code>S2I</code></td>
+<td>Extended string operations</td>
+</tr>
+<tr>
+<td><code>U82</code></td>
+<td><code>Uint8Array</code></td>
+<td><code>U82I</code></td>
+<td>Extended byte-array operations</td>
+</tr>
+<tr>
+<td><code>USP2</code></td>
+<td><code>URLSearchParams</code></td>
+<td><code>USP2I</code></td>
+<td>Extended URL parameter operations</td>
+</tr>
+</tbody>
+</table>
+<p>The global declarations provide TypeScript access to these APIs. <code>MaybePromise</code> is also declared globally as a type alias.</p>
+<h2 id="quick-reference">Quick Reference</h2>
+<h2 id="a2--array"><code>A2</code> — Array</h2>
+<p><code>A2I</code> extends <code>Array</code> and adds collection helpers. Methods returning arrays generally return <code>A2I</code> instances.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>first()</code> / <code>last()</code></td>
+<td>Retrieve the first or last element</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code> / <code>isNotEmpty()</code></td>
+<td>Check whether the array contains elements</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Empty the array in place</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Create a shallow copy</td>
+</tr>
+<tr>
+<td><code>unique()</code> / <code>compact()</code></td>
+<td>Remove duplicates or nullish values</td>
+</tr>
+<tr>
+<td><code>take()</code> / <code>takeLast()</code></td>
+<td>Select elements from either end</td>
+</tr>
+<tr>
+<td><code>drop()</code> / <code>dropLast()</code></td>
+<td>Remove elements from either end</td>
+</tr>
+<tr>
+<td><code>chunk(size)</code></td>
+<td>Split into fixed-size arrays</td>
+</tr>
+<tr>
+<td><code>flatten(depth?)</code></td>
+<td>Flatten nested arrays</td>
+</tr>
+<tr>
+<td><code>flatMap(callback)</code></td>
+<td>Map and flatten</td>
+</tr>
+<tr>
+<td><code>distinctBy(callback)</code></td>
+<td>Deduplicate by a computed key</td>
+</tr>
+<tr>
+<td><code>groupBy(callback)</code></td>
+<td>Group elements into a map</td>
+</tr>
+<tr>
+<td><code>partition(callback)</code></td>
+<td>Split into matching and nonmatching arrays</td>
+</tr>
+<tr>
+<td><code>insert(index, ...items)</code></td>
+<td>Insert elements in place</td>
+</tr>
+<tr>
+<td><code>removeAt(index)</code></td>
+<td>Remove and return an element</td>
+</tr>
+<tr>
+<td><code>remove(value)</code> / <code>removeAll(value)</code></td>
+<td>Remove one or all matching values</td>
+</tr>
+<tr>
+<td><code>replaceAt(index, value)</code></td>
+<td>Replace an element and return the previous value</td>
+</tr>
+<tr>
+<td><code>move(from, to)</code> / <code>swap(first, second)</code></td>
+<td>Reorder elements in place</td>
+</tr>
+<tr>
+<td><code>sample()</code></td>
+<td>Return a random element</td>
+</tr>
+<tr>
+<td><code>shuffle()</code></td>
+<td>Shuffle in place</td>
+</tr>
+<tr>
+<td><code>countBy(callback)</code></td>
+<td>Count matching elements</td>
+</tr>
+<tr>
+<td><code>sum(callback?)</code> / <code>average(callback?)</code></td>
+<td>Calculate numeric aggregates</td>
+</tr>
+<tr>
+<td><code>min(callback?)</code> / <code>max(callback?)</code></td>
+<td>Find minimum or maximum element</td>
+</tr>
+<tr>
+<td><code>equals(array)</code></td>
+<td>Compare arrays using <code>Object.is</code></td>
+</tr>
+<tr>
+<td><code>includesAll(values)</code></td>
+<td>Check whether every supplied value exists</td>
+</tr>
+<tr>
+<td><code>intersects(values)</code></td>
+<td>Check whether any supplied value exists</td>
+</tr>
+</tbody>
+</table>
+<p>Static helpers include <code>A2I.from()</code> and <code>A2I.of()</code>.</p>
+<h2 id="d2--date"><code>D2</code> — Date</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clone()</code> / <code>isValid()</code></td>
+<td>Copy a date or check validity</td>
+</tr>
+<tr>
+<td><code>month()</code> / <code>dateOfWeek()</code></td>
+<td>Get one-based month or weekday index</td>
+</tr>
+<tr>
+<td><code>dayOfYear()</code> / <code>quarter()</code></td>
+<td>Get day of year or quarter</td>
+</tr>
+<tr>
+<td><code>unix()</code> / <code>toUnix()</code></td>
+<td>Get Unix timestamp in seconds</td>
+</tr>
+<tr>
+<td><code>toUnixMs()</code></td>
+<td>Get Unix timestamp in milliseconds</td>
+</tr>
+<tr>
+<td><code>addMs()</code> / <code>addSeconds()</code> / <code>addMinutes()</code> / <code>addHours()</code></td>
+<td>Add time</td>
+</tr>
+<tr>
+<td><code>addDays()</code> / <code>addWeeks()</code> / <code>addMonths()</code> / <code>addYears()</code></td>
+<td>Add calendar units</td>
+</tr>
+<tr>
+<td><code>subDays()</code> / <code>subMonths()</code> / <code>subYears()</code></td>
+<td>Subtract calendar units</td>
+</tr>
+<tr>
+<td><code>startOfDay()</code> / <code>endOfDay()</code></td>
+<td>Day boundaries</td>
+</tr>
+<tr>
+<td><code>startOfWeek()</code> / <code>endOfWeek()</code></td>
+<td>Week boundaries</td>
+</tr>
+<tr>
+<td><code>startOfMonth()</code> / <code>endOfMonth()</code></td>
+<td>Month boundaries</td>
+</tr>
+<tr>
+<td><code>startOfQuarter()</code> / <code>endOfQuarter()</code></td>
+<td>Quarter boundaries</td>
+</tr>
+<tr>
+<td><code>startOfYear()</code> / <code>endOfYear()</code></td>
+<td>Year boundaries</td>
+</tr>
+<tr>
+<td><code>daysInMonth()</code> / <code>daysInYear()</code></td>
+<td>Count days</td>
+</tr>
+<tr>
+<td><code>isLeapYear()</code></td>
+<td>Check leap year</td>
+</tr>
+<tr>
+<td><code>isWeekend()</code> / <code>isWeekday()</code></td>
+<td>Check day type</td>
+</tr>
+<tr>
+<td><code>isBefore(date)</code> / <code>isAfter(date)</code> / <code>isEqual(date)</code></td>
+<td>Compare timestamps</td>
+</tr>
+<tr>
+<td><code>isBetween(start, end)</code></td>
+<td>Check an inclusive date range</td>
+</tr>
+<tr>
+<td><code>diffMs()</code> / <code>diffSeconds()</code> / <code>diffMinutes()</code> / <code>diffHours()</code> / <code>diffDays()</code></td>
+<td>Calculate signed time differences</td>
+</tr>
+<tr>
+<td><code>sameDay()</code> / <code>sameMonth()</code> / <code>sameYear()</code></td>
+<td>Compare calendar components</td>
+</tr>
+<tr>
+<td><code>toD2()</code></td>
+<td>Return a cloned <code>D2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Static helpers include <code>now()</code>, <code>fromUnix()</code>, <code>fromUnixMs()</code>, <code>fromParts()</code>, <code>today()</code>, <code>min()</code>, and <code>max()</code>.</p>
+<p><code>ToLocalString(value?)</code> is also exported as a standalone formatting helper.</p>
+<h2 id="er2--error"><code>ER2</code> — Error</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clone()</code></td>
+<td>Copy message, name, cause, and stack</td>
+</tr>
+<tr>
+<td><code>toJSON()</code></td>
+<td>Produce a serializable error representation</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>Format as <code>name: message</code></td>
+</tr>
+<tr>
+<td><code>ER2.is(value)</code></td>
+<td>Check whether a value is an <code>Error</code></td>
+</tr>
+<tr>
+<td><code>ER2.isER2(value)</code></td>
+<td>Check whether a value is an <code>ER2I</code></td>
+</tr>
+<tr>
+<td><code>ER2.from(value, fallback?)</code></td>
+<td>Normalize unknown values into <code>ER2I</code></td>
+</tr>
+<tr>
+<td><code>ER2.wrap(value, message?)</code></td>
+<td>Wrap an error with a cause</td>
+</tr>
+<tr>
+<td><code>ER2.aggregate(errors, message?)</code></td>
+<td>Create an <code>AggregateError</code> from multiple errors</td>
+</tr>
+</tbody>
+</table>
+<p><code>ER2I</code> accepts an optional message and standard <code>ErrorOptions</code>, including <code>cause</code>.</p>
+<h2 id="i2--iterator"><code>I2</code> — Iterator</h2>
+<p><code>I2I</code> wraps an iterable or iterator and provides lazy transformation pipelines.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n()</code> / <code>r()</code> / <code>f()</code></td>
+<td>Intended aliases for <code>next</code>, <code>return</code>, and <code>throw</code></td>
+</tr>
+<tr>
+<td><code>toArray()</code></td>
+<td>Consume into an array</td>
+</tr>
+<tr>
+<td><code>first()</code> / <code>last()</code></td>
+<td>Retrieve the first or last value</td>
+</tr>
+<tr>
+<td><code>at(index)</code></td>
+<td>Retrieve by position, supporting negative indices</td>
+</tr>
+<tr>
+<td><code>peek()</code></td>
+<td>Read the next value without consuming it</td>
+</tr>
+<tr>
+<td><code>nextValue()</code></td>
+<td>Return the next value</td>
+</tr>
+<tr>
+<td><code>nextOr(value)</code> / <code>nextOrM(make)</code></td>
+<td>Return the next value or a fallback</td>
+</tr>
+<tr>
+<td><code>nextOrThrow(error?)</code></td>
+<td>Throw if exhausted</td>
+</tr>
+<tr>
+<td><code>map(fn)</code> / <code>filter(pred)</code></td>
+<td>Lazy transformation and filtering</td>
+</tr>
+<tr>
+<td><code>flatMap(fn)</code> / <code>flat()</code></td>
+<td>Flatten mapped iterables</td>
+</tr>
+<tr>
+<td><code>take(limit)</code> / <code>drop(limit)</code></td>
+<td>Limit or skip values</td>
+</tr>
+<tr>
+<td><code>unique(fn?)</code></td>
+<td>Remove duplicate values or computed keys</td>
+</tr>
+<tr>
+<td><code>chunk(size)</code></td>
+<td>Emit arrays of a specified size</td>
+</tr>
+<tr>
+<td><code>zip(other)</code></td>
+<td>Pair values from two iterators</td>
+</tr>
+<tr>
+<td><code>concat(...others)</code></td>
+<td>Concatenate iterables</td>
+</tr>
+<tr>
+<td><code>enumerate()</code></td>
+<td>Emit index-value pairs</td>
+</tr>
+<tr>
+<td><code>find(pred)</code> / <code>findIndex(pred)</code></td>
+<td>Find a value or index</td>
+</tr>
+<tr>
+<td><code>some(pred)</code> / <code>every(pred)</code></td>
+<td>Predicate checks</td>
+</tr>
+<tr>
+<td><code>reduce(fn, initial)</code> / <code>forEach(fn)</code></td>
+<td>Aggregate or consume values</td>
+</tr>
+<tr>
+<td><code>count()</code> / <code>sum(fn?)</code></td>
+<td>Count or sum values</td>
+</tr>
+<tr>
+<td><code>join(separator?)</code></td>
+<td>Join values into a string</td>
+</tr>
+<tr>
+<td><code>partition(pred)</code></td>
+<td>Split into matching and nonmatching arrays</td>
+</tr>
+<tr>
+<td><code>group(fn)</code></td>
+<td>Group values into a map</td>
+</tr>
+<tr>
+<td><code>toSet()</code> / <code>toMap(keyFn, valueFn?)</code></td>
+<td>Convert to collections</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code></td>
+<td>Check whether another value is available</td>
+</tr>
+<tr>
+<td><code>exhaust()</code></td>
+<td>Consume the remaining iterator</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Create an iterator over a materialized copy</td>
+</tr>
+</tbody>
+</table>
+<h2 id="m2--map"><code>M2</code> — Map</h2>
+<p><code>M2I</code> extends <code>Map</code> and retains the standard <code>Map</code> API.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g(key)</code> / <code>h(key)</code> / <code>d(key)</code></td>
+<td>Aliases for <code>get</code>, <code>has</code>, and <code>delete</code></td>
+</tr>
+<tr>
+<td><code>s(key, value)</code></td>
+<td>Set a value; evaluates function arguments as factories</td>
+</tr>
+<tr>
+<td><code>swap(key, value)</code></td>
+<td>Replace a value and return the previous value</td>
+</tr>
+<tr>
+<td><code>take(key)</code></td>
+<td>Get and delete a value</td>
+</tr>
+<tr>
+<td><code>peek(key)</code></td>
+<td>Return the value or <code>false</code> if absent</td>
+</tr>
+<tr>
+<td><code>getOrI(key, value)</code></td>
+<td>Get or insert a supplied value</td>
+</tr>
+<tr>
+<td><code>getOrM(key, make)</code></td>
+<td>Get or lazily create a value</td>
+</tr>
+<tr>
+<td><code>update(key, fn, initial)</code></td>
+<td>Update using the current value or initial value</td>
+</tr>
+<tr>
+<td><code>setIfAbsent(key, value)</code></td>
+<td>Insert only when missing</td>
+</tr>
+<tr>
+<td><code>setIfPresent(key, value)</code></td>
+<td>Set only when present</td>
+</tr>
+<tr>
+<td><code>replace(key, value)</code></td>
+<td>Replace only when present</td>
+</tr>
+<tr>
+<td><code>inc(key, by?)</code></td>
+<td>Increment a numeric entry</td>
+</tr>
+<tr>
+<td><code>touch(key)</code></td>
+<td>Ensure a key exists</td>
+</tr>
+<tr>
+<td><code>mapValues(fn)</code> / <code>mapKeys(fn)</code></td>
+<td>Transform values or keys</td>
+</tr>
+<tr>
+<td><code>filterKV(pred)</code> / <code>filterKeys(pred)</code></td>
+<td>Filter in place</td>
+</tr>
+<tr>
+<td><code>partition(pred)</code></td>
+<td>Split entries into matching and nonmatching maps</td>
+</tr>
+<tr>
+<td><code>find(pred)</code></td>
+<td>Find the first matching entry</td>
+</tr>
+<tr>
+<td><code>findKey(pred)</code> / <code>findValue(pred)</code></td>
+<td>Find a matching key or value</td>
+</tr>
+<tr>
+<td><code>some(pred)</code> / <code>every(pred)</code></td>
+<td>Predicate checks</td>
+</tr>
+<tr>
+<td><code>reduce(fn, initial)</code></td>
+<td>Reduce entries</td>
+</tr>
+<tr>
+<td><code>forEachKV(fn)</code></td>
+<td>Iterate over value, key, and map</td>
+</tr>
+<tr>
+<td><code>invert()</code></td>
+<td>Reverse keys and values</td>
+</tr>
+<tr>
+<td><code>group(fn)</code></td>
+<td>Group values by computed key</td>
+</tr>
+<tr>
+<td><code>unique(fn?)</code></td>
+<td>Deduplicate by computed or original value</td>
+</tr>
+<tr>
+<td><code>pick(keys)</code> / <code>omit(keys)</code></td>
+<td>Select or exclude keys</td>
+</tr>
+<tr>
+<td><code>merge(entries)</code></td>
+<td>Merge entries into the current map</td>
+</tr>
+<tr>
+<td><code>clearAndSet(entries)</code></td>
+<td>Replace all entries</td>
+</tr>
+<tr>
+<td><code>toObject()</code></td>
+<td>Convert entries to an object</td>
+</tr>
+<tr>
+<td><code>toArray()</code> / <code>toKeys()</code> / <code>toValues()</code></td>
+<td>Convert entries, keys, or values to arrays</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Create a shallow copy</td>
+</tr>
+<tr>
+<td><code>equals(other)</code></td>
+<td>Compare keys and values</td>
+</tr>
+<tr>
+<td><code>fromObject(obj)</code></td>
+<td>Create a map from an object</td>
+</tr>
+<tr>
+<td><code>fromEntries(entries)</code></td>
+<td>Create a map from entries</td>
+</tr>
+<tr>
+<td><code>from(map)</code></td>
+<td>Create a map from another map</td>
+</tr>
+</tbody>
+</table>
+<h2 id="n2--number"><code>N2</code> — Number</h2>
+<p>Numeric helpers return <code>N2I</code> for chaining unless otherwise indicated.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>abs()</code></td>
+<td>Absolute value</td>
+</tr>
+<tr>
+<td><code>sign()</code></td>
+<td>Sign of the number</td>
+</tr>
+<tr>
+<td><code>neg()</code></td>
+<td>Negate the number</td>
+</tr>
+<tr>
+<td><code>inv()</code></td>
+<td>Reciprocal</td>
+</tr>
+<tr>
+<td><code>clamp(min, max)</code></td>
+<td>Constrain to a range</td>
+</tr>
+<tr>
+<td><code>wrap(min, max)</code></td>
+<td>Wrap into a range</td>
+</tr>
+<tr>
+<td><code>lerp(to, t)</code></td>
+<td>Linear interpolation</td>
+</tr>
+<tr>
+<td><code>map(inMin, inMax, outMin, outMax)</code></td>
+<td>Map between numeric ranges</td>
+</tr>
+<tr>
+<td><code>remap(...)</code></td>
+<td>Alias for <code>map()</code></td>
+</tr>
+<tr>
+<td><code>roundTo(precision?)</code></td>
+<td>Round to decimal precision</td>
+</tr>
+<tr>
+<td><code>floorTo(precision?)</code></td>
+<td>Floor to decimal precision</td>
+</tr>
+<tr>
+<td><code>ceilTo(precision?)</code></td>
+<td>Ceiling to decimal precision</td>
+</tr>
+<tr>
+<td><code>truncTo(precision?)</code></td>
+<td>Truncate to decimal precision</td>
+</tr>
+<tr>
+<td><code>isFinite()</code></td>
+<td>Check for a finite number</td>
+</tr>
+<tr>
+<td><code>isInteger()</code></td>
+<td>Check for an integer</td>
+</tr>
+<tr>
+<td><code>isSafeInteger()</code></td>
+<td>Check for a safe integer</td>
+</tr>
+<tr>
+<td><code>isNaN()</code></td>
+<td>Check for <code>NaN</code></td>
+</tr>
+<tr>
+<td><code>isBetween(min, max, inclusive?)</code></td>
+<td>Check whether the value is in a range</td>
+</tr>
+<tr>
+<td><code>isPositive()</code> / <code>isNegative()</code></td>
+<td>Check the sign</td>
+</tr>
+<tr>
+<td><code>isZero()</code></td>
+<td>Check for zero</td>
+</tr>
+<tr>
+<td><code>isEven()</code> / <code>isOdd()</code></td>
+<td>Check integer parity</td>
+</tr>
+<tr>
+<td><code>squared()</code> / <code>cubed()</code></td>
+<td>Square or cube</td>
+</tr>
+<tr>
+<td><code>sqrt()</code> / <code>cbrt()</code></td>
+<td>Square or cube root</td>
+</tr>
+<tr>
+<td><code>pow(exponent)</code></td>
+<td>Raise to a power</td>
+</tr>
+<tr>
+<td><code>root(degree)</code></td>
+<td>Calculate a root</td>
+</tr>
+<tr>
+<td><code>mod(divisor)</code></td>
+<td>Positive modulo</td>
+</tr>
+<tr>
+<td><code>percentOf(total)</code></td>
+<td>Calculate a percentage of a total</td>
+</tr>
+<tr>
+<td><code>percentChange(from)</code></td>
+<td>Calculate percentage change</td>
+</tr>
+<tr>
+<td><code>toRadians()</code> / <code>toDegrees()</code></td>
+<td>Convert angular units</td>
+</tr>
+<tr>
+<td><code>toOrdinal()</code></td>
+<td>Format as an ordinal</td>
+</tr>
+<tr>
+<td><code>toBytes(unit?, decimals?)</code></td>
+<td>Format as a byte quantity</td>
+</tr>
+<tr>
+<td><code>toCompact(locales?)</code></td>
+<td>Compact number formatting</td>
+</tr>
+<tr>
+<td><code>toCurrency(currency?, locales?)</code></td>
+<td>Currency formatting</td>
+</tr>
+<tr>
+<td><code>toPercent(decimals?, locales?)</code></td>
+<td>Percentage formatting</td>
+</tr>
+<tr>
+<td><code>times(fn)</code></td>
+<td>Execute a callback for each integer index below the value</td>
+</tr>
+<tr>
+<td><code>upTo(end, step?)</code></td>
+<td>Generate an ascending numeric array</td>
+</tr>
+<tr>
+<td><code>downTo(end, step?)</code></td>
+<td>Generate a descending numeric array</td>
+</tr>
+</tbody>
+</table>
+<h2 id="o2--object"><code>O2</code> — Object</h2>
+<p>Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>isEmpty(value)</code> / <code>isNotEmpty(value)</code></td>
+<td>Checks own-key count</td>
+</tr>
+<tr>
+<td><code>size(value)</code></td>
+<td>Returns the number of own keys, including symbols</td>
+</tr>
+<tr>
+<td><code>isPlainObject(value)</code> / <code>isObject(value)</code></td>
+<td>Checks object type</td>
+</tr>
+<tr>
+<td><code>get(value, path, fallback?)</code></td>
+<td>Reads a nested path</td>
+</tr>
+<tr>
+<td><code>getOr(value, path, fallback)</code></td>
+<td>Reads a nested path with a typed fallback</td>
+</tr>
+<tr>
+<td><code>set(value, path, next)</code></td>
+<td>Sets a nested path, creating intermediate objects</td>
+</tr>
+<tr>
+<td><code>unset(value, path)</code></td>
+<td>Deletes a nested property</td>
+</tr>
+<tr>
+<td><code>hasPath(value, path)</code></td>
+<td>Checks whether a nested path exists</td>
+</tr>
+<tr>
+<td><code>clone(value)</code></td>
+<td>Shallow-clones an object or array</td>
+</tr>
+<tr>
+<td><code>deepClone(value)</code></td>
+<td>Uses <code>structuredClone</code></td>
+</tr>
+<tr>
+<td><code>deepMerge(target, source)</code></td>
+<td>Recursively merges plain objects</td>
+</tr>
+<tr>
+<td><code>defaults(target, defaults)</code></td>
+<td>Applies defaults while retaining target values</td>
+</tr>
+<tr>
+<td><code>getOrCreate(value, key, create)</code></td>
+<td>Creates a property when absent or undefined</td>
+</tr>
+<tr>
+<td><code>pick(value, keys)</code> / <code>omit(value, keys)</code></td>
+<td>Selects or excludes properties</td>
+</tr>
+<tr>
+<td><code>pickBy(value, predicate)</code> / <code>omitBy(value, predicate)</code></td>
+<td>Selects or excludes properties by predicate</td>
+</tr>
+<tr>
+<td><code>mapKeys(value, mapper)</code></td>
+<td>Transforms property keys</td>
+</tr>
+<tr>
+<td><code>mapValues(value, mapper)</code></td>
+<td>Transforms property values</td>
+</tr>
+<tr>
+<td><code>mapEntries(value, mapper)</code></td>
+<td>Transforms key-value entries</td>
+</tr>
+<tr>
+<td><code>filter(value, predicate)</code></td>
+<td>Selects properties by predicate</td>
+</tr>
+<tr>
+<td><code>isEqual(first, second)</code></td>
+<td>Performs recursive equality checks</td>
+</tr>
+<tr>
+<td><code>isShallowEqual(first, second)</code></td>
+<td>Compares own keys and values shallowly</td>
+</tr>
+<tr>
+<td><code>hasAll(value, keys)</code> / <code>hasAny(value, keys)</code></td>
+<td>Checks required own properties</td>
+</tr>
+<tr>
+<td><code>assertKeys(value, keys)</code></td>
+<td>Throws if required own properties are missing</td>
+</tr>
+<tr>
+<td><code>with(value, key, next)</code></td>
+<td>Returns a copy with a property changed</td>
+</tr>
+<tr>
+<td><code>without(value, key)</code></td>
+<td>Returns a copy without a property</td>
+</tr>
+<tr>
+<td><code>update(value, key, updater)</code></td>
+<td>Returns a copy with an updated property</td>
+</tr>
+</tbody>
+</table>
+<p><code>O2</code> is exposed as a static utility constructor on <code>globalThis</code>.</p>
+<h2 id="p2--promise"><code>P2</code> — Promise</h2>
+<p>Extends <code>Promise&lt;T&gt;</code> with chaining helpers, recovery, timing controls, and result conversion.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tap(fn)</code></td>
+<td>Runs a callback on fulfillment and preserves the value</td>
+</tr>
+<tr>
+<td><code>tapError(fn)</code></td>
+<td>Runs a callback on rejection and preserves the rejection</td>
+</tr>
+<tr>
+<td><code>recover(fn)</code></td>
+<td>Recovers from rejection</td>
+</tr>
+<tr>
+<td><code>fallback(value)</code></td>
+<td>Supplies a fallback after rejection</td>
+</tr>
+<tr>
+<td><code>timeout(ms, error?)</code></td>
+<td>Rejects if the promise does not settle before the timeout</td>
+</tr>
+<tr>
+<td><code>delay(ms)</code></td>
+<td>Delays delivery of a fulfilled value</td>
+</tr>
+<tr>
+<td><code>withDeadline(deadline, error?)</code></td>
+<td>Applies a deadline based on a timestamp</td>
+</tr>
+<tr>
+<td><code>map(fn)</code> / <code>flatMap(fn)</code></td>
+<td>Chains a transformation</td>
+</tr>
+<tr>
+<td><code>and(other)</code> / <code>zip(other)</code></td>
+<td>Combines a fulfilled value with another value or promise</td>
+</tr>
+<tr>
+<td><code>or(other)</code></td>
+<td>Uses an alternative after rejection</td>
+</tr>
+<tr>
+<td><code>unwrap()</code></td>
+<td>Returns the promise as a native <code>Promise&lt;T&gt;</code> type</td>
+</tr>
+<tr>
+<td><code>toResult()</code></td>
+<td>Converts fulfillment or rejection into an <code>{ ok, value/error }</code> result</td>
+</tr>
+<tr>
+<td><code>onResolve(fn)</code> / <code>onReject(fn)</code></td>
+<td>Registers fulfillment or rejection callbacks</td>
+</tr>
+<tr>
+<td><code>finallyDo(fn)</code></td>
+<td>Runs a final callback</td>
+</tr>
+</tbody>
+</table>
+<p>Static helpers:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resolve(value?)</code> / <code>reject(reason?)</code></td>
+<td>Creates a settled promise</td>
+</tr>
+<tr>
+<td><code>all(values)</code></td>
+<td>Waits for all promises to fulfill</td>
+</tr>
+<tr>
+<td><code>allSettled(values)</code></td>
+<td>Waits for all promises to settle</td>
+</tr>
+<tr>
+<td><code>race(values)</code></td>
+<td>Settles with the first settled promise</td>
+</tr>
+<tr>
+<td><code>any(values)</code></td>
+<td>Settles with the first fulfilled promise</td>
+</tr>
+<tr>
+<td><code>retry(fn, times?, delay?)</code></td>
+<td>Retries a task after rejection</td>
+</tr>
+<tr>
+<td><code>deferred&lt;T&gt;()</code></td>
+<td>Returns a promise with external <code>resolve</code> and <code>reject</code> functions</td>
+</tr>
+<tr>
+<td><code>try(fn)</code></td>
+<td>Executes a function and converts synchronous throws into rejection</td>
+</tr>
+</tbody>
+</table>
+<p>Chained operations return <code>P2</code> instances.</p>
+<h2 id="s2--string"><code>S2</code> — String</h2>
+<p>Extends <code>String</code> with common string checks, transformations, parsing, and conversion helpers.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>empty()</code> / <code>notEmpty()</code></td>
+<td>Checks whether the string has characters</td>
+</tr>
+<tr>
+<td><code>blank()</code> / <code>notBlank()</code></td>
+<td>Checks whether the string is empty or whitespace-only</td>
+</tr>
+<tr>
+<td><code>equals(value)</code></td>
+<td>Checks exact equality</td>
+</tr>
+<tr>
+<td><code>equalsIgnoreCase(value)</code></td>
+<td>Checks equality without case sensitivity</td>
+</tr>
+<tr>
+<td><code>contains(value)</code></td>
+<td>Checks whether the string contains a value</td>
+</tr>
+<tr>
+<td><code>starts(value)</code> / <code>ends(value)</code></td>
+<td>Checks the beginning or end</td>
+</tr>
+<tr>
+<td><code>first()</code> / <code>last()</code></td>
+<td>Gets the first or last character</td>
+</tr>
+<tr>
+<td><code>reverse()</code></td>
+<td>Reverses the string by Unicode code point</td>
+</tr>
+<tr>
+<td><code>capitalize()</code> / <code>uncapitalize()</code></td>
+<td>Changes the first character's case</td>
+</tr>
+<tr>
+<td><code>titleCase()</code></td>
+<td>Capitalizes word initials</td>
+</tr>
+<tr>
+<td><code>camelCase()</code></td>
+<td>Converts to camel case</td>
+</tr>
+<tr>
+<td><code>kebabCase()</code></td>
+<td>Converts to kebab case</td>
+</tr>
+<tr>
+<td><code>snakeCase()</code></td>
+<td>Converts to snake case</td>
+</tr>
+<tr>
+<td><code>pascalCase()</code></td>
+<td>Converts to PascalCase</td>
+</tr>
+<tr>
+<td><code>words()</code></td>
+<td>Extracts letter-and-number sequences</td>
+</tr>
+<tr>
+<td><code>lines()</code></td>
+<td>Splits into lines</td>
+</tr>
+<tr>
+<td><code>chars()</code> / <code>toArray()</code></td>
+<td>Converts to an array of characters</td>
+</tr>
+<tr>
+<td><code>unique()</code></td>
+<td>Removes duplicate characters</td>
+</tr>
+<tr>
+<td><code>escapeRegExp()</code></td>
+<td>Escapes regular-expression special characters</td>
+</tr>
+<tr>
+<td><code>stripHtml()</code></td>
+<td>Removes HTML-like tags</td>
+</tr>
+<tr>
+<td><code>stripWhitespace()</code></td>
+<td>Removes all whitespace</td>
+</tr>
+<tr>
+<td><code>truncate(length, suffix?)</code> / <code>limit(length, suffix?)</code></td>
+<td>Limits string length</td>
+</tr>
+<tr>
+<td><code>toNumber()</code></td>
+<td>Converts to a number</td>
+</tr>
+<tr>
+<td><code>toInt(radix?)</code></td>
+<td>Parses an integer</td>
+</tr>
+<tr>
+<td><code>toFloat()</code></td>
+<td>Parses a floating-point number</td>
+</tr>
+<tr>
+<td><code>toBoolean()</code></td>
+<td>Parses <code>true</code>, <code>1</code>, <code>yes</code>, or <code>on</code> as true</td>
+</tr>
+<tr>
+<td><code>toJSON()</code></td>
+<td>Returns the JSON-serialized string</td>
+</tr>
+</tbody>
+</table>
+<p>Also inherits the native <code>String</code> API. <code>S2</code> is registered as a callable and constructible string wrapper.</p>
+<h2 id="set2--set"><code>SET2</code> — Set</h2>
+<p>Extends <code>Set&lt;T&gt;</code> with convenience accessors, set algebra, predicate operations, and conversions.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s(value)</code></td>
+<td>Alias for <code>add</code></td>
+</tr>
+<tr>
+<td><code>take(value)</code></td>
+<td>Deletes and returns the value if present</td>
+</tr>
+<tr>
+<td><code>peek(value)</code></td>
+<td>Returns the value if present, otherwise <code>false</code></td>
+</tr>
+<tr>
+<td><code>toggle(value)</code></td>
+<td>Adds an absent value or deletes a present value</td>
+</tr>
+<tr>
+<td><code>first()</code> / <code>last()</code></td>
+<td>Gets the first or last iterated value</td>
+</tr>
+<tr>
+<td><code>union(other)</code></td>
+<td>Returns the union</td>
+</tr>
+<tr>
+<td><code>intersection(other)</code></td>
+<td>Returns the intersection</td>
+</tr>
+<tr>
+<td><code>difference(other)</code></td>
+<td>Returns values absent from another iterable</td>
+</tr>
+<tr>
+<td><code>symmetricDifference(other)</code></td>
+<td>Returns values exclusive to either set</td>
+</tr>
+<tr>
+<td><code>isSubsetOf(other)</code> / <code>isSupersetOf(other)</code></td>
+<td>Checks subset or superset relationships</td>
+</tr>
+<tr>
+<td><code>isDisjointFrom(other)</code></td>
+<td>Checks whether sets have no shared values</td>
+</tr>
+<tr>
+<td><code>equals(other)</code></td>
+<td>Checks set equality</td>
+</tr>
+<tr>
+<td><code>filter(fn)</code> / <code>map(fn)</code></td>
+<td>Filters or transforms values into a <code>SET2I</code></td>
+</tr>
+<tr>
+<td><code>partition(fn)</code></td>
+<td>Splits values into matching and nonmatching sets</td>
+</tr>
+<tr>
+<td><code>differenceBy(other, fn)</code></td>
+<td>Computes a difference using computed keys</td>
+</tr>
+<tr>
+<td><code>uniqueBy(fn)</code></td>
+<td>Keeps the first value for each computed key</td>
+</tr>
+<tr>
+<td><code>find(fn)</code></td>
+<td>Returns the first matching value</td>
+</tr>
+<tr>
+<td><code>every(fn)</code> / <code>some(fn)</code></td>
+<td>Tests values against a predicate</td>
+</tr>
+<tr>
+<td><code>reduce(fn, initial)</code></td>
+<td>Reduces values to an accumulated result</td>
+</tr>
+<tr>
+<td><code>addAll(values)</code></td>
+<td>Adds multiple values</td>
+</tr>
+<tr>
+<td><code>deleteAll(values)</code></td>
+<td>Deletes values and returns the deletion count</td>
+</tr>
+<tr>
+<td><code>retainAll(values)</code></td>
+<td>Keeps only values present in another iterable</td>
+</tr>
+<tr>
+<td><code>update(values)</code></td>
+<td>Adds values from another iterable</td>
+</tr>
+<tr>
+<td><code>replace(values)</code></td>
+<td>Replaces all members</td>
+</tr>
+<tr>
+<td><code>swap(a, b)</code></td>
+<td>Removes <code>a</code> and adds <code>b</code> if <code>a</code> exists</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Creates a copy</td>
+</tr>
+<tr>
+<td><code>toArray()</code></td>
+<td>Converts to an array</td>
+</tr>
+<tr>
+<td><code>toMap(fn)</code></td>
+<td>Converts values into a map using returned key-value pairs</td>
+</tr>
+<tr>
+<td><code>toObject(fn?)</code></td>
+<td>Converts values to an object using generated or stringified keys</td>
+</tr>
+<tr>
+<td><code>toJSON()</code></td>
+<td>Returns the values as an array</td>
+</tr>
+</tbody>
+</table>
+<p>Static constructors: <code>fromArray(values)</code>, <code>fromObject(obj)</code>, <code>fromEntries(entries)</code>, and <code>from(values)</code>.</p>
+<h2 id="u82--array"><code>U82</code> — Array</h2>
+<p>Extends <code>Array&lt;T&gt;</code> with collection access, transformations, set-like operations, and in-place utilities.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>first()</code> / <code>second()</code> / <code>third()</code> / <code>last()</code></td>
+<td>Gets an element by position</td>
+</tr>
+<tr>
+<td><code>random()</code></td>
+<td>Gets a random element</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code> / <code>isNotEmpty()</code></td>
+<td>Checks whether the array has elements</td>
+</tr>
+<tr>
+<td><code>isNotEmptyAndDefined()</code></td>
+<td>Checks for at least one non-nullish element</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Empties the array in place</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Creates a shallow copy</td>
+</tr>
+<tr>
+<td><code>unique()</code></td>
+<td>Removes duplicate values</td>
+</tr>
+<tr>
+<td><code>compact()</code></td>
+<td>Removes <code>null</code> and <code>undefined</code></td>
+</tr>
+<tr>
+<td><code>chunk(size)</code></td>
+<td>Splits into groups of a given size</td>
+</tr>
+<tr>
+<td><code>flatten(depth?)</code> / <code>flattenDeep()</code></td>
+<td>Flattens nested arrays</td>
+</tr>
+<tr>
+<td><code>shuffle()</code> / <code>shuffleInPlace()</code></td>
+<td>Randomizes the array in place</td>
+</tr>
+<tr>
+<td><code>sample(count?)</code> / <code>pick(count?)</code></td>
+<td>Selects random elements without replacement</td>
+</tr>
+<tr>
+<td><code>count(predicate?)</code></td>
+<td>Counts all elements or matching elements</td>
+</tr>
+<tr>
+<td><code>sum()</code> / <code>average()</code> / <code>min()</code> / <code>max()</code></td>
+<td>Numeric aggregations</td>
+</tr>
+<tr>
+<td><code>groupBy(keyFn)</code></td>
+<td>Groups elements by computed key</td>
+</tr>
+<tr>
+<td><code>keyBy(keyFn)</code> / <code>toMap(keyFn)</code></td>
+<td>Maps computed keys to elements</td>
+</tr>
+<tr>
+<td><code>partition(predicate)</code></td>
+<td>Splits elements into matching and nonmatching arrays</td>
+</tr>
+<tr>
+<td><code>difference(other)</code></td>
+<td>Returns elements not present in another iterable</td>
+</tr>
+<tr>
+<td><code>intersection(other)</code></td>
+<td>Returns elements present in another iterable</td>
+</tr>
+<tr>
+<td><code>union(other)</code></td>
+<td>Combines unique elements</td>
+</tr>
+<tr>
+<td><code>symmetricDifference(other)</code></td>
+<td>Returns elements exclusive to either collection</td>
+</tr>
+<tr>
+<td><code>take(count)</code> / <code>takeLast(count)</code></td>
+<td>Takes elements from either end</td>
+</tr>
+<tr>
+<td><code>drop(count)</code> / <code>dropLast(count)</code></td>
+<td>Removes elements from either end in the returned copy</td>
+</tr>
+<tr>
+<td><code>pluck(key)</code></td>
+<td>Extracts a property from every element</td>
+</tr>
+<tr>
+<td><code>insert(index, ...items)</code></td>
+<td>Inserts elements in place</td>
+</tr>
+<tr>
+<td><code>removeAt(index)</code></td>
+<td>Removes and returns an element</td>
+</tr>
+<tr>
+<td><code>remove(value)</code></td>
+<td>Removes the first matching element</td>
+</tr>
+<tr>
+<td><code>removeWhere(predicate)</code></td>
+<td>Removes all matching elements in place</td>
+</tr>
+<tr>
+<td><code>replace(oldValue, newValue)</code></td>
+<td>Replaces the first matching element</td>
+</tr>
+<tr>
+<td><code>move(from, to)</code></td>
+<td>Moves an element to another index</td>
+</tr>
+<tr>
+<td><code>swap(i, j)</code></td>
+<td>Swaps two positions</td>
+</tr>
+<tr>
+<td><code>toSet()</code></td>
+<td>Converts to a native <code>Set</code></td>
+</tr>
+<tr>
+<td><code>equals(other)</code></td>
+<td>Checks element-by-element equality</td>
+</tr>
+<tr>
+<td><code>startsWith(other)</code> / <code>endsWith(other)</code></td>
+<td>Checks matching elements at either end</td>
+</tr>
+<tr>
+<td><code>isSorted(compareFn?)</code></td>
+<td>Checks whether elements are sorted</td>
+</tr>
+<tr>
+<td><code>frequencies()</code></td>
+<td>Counts occurrences of each element</td>
+</tr>
+</tbody>
+</table>
+<p>Also inherits the native <code>Array</code> API. Static <code>from()</code> and <code>of()</code> return the enhanced array type.</p>
+<h2 id="usp2--urlsearchparams"><code>USP2</code> — URLSearchParams</h2>
+<p>Extends <code>URLSearchParams</code> with typed value access, serialization, merging, and convenience methods.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getOr(name, fallback)</code></td>
+<td>Gets a parameter or returns a fallback</td>
+</tr>
+<tr>
+<td><code>getOrNull(name)</code></td>
+<td>Gets a parameter or returns <code>null</code></td>
+</tr>
+<tr>
+<td><code>getOrThrow(name, error?)</code></td>
+<td>Gets a parameter or throws</td>
+</tr>
+<tr>
+<td><code>getNumber(name, fallback?)</code></td>
+<td>Parses a finite number</td>
+</tr>
+<tr>
+<td><code>getInt(name, radix?)</code></td>
+<td>Parses an integer</td>
+</tr>
+<tr>
+<td><code>getFloat(name)</code></td>
+<td>Parses a floating-point number</td>
+</tr>
+<tr>
+<td><code>getBoolean(name, fallback?)</code></td>
+<td>Parses boolean-like values</td>
+</tr>
+<tr>
+<td><code>getJSON&lt;T&gt;(name)</code></td>
+<td>Parses JSON; returns <code>undefined</code> on missing or invalid JSON</td>
+</tr>
+<tr>
+<td><code>getArray(name, separator?)</code></td>
+<td>Splits a parameter into an array</td>
+</tr>
+<tr>
+<td><code>getObject&lt;T&gt;()</code></td>
+<td>Converts parameters to an object, preserving repeated values as arrays</td>
+</tr>
+<tr>
+<td><code>setNumber(name, value)</code></td>
+<td>Sets a numeric parameter</td>
+</tr>
+<tr>
+<td><code>setBoolean(name, value)</code></td>
+<td>Sets a boolean parameter</td>
+</tr>
+<tr>
+<td><code>setJSON(name, value)</code></td>
+<td>JSON-serializes a value into a parameter</td>
+</tr>
+<tr>
+<td><code>setArray(name, values, separator?)</code></td>
+<td>Joins values into a parameter</td>
+</tr>
+<tr>
+<td><code>setIfAbsent(name, value)</code></td>
+<td>Sets only if the parameter does not exist</td>
+</tr>
+<tr>
+<td><code>setIfPresent(name, value)</code></td>
+<td>Sets only if the parameter exists</td>
+</tr>
+<tr>
+<td><code>appendAll(params)</code></td>
+<td>Appends parameters from another source</td>
+</tr>
+<tr>
+<td><code>merge(params, overwrite?)</code></td>
+<td>Merges parameters, overwriting by default</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Creates a copy</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Removes all parameters</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code> / <code>isNotEmpty()</code></td>
+<td>Checks whether parameters exist</td>
+</tr>
+<tr>
+<td><code>toObject()</code> / <code>toJSON()</code></td>
+<td>Converts parameters to an object</td>
+</tr>
+<tr>
+<td><code>toURLSearchParams()</code></td>
+<td>Returns a native <code>URLSearchParams</code> copy</td>
+</tr>
+<tr>
+<td><code>toURL(url)</code></td>
+<td>Creates a URL and appends these parameters</td>
+</tr>
+</tbody>
+</table>
+<p>Also exposes <code>size</code> and inherits the native <code>URLSearchParams</code> API.</p>
+<h2 id="wm2--weakmap"><code>WM2</code> — WeakMap</h2>
+<p>Extends <code>WeakMap&lt;K, V&gt;</code> with aliases, lazy initialization, conditional updates, and optional explicit key tracking.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g</code> / <code>h</code> / <code>d</code></td>
+<td>Aliases for <code>get</code> / <code>has</code> / <code>delete</code></td>
+</tr>
+<tr>
+<td><code>s(key, value)</code></td>
+<td>Sets a value; evaluates a function argument lazily</td>
+</tr>
+<tr>
+<td><code>swap(key, value)</code></td>
+<td>Sets a value and returns the previous value</td>
+</tr>
+<tr>
+<td><code>take(key)</code> / <code>getAndDelete(key)</code></td>
+<td>Gets and deletes a value</td>
+</tr>
+<tr>
+<td><code>peek(key)</code></td>
+<td>Returns the value or <code>false</code> if absent</td>
+</tr>
+<tr>
+<td><code>getOrI(key, value)</code></td>
+<td>Gets an existing value or stores the supplied value</td>
+</tr>
+<tr>
+<td><code>getOrM(key, make)</code></td>
+<td>Gets an existing value or lazily creates and stores one</td>
+</tr>
+<tr>
+<td><code>getOr(key, fallback)</code></td>
+<td>Gets a value or returns a fallback</td>
+</tr>
+<tr>
+<td><code>getOrThrow(key, error?)</code></td>
+<td>Gets a value or throws</td>
+</tr>
+<tr>
+<td><code>getOrCreate(key, make)</code> / <code>ensure(key, make)</code></td>
+<td>Lazily creates a missing value</td>
+</tr>
+<tr>
+<td><code>update(key, fn, initial)</code></td>
+<td>Computes and stores an updated value</td>
+</tr>
+<tr>
+<td><code>setIfAbsent(key, value)</code></td>
+<td>Sets only if the key is absent</td>
+</tr>
+<tr>
+<td><code>setIfPresent(key, value)</code></td>
+<td>Sets only if the key exists</td>
+</tr>
+<tr>
+<td><code>hasOrSet(key, value)</code></td>
+<td>Returns whether the key already existed; otherwise sets it</td>
+</tr>
+<tr>
+<td><code>replace(key, value)</code></td>
+<td>Replaces a value only when the key exists</td>
+</tr>
+<tr>
+<td><code>touch(key)</code></td>
+<td>Inserts <code>undefined</code> for an absent key</td>
+</tr>
+<tr>
+<td><code>track(key)</code> / <code>untrack(key)</code></td>
+<td>Enables or removes explicit key tracking</td>
+</tr>
+<tr>
+<td><code>trackedKeys()</code> / <code>trackedValues()</code> / <code>trackedEntries()</code></td>
+<td>Reads explicitly tracked keys and their current values</td>
+</tr>
+<tr>
+<td><code>forEachTracked(fn)</code></td>
+<td>Iterates tracked entries still present</td>
+</tr>
+<tr>
+<td><code>clearTracked()</code></td>
+<td>Deletes tracked keys from the WeakMap and clears tracking</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tracking note:</strong> Tracking retains strong references to keys and can prevent garbage collection. Tracking is opt-in.</p>
+<h2 id="ws2--weakset"><code>WS2</code> — WeakSet</h2>
+<p>Extends <code>WeakSet&lt;T&gt;</code> with conditional membership, bulk operations, and optional explicit tracking.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>addIfAbsent(value)</code></td>
+<td>Adds only if absent; returns whether it added</td>
+</tr>
+<tr>
+<td><code>toggle(value)</code></td>
+<td>Adds if absent or deletes if present; returns the new membership state</td>
+</tr>
+<tr>
+<td><code>deleteIfPresent(value)</code></td>
+<td>Deletes a value if present</td>
+</tr>
+<tr>
+<td><code>hasAll(values)</code> / <code>hasAny(values)</code></td>
+<td>Checks membership across an iterable</td>
+</tr>
+<tr>
+<td><code>addAll(values)</code></td>
+<td>Adds multiple values</td>
+</tr>
+<tr>
+<td><code>deleteAll(values)</code></td>
+<td>Deletes multiple values and returns the deletion count</td>
+</tr>
+<tr>
+<td><code>replace(oldValue, newValue)</code></td>
+<td>Replaces a member if the old value exists</td>
+</tr>
+<tr>
+<td><code>track(value)</code></td>
+<td>Adds a value and explicitly tracks it</td>
+</tr>
+<tr>
+<td><code>untrack(value)</code></td>
+<td>Removes a value from explicit tracking</td>
+</tr>
+<tr>
+<td><code>trackedKeys()</code></td>
+<td>Returns explicitly tracked values</td>
+</tr>
+<tr>
+<td><code>forEachTracked(callback, thisArg?)</code></td>
+<td>Iterates tracked values still present in the WeakSet</td>
+</tr>
+<tr>
+<td><code>clearTracked()</code></td>
+<td>Deletes all explicitly tracked values</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tracking note:</strong> Native <code>WeakSet</code> values are not enumerable. These helpers maintain a separate strong-reference <code>Set</code> for tracked values; tracked objects can therefore remain reachable until untracked or cleared.</p>
+<h2 id="usage">Usage</h2>
+<p>After the package's initialization module has executed, the registered globals can be used directly:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> values = <span class="hljs-keyword">new</span> <span class="hljs-title function_">A2</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);
+
+values.<span class="hljs-title function_">unique</span>().<span class="hljs-title function_">chunk</span>(<span class="hljs-number">2</span>);
+<span class="hljs-comment">// [[1, 2], [3, 4]]</span>
+
+<span class="hljs-keyword">new</span> <span class="hljs-title function_">N2</span>(<span class="hljs-number">42</span>).<span class="hljs-title function_">clamp</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>).<span class="hljs-title function_">valueOf</span>();
+<span class="hljs-comment">// 10</span>
+
+<span class="hljs-keyword">const</span> cache = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;();
+cache.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;count&quot;</span>, <span class="hljs-number">1</span>);
+cache.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;count&quot;</span>);
+<span class="hljs-comment">// 2</span>
+
+<span class="hljs-keyword">const</span> iterator = <span class="hljs-keyword">new</span> <span class="hljs-title function_">I2</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>]);
+iterator.<span class="hljs-title function_">filter</span>(<span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> value % <span class="hljs-number">2</span> === <span class="hljs-number">0</span>).<span class="hljs-title function_">toArray</span>();
+<span class="hljs-comment">// [2, 4]</span>
+
+<span class="hljs-keyword">const</span> error = <span class="hljs-title class_">ER2</span>.<span class="hljs-title function_">from</span>(<span class="hljs-string">&quot;Something failed&quot;</span>);
+error.<span class="hljs-title function_">toJSON</span>();
+</code></pre>
+
+            
+            
+        </body>
+        </html>
