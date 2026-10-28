@@ -1,21 +1,19 @@
 {
   "compilerOptions": {
-  "lib": ["DOM", "DOM.Iterable", "ES2022", "ES2021.WeakRef"],
-
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declaration": true,
-  "allowJs": true,
-  "strict": true,
-  "isolatedModules": false,
-  "skipLibCheck": true,
-  "verbatimModuleSyntax": true,
+		"lib": ["DOM", "DOM.Iterable", "ES2022", "ES2021.WeakRef"],
+		"isolatedModules": false,
+		"esModuleInterop": true,
+		"module": "es2022",
+		"target": "ES2022",
+		// "resolveJsonModule": true,
+		"moduleResolution": "bundler",
+		"strict": true,
+		"allowJs": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"ignoreDeprecations": "6.0",
     "types":[
-      "Bun",
-     "node",
+      "node",
      "@the-w1zard/alias_types"
     ]
   },

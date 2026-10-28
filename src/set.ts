@@ -1,3 +1,5 @@
+import { M2I } from "./map";
+
 export interface SET2<T = A> extends Set<T> {
 	s(value: T): this;
 	take(value: T): T | UD;
@@ -34,7 +36,7 @@ export interface SET2<T = A> extends Set<T> {
 
 	clone(): this;
 	toArray(): T[];
-	toMap<K, R>(fn: (v: T) => readonly [K, R]): typeof M2<K, R>;
+	toMap<K, R>(fn: (v: T) => readonly [K, R]): M2I<K, R>;
 	toObject(fn?: (v: T) => S): OB<T>;
 	toJSON(): T[];
 
@@ -234,7 +236,7 @@ export class SET2I<T = A> extends Set<T> implements SET2<T> {
 		return [...this];
 	}
 
-	toMap<K, R>(fn: (v: T) => readonly [K, R]):typeof M2<K, R> {
+	toMap<K, R>(fn: (v: T) => readonly [K, R]): M2I<K, R> {
 		const out = new M2<K, R>();
 		for (const value of this) {
 			const [key, result] = fn(value);
@@ -274,4 +276,4 @@ export class SET2I<T = A> extends Set<T> implements SET2<T> {
 	}
 }
 
-globalThis.S2 = SET2I;
+globalThis.SET2 = SET2I;
