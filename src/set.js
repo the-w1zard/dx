@@ -5,9 +5,7 @@ export class SET2I extends Set {
             return undefined;
         return value;
     }
-    peek(value) {
-        return this.has(value) ? value : false;
-    }
+    peek(value) { return this.has(value) ? value : false; }
     toggle(value) {
         if (this.has(value)) {
             this.delete(value);

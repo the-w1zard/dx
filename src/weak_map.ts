@@ -1,39 +1,3 @@
-export interface WM2<H extends WeakKey = A, T = A> extends WeakMap<H, T> {
-	g: typeof WeakMap.prototype.get;
-	h: typeof WeakMap.prototype.has;
-	d: typeof WeakMap.prototype.delete;
-	s(k: H, v: T | (() => T)): this;
-
-	swap(key: H, value: T): T | UD;
-	take(key: H): T | UD;
-	getAndDelete(key: H): T | UD;
-	peek(key: H): T | false;
-
-	getOrI(key: H, value: T): T;
-	getOrM(key: H, make: () => T): T;
-	getOr<G>(key: H, fallback: G): T | G;
-	getOrThrow(key: H, error?: Error): T;
-	getOrCreate(key: H, make: () => T): T;
-	ensure(key: H, make: () => T): T;
-
-	update(key: H, fn: (old: T, has: B) => T, initial: T): T;
-	setIfAbsent(key: H, value: T): B;
-	setIfPresent(key: H, value: T): B;
-	hasOrSet(key: H, value: T): B;
-	replace(key: H, value: T): B;
-	touch(key: H): B;
-
-	/** Registry-backed methods retain strong references to keys and can prevent garbage collection. */
-	readonly tracked?: B;
-	readonly trackedSize?: N;
-	track(key: H): this;
-	untrack(key: H): B;
-	trackedKeys(): AR<H>;
-	trackedValues(): AR<T>;
-	trackedEntries(): AR<[H, T]>;
-	forEachTracked(fn: (value: T, key: H, map: this) => void): void;
-	clearTracked(): void;
-}
 
 export class WM2I<H extends WeakKey = A, T = A> extends WeakMap<H, T> implements WM2<H, T> {
 	g = this.get;

@@ -1,14 +1,272 @@
+export const rv = (v) => typeof v === "function" ? v() : v;
 export class M2I extends Map {
-    g = this.get;
-    h = this.has;
-    d = this.delete;
-    s(k, v) {
-        const n = typeof v === "function" ? v() : v;
-        return super.set(k, n);
+    // public g = this.get;
+    // public h = this.has;
+    // public d = this.delete;
+    // public c = this.clear
+    f = this.forEach; //                                                     [FOR EACH]
+    #subs;
+    #hist;
+    #histLimit = 0;
+    #strict = false;
+    #iterating = 0;
+    #batching = 0;
+    #pending;
+    #derived;
+    #dependents;
+    #emit(e) {
+        if (this.#batching > 0) {
+            // coalesce: last write per key wins, keep prev from first event
+            const pending = this.#pending.get(e.k);
+            this.#pending.set(e.k, pending ? { ...e, prev: pending.prev, batch: true } : { ...e, batch: true });
+            return;
+        }
+        this.#record(e);
+        this.#subs?.forEach((sub) => {
+            try {
+                sub(e);
+            }
+            catch (err) {
+                process.emitWarning(err);
+            }
+        });
     }
-    swap(key, value) {
-        const previous = this.has(key) ? this.get(key) : undefined;
-        this.s(key, value);
+    #record(e) {
+        if (!this.#hist)
+            return;
+        this.#hist.push(e);
+        if (this.#hist.length > this.#histLimit) {
+            this.#hist.splice(0, this.#hist.length - this.#histLimit);
+        }
+    }
+    #invalidate(k) {
+        const deps = this.#dependents?.get(k);
+        if (!deps)
+            return;
+        for (const dk of deps) {
+            const d = this.#derived?.get(dk);
+            if (!d || d.dirty)
+                continue;
+            d.dirty = true;
+            this.#emit({ op: "dirty", k: dk, has: d.has });
+        }
+    }
+    #computeDerived(k, d) {
+        const vals = d.deps.map((dep) => this.g(dep));
+        const next = d.fn(...vals);
+        const had = d.has;
+        const prev = d.value;
+        d.value = next;
+        d.has = true;
+        d.dirty = false;
+        if (!had || !Object.is(prev, next)) {
+            this.#emit({
+                op: had ? "upd" : "set",
+                k,
+                v: next,
+                prev: prev,
+                has: true,
+            });
+        }
+        return next;
+    }
+    #assertNotIterating(op) {
+        if (this.#strict && this.#iterating > 0) {
+            throw new Error(`M2.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
+        }
+    }
+    [Symbol.iterator]() { return this.entries(); }
+    on(fn) {
+        (this.#subs ??= new Set()).add(fn);
+        return () => this.off(fn);
+    }
+    off(fn) {
+        this.#subs?.delete(fn);
+    }
+    batch(fn) {
+        this.#batching++;
+        this.#pending ??= new M2I();
+        try {
+            fn();
+        }
+        finally {
+            this.#batching--;
+            if (this.#batching === 0) {
+                const events = [...this.#pending.values()];
+                this.#pending = undefined;
+                for (const e of events) {
+                    this.#record(e);
+                    this.#subs?.forEach(sub => sub(e));
+                }
+            }
+        }
+        return this;
+    }
+    s(v, k) {
+        this.#assertNotIterating("s");
+        const next = rv(v);
+        const has = this.h(k);
+        const prev = has ? this.g(k) : undefined;
+        super.set(k, next);
+        this.#invalidate(k);
+        this.#emit({
+            op: "set",
+            k,
+            v: next,
+            prev: prev,
+            has,
+        });
+        return this;
+    }
+    mutate(k, fn) {
+        this.#assertNotIterating("mutate");
+        if (!this.h(k))
+            return undefined;
+        const old = this.g(k);
+        const next = fn(old, true);
+        this.s(next, k);
+        return next;
+    }
+    d(k) {
+        this.#assertNotIterating("delete");
+        if (!this.h(k))
+            return false;
+        const prev = this.g(k);
+        const out = super.delete(k);
+        this.#invalidate(k);
+        this.#emit({
+            op: "del",
+            k,
+            prev,
+            has: false,
+        });
+        return out;
+    }
+    c() {
+        this.#assertNotIterating("clear");
+        const entries = [...this.entries()];
+        super.clear();
+        for (const [k, prev] of entries) {
+            this.#invalidate(k);
+            this.#emit({ op: "del", k, prev, has: false });
+        }
+    }
+    dv(k, deps, fn) {
+        (this.#derived ??= new M2I())
+            .set(k, {
+            deps,
+            fn,
+            dirty: true,
+            has: false,
+        });
+        for (const dep of deps) {
+            (this.#dependents ??= new M2I())
+                .getOrM(() => new Set(), dep)
+                .add(k);
+        }
+        return this;
+    }
+    dirty(...keys) {
+        for (const k of keys) {
+            const d = this.#derived?.get(k);
+            if (d && !d.dirty) {
+                d.dirty = true;
+                this.#emit({ op: "dirty", k, has: d.has });
+            }
+        }
+        return this;
+    }
+    g(k) {
+        const d = this.#derived?.get(k);
+        if (d) {
+            if (d.dirty || !d.has)
+                return this.#computeDerived(k, d);
+            return d.value;
+        }
+        return super.get(k);
+    }
+    h(k) {
+        const d = this.#derived?.get(k);
+        if (d) {
+            if (d.dirty || !d.has)
+                this.#computeDerived(k, d);
+            return true;
+        }
+        return super.has(k);
+    }
+    $debug(limit = 256) {
+        this.#hist ??= [];
+        this.#histLimit = limit;
+        return this;
+    }
+    $strict() {
+        this.#strict = true;
+        return this;
+    }
+    $history() {
+        return this.#hist ? [...this.#hist] : [];
+    }
+    $why(k) {
+        if (!this.#hist)
+            return undefined;
+        for (let i = this.#hist.length - 1; i >= 0; i--) {
+            if (Object.is(this.#hist[i].k, k))
+                return this.#hist[i];
+        }
+        return undefined;
+    }
+    $diff(other) {
+        const add = [];
+        const del = [];
+        const chg = [];
+        for (const [k, v] of this) {
+            if (!other.has(k)) {
+                add.push([k, v]);
+            }
+            else if (!Object.is(other.get(k), v)) {
+                chg.push([k, v, other.get(k)]);
+            }
+        }
+        for (const k of other.keys()) {
+            if (!this.has(k))
+                del.push(k);
+        }
+        return { add, del, chg };
+    }
+    *entries() {
+        this.#iterating++;
+        try {
+            for (const entry of super.entries())
+                yield entry;
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    *keys() {
+        this.#iterating++;
+        try {
+            for (const k of super.keys())
+                yield k;
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    *values() {
+        this.#iterating++;
+        try {
+            for (const v of super.values())
+                yield v;
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    swap(value, key) {
+        const next = rv(value);
+        const previous = this.has(key) ? this.get(key) : next;
+        this.s(next, key);
         return previous;
     }
     take(k) {
@@ -19,56 +277,65 @@ export class M2I extends Map {
     peek(k) {
         return this.h(k) ? this.g(k) : false;
     }
-    getOrI(k, value) {
+    getOrI(value, k) {
         if (this.h(k))
             return this.g(k);
-        this.s(k, value);
-        return value;
+        const next = rv(value);
+        this.s(next, k);
+        return next;
     }
-    getOrM(k, make) {
+    getOrM(make, k) {
         if (this.h(k))
             return this.g(k);
         const value = make();
-        this.s(k, value);
+        this.s(value, k);
         return value;
     }
     update(k, fn, initial) {
         const has = this.h(k);
-        const value = fn(has ? this.g(k) : initial, has);
-        this.s(k, value);
-        return value;
+        const old = has
+            ? this.g(k)
+            : initial === undefined
+                ? undefined
+                : rv(initial);
+        const next = rv(fn(old, has));
+        this.s(next, k);
+        return next;
     }
-    setIfAbsent(k, value) {
+    setIfAbsent(value, k) {
         if (this.h(k))
             return false;
-        this.s(k, value);
+        const next = rv(value);
+        this.s(next, k);
         return true;
     }
-    setIfPresent(k, value) {
+    setIfPresent(value, k) {
         if (!this.h(k))
             return false;
-        this.s(k, value);
+        const next = rv(value);
+        this.s(next, k);
         return true;
     }
-    replace(k, value) {
-        return this.setIfPresent(k, value);
+    replace(value, k) {
+        const next = rv(value);
+        return this.setIfPresent(next, k);
     }
     inc(key, by = 1) {
         return this.update(key, (old) => ((old ?? 0) + by), 0);
     }
     touch(k) {
-        return this.setIfAbsent(k, undefined);
+        return this.setIfAbsent(undefined, k);
     }
     mapValues(fn) {
         const out = new M2I();
         for (const [k, v] of this)
-            out.set(k, fn(v, k));
+            out.s(fn(v, k), k);
         return out;
     }
     mapKeys(fn) {
         const out = new M2I();
         for (const [k, v] of this)
-            out.set(fn(v, k), v);
+            out.s(v, fn(v, k));
         return out;
     }
     filterKV(pred) {
@@ -79,17 +346,13 @@ export class M2I extends Map {
         return this;
     }
     filterKeys(pred) {
-        for (const [k, v] of this) {
-            if (!pred(k, v))
-                this.d(k);
-        }
-        return this;
+        return this.filterKV(pred);
     }
     partition(pred) {
         const yes = new M2I();
         const no = new M2I();
         for (const [k, v] of this) {
-            (pred(v, k) ? yes : no).set(k, v);
+            (pred(v, k) ? yes : no).s(v, k);
         }
         return [yes, no];
     }
@@ -141,13 +404,13 @@ export class M2I extends Map {
     invert() {
         const out = new M2I();
         for (const [k, v] of this)
-            out.set(v, k);
+            out.s(k, v);
         return out;
     }
     group(fn) {
         const out = new M2I();
         for (const [k, v] of this) {
-            out.getOrM(fn(v, k), () => []).push(v);
+            out.getOrM(() => [], fn(v, k)).push(v);
         }
         return out;
     }
@@ -155,16 +418,16 @@ export class M2I extends Map {
         const out = new M2I();
         for (const [k, v] of this) {
             const key = (fn ? fn(v, k) : v);
-            if (!out.has(key))
-                out.set(key, v);
+            if (!out.h(key))
+                out.s(v, key);
         }
         return out;
     }
     pick(keys) {
         const out = new M2I();
         for (const k of keys) {
-            if (this.has(k))
-                out.set(k, this.get(k));
+            if (this.h(k))
+                out.s(this.g(k), k);
         }
         return out;
     }
@@ -173,21 +436,25 @@ export class M2I extends Map {
         const out = new M2I();
         for (const [k, v] of this) {
             if (!omitted.has(k))
-                out.set(k, v);
+                out.s(v, k);
         }
         return out;
     }
     merge(other) {
-        for (const [k, v] of other)
-            this.set(k, v);
+        for (const [k, v] of other) {
+            const n = rv(v);
+            this.s(n, k);
+        }
         return this;
     }
     clearAndSet(entries) {
-        const snapshot = Array.from(entries);
-        this.clear();
-        for (const [k, v] of snapshot)
-            this.set(k, v);
-        return this;
+        return this.batch(() => {
+            this.clear();
+            for (const [k, v] of entries) {
+                const n = rv(v);
+                this.s(n, k);
+            }
+        });
     }
     toObject() {
         const out = {};
@@ -205,7 +472,7 @@ export class M2I extends Map {
         return Array.from(this.values());
     }
     clone() {
-        return new M2(this);
+        return new M2I(this);
     }
     equals(other) {
         if (other === this)
@@ -219,13 +486,16 @@ export class M2I extends Map {
         return true;
     }
     static fromObject(obj) {
-        return new M2(Object.entries(obj));
+        return new M2I(Object.entries(obj));
     }
     static fromEntries(entries) {
-        return new M2(entries);
+        return new M2I(entries);
     }
     static from(map) {
-        return new M2(map);
+        return new M2I(map);
     }
 }
 globalThis.M2 = M2I;
+/*  ====================================================================================================
+    
+    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */

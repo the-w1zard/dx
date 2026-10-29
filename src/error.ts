@@ -1,20 +1,4 @@
-export interface ER2 extends Error {
-	cause?: unknown;
-	clone(): ER2I;
-	toJSON(): {
-		name: string;
-		message: string;
-		stack?: string;
-		cause?: unknown;
-	};
-	toString(): string;
-}
 
-export interface ER2C extends ErrorConstructor {
-	new (message?: string, options?: ErrorOptions): ER2I;
-	(message?: string): string;
-	readonly prototype: ER2I;
-}
 
 export class ER2I extends Error implements ER2 {
 	constructor(message = "", options?: ErrorOptions) {

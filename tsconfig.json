@@ -1,23 +1,26 @@
 {
   "compilerOptions": {
-		"lib": ["DOM", "DOM.Iterable", "ES2022", "ES2021.WeakRef"],
-		"isolatedModules": false,
-		"esModuleInterop": true,
-		"module": "es2022",
-		"target": "ES2022",
-		// "resolveJsonModule": true,
-		"moduleResolution": "bundler",
-		"strict": true,
-		"allowJs": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"ignoreDeprecations": "6.0",
+	"lib": ["DOM", "DOM.Iterable", "ES2022", "ES2021.WeakRef"],
+	"isolatedModules": false,
+	"esModuleInterop": true,
+	"jsx": "react-jsx",
+	"jsxImportSource": "#the_wizard_renderer",
+	"module": "es2022",
+	"target": "ES2022",
+	// "resolveJsonModule": true,
+	"moduleResolution": "bundler",
+	"strict": true,
+	"allowJs": true,
+	"skipLibCheck": true,
+	"forceConsistentCasingInFileNames": true,
     "types":[
       "node",
-     "@the-w1zard/alias_types"
+     "@the-w1zard/alias_types",
+	 "./src/dx.d.ts"
     ]
   },
   "include": [
+	"./src/**/*",
     "**/*.ts"
  ],
   "exclude": ["node_modules", "dist"]
