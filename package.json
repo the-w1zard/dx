@@ -1,6 +1,6 @@
 {
   "name": "@the-w1zard/dx",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -23,6 +23,6 @@
     "typescript": "^6.0.0"
   },
   "dependencies": {
-      "@the-w1zard/alias_types": "workspace:*"
-    }
+    "@the-w1zard/alias_types": "workspace:*"
+  }
 }
