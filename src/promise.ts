@@ -1,6 +1,11 @@
-
-
 export class P2I<T = A> extends Promise<T> implements P2<T> {
+	#createdAt = Date.now();
+	#status: "pending" | "fulfilled" | "rejected" = "pending";
+	#val?: T;
+	#err?: A;
+	#settledAt?: N;
+	#label?: S;
+
 	constructor(
 		executor: (
 			resolve: (value: T | PromiseLike<T>) => void,
@@ -8,6 +13,11 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 		) => void,
 	) {
 		super(executor);
+
+		super.then(
+			(v) => { this.#status = "fulfilled"; this.#val = v; this.#settledAt = Date.now(); },
+			(e) => { this.#status = "rejected"; this.#err = e as A; this.#settledAt = Date.now(); },
+		);
 	}
 
 	static get [Symbol.species](): PromiseConstructor {
@@ -30,6 +40,16 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 	override finally(onfinally?: (() => void) | null): P2I<T> {
 		return super.finally(onfinally) as P2I<T>;
 	}
+
+	//                                                                                     [STATUS]
+	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+	status(): "pending" | "fulfilled" | "rejected" { return this.#status; }
+	isPending(): B { return this.#status === "pending"; }
+	isFulfilled(): B { return this.#status === "fulfilled"; }
+	isRejected(): B { return this.#status === "rejected"; }
+	value(): T | UD { return this.#status === "fulfilled" ? this.#val : undefined; }
+	error(): A | UD { return this.#status === "rejected" ? this.#err : undefined; }
+	elapsed(): N | UD { return this.#settledAt ? (this.#settledAt - this.#createdAt) as N : undefined; }
 
 	static resolve(): P2I<void>;
 	static resolve<T>(value: T | PromiseLike<T>): P2I<Awaited<T>>;
@@ -117,6 +137,59 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 		});
 	}
 
+	//                                                                                [CONCURRENCY]
+	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+	static sleep(ms: N): P2I<void> {
+		return new P2I<void>(resolve => setTimeout(resolve, ms));
+	}
+
+	static fromCallback<T>(fn: (cb: (err: A, value?: T) => void) => void): P2I<T> {
+		return new P2I<T>((resolve, reject) => {
+			fn((err, value) => {
+				if (err) reject(err);
+				else resolve(value as T);
+			});
+		});
+	}
+
+	static mapLimit<T, G>(
+		items: AR<T>,
+		limit: N,
+		fn: (item: T, index: N) => G | PromiseLike<G>,
+	): P2I<AR<G>> {
+		return new P2I<AR<G>>((resolve, reject) => {
+			const results: AR<G> = new Array(items.length);
+			let next = 0;
+			let active = 0;
+			let done = 0;
+			let failed = false;
+
+			const run = (): void => {
+				if (failed) return;
+				if (done === items.length) { resolve(results); return; }
+
+				while (active < limit && next < items.length) {
+					const i = next++;
+					active++;
+
+					P2I.try(() => fn(items[i], i as N)).then(
+						(v) => { results[i] = v as G; active--; done++; run(); },
+						(e) => { failed = true; reject(e); },
+					);
+				}
+			};
+
+			run();
+		});
+	}
+
+	static series<T>(fns: AR<() => T | PromiseLike<T>>): P2I<AR<T>> {
+		return fns.reduce(
+			(acc, fn) => acc.then(results => P2I.resolve(fn()).then(v => [...results, v])),
+			P2I.resolve([] as AR<T>),
+		) as P2I<AR<T>>;
+	}
+
 	tap(fn: (value: T) => unknown): P2I<T> {
 		return this.then(value =>
 			P2I.resolve(fn(value)).then(() => value),
@@ -172,11 +245,11 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 	map<G>(fn: (value: T) => G | PromiseLike<G>): P2I<Awaited<G>> {
 		return this.then(fn) as P2I<Awaited<G>>;
 	}
-	
+
 	flatMap<G>(fn: (value: T) => G | PromiseLike<G>): P2I<Awaited<G>> {
 		return this.then(fn) as P2I<Awaited<G>>;
 	}
-	
+
 	or<G>(other: G | PromiseLike<G>): P2I<T | Awaited<G>> {
 		return this.catch(() => other) as P2I<T | Awaited<G>>;
 	}
@@ -188,8 +261,6 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 			),
 		);
 	}
-
-
 
 	zip<G>(other: PromiseLike<G>): P2I<[T, Awaited<G>]> {
 		return this.and(other);
@@ -217,6 +288,22 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 	finallyDo(fn: () => unknown): P2I<T> {
 		return this.finally(fn);
 	}
+
+	//                                                                                      [DEBUG]
+	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+	$label(name: S): this {
+		this.#label = name;
+		return this;
+	}
+
+	$debug(): this {
+		const tag = this.#label ? `:${this.#label}` : "";
+		super.then(
+			v => console.log(`[P2${tag}] ✓ resolved`, v, `(${this.elapsed()}ms)`),
+			e => console.log(`[P2${tag}] ✗ rejected`, e, `(${this.elapsed()}ms)`),
+		);
+		return this;
+	}
 }
 
-globalThis.P2 = P2I as P2C;
+(globalThis as A).P2 = P2I as P2C;

@@ -98,4 +98,4 @@ export class WS2I<T extends WeakKey = A> extends WeakSet<T> implements WS2<T> {
 	}
 }
 
-globalThis.WS2 = WS2I as WS2C;
+(globalThis as A).WS2 = WS2I as WS2C;

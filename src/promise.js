@@ -1,6 +1,13 @@
 export class P2I extends Promise {
+    #createdAt = Date.now();
+    #status = "pending";
+    #val;
+    #err;
+    #settledAt;
+    #label;
     constructor(executor) {
         super(executor);
+        super.then((v) => { this.#status = "fulfilled"; this.#val = v; this.#settledAt = Date.now(); }, (e) => { this.#status = "rejected"; this.#err = e; this.#settledAt = Date.now(); });
     }
     static get [Symbol.species]() {
         return P2I;
@@ -14,6 +21,15 @@ export class P2I extends Promise {
     finally(onfinally) {
         return super.finally(onfinally);
     }
+    //                                                                                     [STATUS]
+    // ══════════════════════════════════════════════════════════════════════════════════════════════════════
+    status() { return this.#status; }
+    isPending() { return this.#status === "pending"; }
+    isFulfilled() { return this.#status === "fulfilled"; }
+    isRejected() { return this.#status === "rejected"; }
+    value() { return this.#status === "fulfilled" ? this.#val : undefined; }
+    error() { return this.#status === "rejected" ? this.#err : undefined; }
+    elapsed() { return this.#settledAt ? (this.#settledAt - this.#createdAt) : undefined; }
     static resolve(value) {
         return new P2I(resolve => resolve(value));
     }
@@ -71,6 +87,47 @@ export class P2I extends Promise {
                 reject(error);
             }
         });
+    }
+    //                                                                                [CONCURRENCY]
+    // ══════════════════════════════════════════════════════════════════════════════════════════════════════
+    static sleep(ms) {
+        return new P2I(resolve => setTimeout(resolve, ms));
+    }
+    static fromCallback(fn) {
+        return new P2I((resolve, reject) => {
+            fn((err, value) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(value);
+            });
+        });
+    }
+    static mapLimit(items, limit, fn) {
+        return new P2I((resolve, reject) => {
+            const results = new Array(items.length);
+            let next = 0;
+            let active = 0;
+            let done = 0;
+            let failed = false;
+            const run = () => {
+                if (failed)
+                    return;
+                if (done === items.length) {
+                    resolve(results);
+                    return;
+                }
+                while (active < limit && next < items.length) {
+                    const i = next++;
+                    active++;
+                    P2I.try(() => fn(items[i], i)).then((v) => { results[i] = v; active--; done++; run(); }, (e) => { failed = true; reject(e); });
+                }
+            };
+            run();
+        });
+    }
+    static series(fns) {
+        return fns.reduce((acc, fn) => acc.then(results => P2I.resolve(fn()).then(v => [...results, v])), P2I.resolve([]));
     }
     tap(fn) {
         return this.then(value => P2I.resolve(fn(value)).then(() => value));
@@ -133,6 +190,17 @@ export class P2I extends Promise {
     }
     finallyDo(fn) {
         return this.finally(fn);
+    }
+    //                                                                                      [DEBUG]
+    // ══════════════════════════════════════════════════════════════════════════════════════════════════════
+    $label(name) {
+        this.#label = name;
+        return this;
+    }
+    $debug() {
+        const tag = this.#label ? `:${this.#label}` : "";
+        super.then(v => console.log(`[P2${tag}] ✓ resolved`, v, `(${this.elapsed()}ms)`), e => console.log(`[P2${tag}] ✗ rejected`, e, `(${this.elapsed()}ms)`));
+        return this;
     }
 }
 globalThis.P2 = P2I;

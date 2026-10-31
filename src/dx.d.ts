@@ -16,7 +16,6 @@ import {MaybePromise} from '../bag_of_tricks/maybe_promise'
 export {};
 
 
-
 declare global {
 /*  ==========================================================================================================================
 	 The entire goal is to take what is already available and give them the upgrades / updates that they need to improve the 
@@ -43,6 +42,238 @@ declare global {
 	var I2: typeof I2I; // Iterator
 	var R2: typeof R2I;
     var R2FN: typeof R2II;
+	//                                                                                                 [MAP]
+	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	type M2Op = "set" | "del" | "upd" | "dirty";
+	interface M2Event<H = A, T = A> {
+		op: M2Op;
+		k: H;
+		v?: T;
+		prev?: T;
+		has: B;
+		batch?: B;
+	}
+	type Sub<H, T> = (e: M2Event<H, T>) => V;
+	interface Derived<H, T> {
+		deps: AR<H>;
+		fn: (...vals: AR<T>) => T;
+		dirty: B;
+		value?: T;
+		has: B;
+	}
+	interface M2<H = A, T = A> extends Map<H, T> {
+		//                                                                          [SET/GET/HAS/DELETE]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		//g: typeof Map.prototype.get;
+		//h: typeof Map.prototype.has;
+		//d: typeof Map.prototype.delete;
+		g(k: H): T | UD;
+		h(k: H): B;
+		d(k: H): B;
+		//                                                                                        [BASE]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		s(v: UF<T>, k: H): this;
+		getOrI(v: UF<T>, k: H): T;
+		replace(v: UF<T>, k: H): B;
+		swap(v: UF<T>, k: H): T | UD;
+		update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T;
+		merge(other: Iterable<readonly [H, UF<T>]>): this;
+		clearAndSet(entries: Iterable<readonly [H, UF<T>]>): this;
+		
+		take(key: H): T | UD;
+		peek(key: H): T | false;
+		getOrM(make: () => T, key: H): T;
+		setIfAbsent(v: UF<T>, k: H): B;
+		setIfPresent(v: UF<T>, k: H): B;
+		inc(key: H, by?: N): N;
+		touch(key: H): B;
+		//                                                                                    [REACTIVE]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		on(fn: Sub<H, T>): () => void;
+		off(fn: Sub<H, T>): void;
+		batch(fn: () => void): this;
+		//                                                                                     [DERIVED]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this;
+		dirty(...keys: AR<H>): this;
+		//                                                                                [DEBUG/SAFETY]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		$debug(limit?: N): this;
+		$strict(): this;
+		$history(): AR<M2Event<H, T>>;
+		$why(k: H): M2Event<H, T> | UD;
+		$diff(other: Map<H, T>): {
+			add: AR<[H, T]>;
+			del: AR<H>;
+			chg: AR<[H, T, T]>;
+		};
+		//                                                                                  [MAP/FILTER]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		mapValues<G>(fn: (v: T, k: H) => G): M2<H, G>;
+		mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T>;
+		filterKV(pred: (v: T, k: H) => B): this;
+		filterKeys(pred: (v: T, k: H) => B): this;
+		//                                                                                        [FIND]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>];
+		find(pred: (v: T, k: H) => B): [H, T] | UD;
+		findKey(pred: (v: T, k: H) => B): H | UD;
+		findValue(pred: (v: T, k: H) => B): T | UD;
+		some(pred: (v: T, k: H) => B): B;
+		every(pred: (v: T, k: H) => B): B;
+		reduce<G>(fn: (acc: G, v: T, k: H) => G, initial: G): G;
+		forEachKV(fn: (v: T, k: H, map: this) => void): void;
+		//                                                                                        [BASE]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		invert(): M2<T, H>;
+		group<G>(fn: (v: T, k: H) => G): M2<G, AR<T>>;
+		unique<G>(fn?: (v: T, k: H) => G): M2<G, T>;
+		pick(keys: Iterable<H>): M2<H, T>;
+		omit(keys: Iterable<H>): M2<H, T>;
+		//                                                                                      [CODECS]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		toObject(): OB<T>;
+		toArray(): AR<[H, T]>;
+		toKeys(): AR<H>;
+		toValues(): AR<T>;
+		clone(): this;
+		equals(other: Map<H, T>): B;
+	}
+	interface M2I<H = A, T = A> extends M2<H, T> {}
+	// #endregion 
+	//                                                                              [R2 — REGEX, THE M2 WAY]
+	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	type RE2Flag = "g" | "i" | "m" | "s" | "u" | "y" | "d" | "v";
+	type RE2Input = S | RegExp | RE2_IF;
+	type RE2ReplaceFn = (m: RegExpExecArray, groups: OB<S> | UD, index: N, input: S) => S;
+	interface RE2Match {
+		match: S;
+		index: N;
+		lastIndex: N;
+		groups: OB<S> | UD;
+		raw: RegExpExecArray;
+	}
+	interface RE2_IF {
+		//                                                                            [PASSTHROUGH]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		readonly source: S;
+		readonly flags: S;
+		readonly global: B;
+		readonly ignoreCase: B;
+		readonly multiline: B;
+		readonly sticky: B;
+		readonly unicode: B;
+		readonly dotAll: B;
+		readonly hasIndices: B;
+		toRegExp(): RegExp;
+	
+		//                                                                                  [BASE]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		test(str: S): B;
+		h(str: S): B;
+		exec(str: S): RegExpExecArray | null;
+		g(str: S): S | UD;
+		at(str: S, n: N): S | UD;
+		groups(str: S): OB<S> | UD;
+		group(str: S, name: S | N): S | UD;
+		index(str: S): N;
+		lastIndexOf(str: S): N;
+		span(str: S): [N, N] | UD;
+	
+		//                                                                               [COLLECT]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		all(str: S): AR<S>;
+		matches(str: S): AR<RE2Match>;
+		allGroups(str: S): AR<OB<S>>;
+		allSpans(str: S): AR<[N, N]>;
+		count(str: S): N;
+		positions(str: S): AR<N>;
+	
+		//                                                                               [REPLACE]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		replace(str: S, fn: S | RE2ReplaceFn): S;
+		replaceFirst(str: S, fn: S | RE2ReplaceFn): S;
+		replaceAt(str: S, n: N, fn: S | RE2ReplaceFn): S;
+		remove(str: S): S;
+		removeFirst(str: S): S;
+		split(str: S, limit?: N): AR<S>;
+		splitKeep(str: S): AR<S>;
+	
+		//                                                                                 [BUILD]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		withFlags(flags: S): RE2_IF;
+		addFlag(flag: RE2Flag): RE2_IF;
+		removeFlag(flag: RE2Flag): RE2_IF;
+		toggleFlag(flag: RE2Flag): RE2_IF;
+		withSource(src: S): RE2_IF;
+		and(...parts: AR<RE2Input>): RE2_IF;
+		or(...parts: AR<RE2Input>): RE2_IF;
+		cap(expr?: RE2Input): RE2_IF;
+		namedGroup(name: S, expr: RE2Input): RE2_IF;
+		nonCap(expr: RE2Input): RE2_IF;
+		lookahead(expr: RE2Input): RE2_IF;
+		notLookahead(expr: RE2Input): RE2_IF;
+		lookbehind(expr: RE2Input): RE2_IF;
+		notLookbehind(expr: RE2Input): RE2_IF;
+		optional(expr?: RE2Input): RE2_IF;
+		many(expr?: RE2Input): RE2_IF;
+		maybeMany(expr?: RE2Input): RE2_IF;
+		repeat(n: N, max?: N, expr?: RE2Input): RE2_IF;
+		lazy(): RE2_IF;
+	
+		//                                                                        [DEBUG/SAFETY]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		$trace(str: S): AR<RE2Match>;
+		$explain(): AR<S>;
+		$risky(): B;
+		$bench(str: S, iterations?: N): N;
+	
+		//                                                                               [CODECS]
+		// ══════════════════════════════════════════════════════════════════════════════════════
+		toString(): S;
+		equals(other: RE2Input): B;
+		clone(): RE2_IF;
+	}
+	interface REC2 extends RE2_IF {}
+	// #endregion 
+	//                                                                                   [STATICS / PRESETS]
+	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	interface RE2Static {
+		(input: RE2Input, flags?: S): RE2_IF;
+		of(input: RE2Input, flags?: S): RE2_IF;
+		escape(str: S): S;
+		literal(str: S): RE2_IF;
+		seq(...parts: AR<RE2Input>): RE2_IF;
+		alt(...parts: AR<RE2Input>): RE2_IF;
+	
+		digit: RE2_IF; word: RE2_IF; space: RE2_IF; any: RE2_IF;
+		notDigit: RE2_IF; notWord: RE2_IF; notSpace: RE2_IF;
+		range(from: S, to: S): RE2_IF;
+		oneOf(chars: S): RE2_IF;
+		noneOf(chars: S): RE2_IF;
+	
+		email: RE2_IF;
+		url: RE2_IF;
+		uuid: RE2_IF;
+		ipv4: RE2_IF;
+		ipv6: RE2_IF;
+		hex: RE2_IF;
+		hexColor: RE2_IF;
+		slug: RE2_IF;
+		alphaNumeric: RE2_IF;
+		integer: RE2_IF;
+		float: RE2_IF;
+		phoneLoose: RE2_IF;
+		isoDate: RE2_IF;
+		base64: RE2_IF;
+		jwt: RE2_IF;
+		semver: RE2_IF;
+		creditCard: RE2_IF;
+		htmlTag: RE2_IF;
+		whitespaceOnly: RE2_IF;
+	}
+	interface RE2 extends RE2Static {}
+	// #endregion 
 	//                                                                                             [WEAKSET]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
 	interface WS2<T extends WeakKey = A> extends WeakSet<T> {
@@ -65,11 +296,11 @@ declare global {
 		forEachTracked(callback: (value: T, set: this) => void, thisArg?: A): void;
 		clearTracked(): void;
 	}
-	
-	 interface WS2C extends WeakSetConstructor {
+	interface WS2C extends WeakSetConstructor {
 		new <T extends WeakKey = A>(values?: readonly T[] | null): WS2I<T>;
 		new <T extends WeakKey = A>(values?: Iterable<T> | null): WS2I<T>;
 	}
+	interface WS2I<T extends WeakKey = A> extends WS2<T> {}
 	// #endregion 
 	//                                                                                                 [SET]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
@@ -114,10 +345,11 @@ declare global {
 		toJSON(): T[];
 	
 	}
+	interface SET2I<T = A> extends SET2<T> {}
 	// #endregion 
 	//                                                                                               [ARRAY]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	 interface A2<T = A> extends Array<T> {
+	interface A2<T = A> extends Array<T> {
 		first(): T | UD;
 		last(): T | UD;
 		isEmpty(): B;
@@ -160,7 +392,7 @@ declare global {
 		includesAll(values: readonly T[]): B;
 		intersects(values: readonly T[]): B;
 	}
-	
+	interface A2I<T = A> extends A2<T> {}
 	// #endregion 
 	//                                                                                               [ARRAY]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
@@ -174,7 +406,7 @@ declare global {
 		eachDay(fn: (d: D2, i: N) => void): void;
 		toArray(): AR<D2>;
 	}
-	 interface D2 extends Date {
+	interface D2 extends Date {
 		clone(): D2;
 		isValid(): B;
 	
@@ -267,10 +499,12 @@ declare global {
 	toInputDateTime(): S;
 	}
 	type DAYSD2 = "day" | "week" | "month" | "quarter" | "year" | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+	interface D2I extends D2 {}
+	interface R2I extends R2 {}
 	// #endregion 
 	//                                                                                               [ERROR]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	 interface ER2 extends Error {
+	interface ER2 extends Error {
 		cause?: unknown;
 		clone(): ER2I;
 		toJSON(): {
@@ -281,12 +515,12 @@ declare global {
 		};
 		toString(): string;
 	}
-	
-	 interface ER2C extends ErrorConstructor {
+	interface ER2C extends ErrorConstructor {
 		new (message?: string, options?: ErrorOptions): ER2I;
 		(message?: string): string;
 		readonly prototype: ER2I;
 	}
+	interface ER2I extends ER2 {}
 	// #endregion 
 	//                                                                                            [ITERATOR]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
@@ -339,108 +573,11 @@ declare global {
 	enumerate(): I2I<[N, T]>;
 	clone(): I2I<T>;
 	}
-	// #endregion 
-	//                                                                                                 [MAP]
-	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  type M2Op = "set" | "del" | "upd" | "dirty";
-  interface M2Event<H = A, T = A> {
-	op: M2Op;
-	k: H;
-	v?: T;
-	prev?: T;
-	has: B;
-	batch?: B;
-}
-type Sub<H, T> = (e: M2Event<H, T>) => V;
-interface Derived<H, T> {
-	deps: AR<H>;
-	fn: (...vals: AR<T>) => T;
-	dirty: B;
-	value?: T;
-	has: B;
-}
-  interface M2<H = A, T = A> extends Map<H, T> {
-	//                                                                          [SET/GET/HAS/DELETE]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	//g: typeof Map.prototype.get;
-	//h: typeof Map.prototype.has;
-	//d: typeof Map.prototype.delete;
-	g(k: H): T | UD;
-	h(k: H): B;
-	d(k: H): B;
-	//                                                                                        [BASE]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	s(v: UF<T>, k: H): this;
-	getOrI(v: UF<T>, k: H): T;
-	replace(v: UF<T>, k: H): B;
-	swap(v: UF<T>, k: H): T | UD;
-	update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T;
-	merge(other: Iterable<readonly [H, UF<T>]>): this;
-	clearAndSet(entries: Iterable<readonly [H, UF<T>]>): this;
-	
-	take(key: H): T | UD;
-	peek(key: H): T | false;
-	getOrM(make: () => T, key: H): T;
-	setIfAbsent(v: UF<T>, k: H): B;
-	setIfPresent(v: UF<T>, k: H): B;
-	inc(key: H, by?: N): N;
-	touch(key: H): B;
-	//                                                                                    [REACTIVE]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	on(fn: Sub<H, T>): () => void;
-	off(fn: Sub<H, T>): void;
-	batch(fn: () => void): this;
-	//                                                                                     [DERIVED]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this;
-	dirty(...keys: AR<H>): this;
-	//                                                                                [DEBUG/SAFETY]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	$debug(limit?: N): this;
-	$strict(): this;
-	$history(): AR<M2Event<H, T>>;
-	$why(k: H): M2Event<H, T> | UD;
-	$diff(other: Map<H, T>): {
-		add: AR<[H, T]>;
-		del: AR<H>;
-		chg: AR<[H, T, T]>;
-	};
-	//                                                                                  [MAP/FILTER]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	mapValues<G>(fn: (v: T, k: H) => G): M2<H, G>;
-	mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T>;
-	filterKV(pred: (v: T, k: H) => B): this;
-	filterKeys(pred: (v: T, k: H) => B): this;
-	//                                                                                        [FIND]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>];
-	find(pred: (v: T, k: H) => B): [H, T] | UD;
-	findKey(pred: (v: T, k: H) => B): H | UD;
-	findValue(pred: (v: T, k: H) => B): T | UD;
-	some(pred: (v: T, k: H) => B): B;
-	every(pred: (v: T, k: H) => B): B;
-	reduce<G>(fn: (acc: G, v: T, k: H) => G, initial: G): G;
-	forEachKV(fn: (v: T, k: H, map: this) => void): void;
-	//                                                                                        [BASE]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	invert(): M2<T, H>;
-	group<G>(fn: (v: T, k: H) => G): M2<G, AR<T>>;
-	unique<G>(fn?: (v: T, k: H) => G): M2<G, T>;
-	pick(keys: Iterable<H>): M2<H, T>;
-	omit(keys: Iterable<H>): M2<H, T>;
-	//                                                                                      [CODECS]
-	// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-	toObject(): OB<T>;
-	toArray(): AR<[H, T]>;
-	toKeys(): AR<H>;
-	toValues(): AR<T>;
-	clone(): this;
-	equals(other: Map<H, T>): B;
-}
+	interface I2I<T = A> extends I2<T> {}
 	// #endregion 
 	//                                                                                              [NUMBER]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface N2 extends Number {
+	interface N2 extends Number {
 		toString: typeof Number.prototype.toString;
 		toFixed: typeof Number.prototype.toFixed;
 		toExponential: typeof Number.prototype.toExponential;
@@ -497,11 +634,11 @@ interface Derived<H, T> {
 		upTo(end: N, step?: N): AR<N>;
 		downTo(end: N, step?: N): AR<N>;
 	}
-	
+	interface N2I extends N2 {}
 	// #endregion 
 	//                                                                                              [OBJECT]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	 interface O2 extends ObjectConstructor {
+	interface O2 extends ObjectConstructor {
 		isEmpty(value: object): B;
 		isNotEmpty(value: object): B;
 		size(value: object): N;
@@ -561,21 +698,39 @@ interface Derived<H, T> {
 			updater: (current: T[K]) => T[K]
 		): T;
 	}
+	interface O2I extends O2 {}
 	// #endregion 
 	//                                                                                             [PROMISE]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface P2<T = A> extends Promise<T> {
+	//                                                                            [P2 — PROMISE, THE M2 WAY]
+	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	
+	type P2Status = "pending" | "fulfilled" | "rejected";
+	
+	interface P2<T = A> extends Promise<T> {
+		//                                                                           [CORE OVERRIDES]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		then<TResult1 = T, TResult2 = never>(
 			onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
 			onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
 		): P2<TResult1 | TResult2>;
-	
 		catch<TResult = never>(
 			onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null,
 		): P2<T | TResult>;
-	
 		finally(onfinally?: (() => void) | null): P2<T>;
 	
+		//                                                                                     [STATUS]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		status(): P2Status;
+		isPending(): B;
+		isFulfilled(): B;
+		isRejected(): B;
+		value(): T | UD;
+		error(): A | UD;
+		elapsed(): N | UD;
+	
+		//                                                                                   [CONTROL]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		tap(fn: (value: T) => unknown): P2<T>;
 		tapError(fn: (error: A) => unknown): P2<T>;
 		recover(fn: (error: A) => T | PromiseLike<T>): P2<T>;
@@ -584,20 +739,35 @@ interface Derived<H, T> {
 		delay(ms: N): P2<T>;
 		withDeadline(deadline: N, error?: A): P2<T>;
 	
+		//                                                                                       [MAP]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		map<G>(fn: (value: T) => G | PromiseLike<G>): P2<Awaited<G>>;
 		flatMap<G>(fn: (value: T) => G | PromiseLike<G>): P2<Awaited<G>>;
-		and<G>(other: G | PromiseLike<G>): P2<[T, Awaited<G>]>;
 		or<G>(other: G | PromiseLike<G>): P2<T | Awaited<G>>;
+		and<G>(other: G | PromiseLike<G>): P2<[T, Awaited<G>]>;
 		zip<G>(other: PromiseLike<G>): P2<[T, Awaited<G>]>;
 	
+		//                                                                                    [CODECS]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		unwrap(): Promise<T>;
 		toResult(): P2<{ ok: true; value: T } | { ok: false; error: A }>;
+	
+		//                                                                                   [HOOKS]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		onResolve(fn: (value: T) => unknown): P2<T>;
 		onReject(fn: (error: A) => unknown): P2<T>;
 		finallyDo(fn: () => unknown): P2<T>;
+	
+		//                                                                                     [DEBUG]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		$label(name: S): this;
+		$debug(): this;
 	}
 	
-	  interface P2C extends PromiseConstructor {
+	// #endregion 
+	//                                                                               [STATICS / CONSTRUCTOR]
+	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	interface P2C {
 		new <T>(
 			executor: (
 				resolve: (value: T | PromiseLike<T>) => void,
@@ -605,8 +775,12 @@ interface Derived<H, T> {
 			) => void,
 		): P2<T>;
 	
+		readonly prototype: P2<A>;
+		readonly [Symbol.species]: PromiseConstructor;
+	
 		resolve(): P2<void>;
 		resolve<T>(value: T | PromiseLike<T>): P2<Awaited<T>>;
+	
 		reject<T = never>(reason?: A): P2<T>;
 	
 		all<T extends readonly unknown[] | []>(
@@ -617,19 +791,10 @@ interface Derived<H, T> {
 			values: T,
 		): P2<{ -readonly [P in keyof T]: PromiseSettledResult<Awaited<T[P]>> }>;
 	
-		race<T extends readonly unknown[] | []>(
-			values: T,
-		): P2<Awaited<T[number]>>;
+		race<T extends readonly unknown[] | []>(values: T): P2<Awaited<T[number]>>;
+		any<T extends readonly unknown[] | []>(values: T): P2<Awaited<T[number]>>;
 	
-		any<T extends readonly unknown[] | []>(
-			values: T,
-		): P2<Awaited<T[number]>>;
-	
-		retry<T>(
-			fn: () => T | PromiseLike<T>,
-			times?: N,
-			delay?: N,
-		): P2<Awaited<T>>;
+		retry<T>(fn: () => T | PromiseLike<T>, times?: N, delay?: N): P2<Awaited<T>>;
 	
 		deferred<T = A>(): {
 			promise: P2<T>;
@@ -638,11 +803,19 @@ interface Derived<H, T> {
 		};
 	
 		try<T>(fn: () => T | PromiseLike<T>): P2<Awaited<T>>;
+	
+		//                                                                                [CONCURRENCY]
+		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		sleep(ms: N): P2<void>;
+		fromCallback<T>(fn: (cb: (err: A, value?: T) => void) => void): P2<T>;
+		mapLimit<T, G>(items: AR<T>, limit: N, fn: (item: T, index: N) => G | PromiseLike<G>): P2<AR<G>>;
+		series<T>(fns: AR<() => T | PromiseLike<T>>): P2<AR<T>>;
 	}
+	interface P2I<T = A> extends P2<T> {}
 	// #endregion 
 	//                                                                                              [STRING]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface S2  {
+	interface S2  {
 		// Native String API
 		readonly length: number;
 		[index: number]: string;
@@ -733,18 +906,18 @@ interface Derived<H, T> {
 		toArray(): string[];
 		toJSON(): string;
 	}
-	
-	  interface S2C extends StringConstructor {
+	interface S2C extends StringConstructor {
 		new (value?: A): S2;
 		(value?: A): string;
 		fromCharCode(...codes: N[]): string;
 		fromCodePoint(...codePoints: N[]): string;
 		raw(template: TemplateStringsArray, ...substitutions: A[]): string;
 	}
+	interface S2I extends S2 {}
 	// #endregion 
 	//                                                                                                  [U8]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface U82<T = A> extends Array<T> {
+	interface U82<T = A> extends Array<T> {
 		// Native Array API
 		at(index: N): T | undefined;
 		concat(...items: (T | ConcatArray<T>)[]): T[];
@@ -855,11 +1028,11 @@ interface Derived<H, T> {
 		flatten<D extends N = 1>(depth?: D): U82I<A>;
 		sample(count?: N): U82I<T>;
 	}
-	
+	interface U82I<T = A> extends U82<T> {}
 	// #endregion 
 	//                                                                                                 [URL]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface USP2 extends URLSearchParams {
+	interface USP2 extends URLSearchParams {
 		append(name: S, value: S): V;
 		delete(name: S, value?: S): V;
 		get(name: S): S | NU;
@@ -903,14 +1076,14 @@ interface Derived<H, T> {
 		toURLSearchParams(): URLSearchParams;
 		toURL(url: S | URL): URL;
 	}
-	
-	  interface USP2C  {
+	interface USP2C  {
 		new (init?: S | URLSearchParams | R<S, S> | S[][]): USP2I;
 	}
+	interface USP2I extends USP2 {}
 	// #endregion 
 	//                                                                                             [WEAKMAP]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-	  interface WM2<H extends WeakKey = A, T = A> extends WeakMap<H, T> {
+	interface WM2<H extends WeakKey = A, T = A> extends WeakMap<H, T> {
 		g: typeof WeakMap.prototype.get;
 		h: typeof WeakMap.prototype.has;
 		d: typeof WeakMap.prototype.delete;
@@ -946,7 +1119,7 @@ interface Derived<H, T> {
 		forEachTracked(fn: (value: T, key: H, map: this) => void): void;
 		clearTracked(): void;
 	}
-	
+	interface WM2I<H extends WeakKey = A, T = A> extends WM2<H,T> {}
 	// #endregion 
 	
 }
