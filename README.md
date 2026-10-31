@@ -233,24 +233,26 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 
 ## `M2` — Map
 
-`M2I` extends `Map` and retains the standard `Map` API.
+`M2I` extends `Map` and retains the standard `Map` API, plus reactive subscriptions, derived values, and batching.
 
 | Method | Description |
 |---|---|
-| `g(key)` / `h(key)` / `d(key)` | Aliases for `get`, `has`, and `delete` |
-| `s(key, value)` | Set a value; evaluates function arguments as factories |
-| `swap(key, value)` | Replace a value and return the previous value |
+| `g(key)` / `h(key)` / `d(key)` / `c()` | Aliases for `get`, `has`, `delete`, and `clear` |
+| `f` | Alias for `forEach` |
+| `s(value, key)` | Set a value; function arguments are evaluated as factories |
+| `swap(value, key)` | Replace a value and return the previous value |
 | `take(key)` | Get and delete a value |
 | `peek(key)` | Return the value or `false` if absent |
-| `getOrI(key, value)` | Get or insert a supplied value |
-| `getOrM(key, make)` | Get or lazily create a value |
-| `update(key, fn, initial)` | Update using the current value or initial value |
-| `setIfAbsent(key, value)` | Insert only when missing |
-| `setIfPresent(key, value)` | Set only when present |
-| `replace(key, value)` | Replace only when present |
+| `getOrI(value, key)` | Get or insert a supplied value |
+| `getOrM(make, key)` | Get or lazily create a value |
+| `update(key, fn, initial?)` | Update using the current value, or an initial value if missing |
+| `setIfAbsent(value, key)` | Insert only when missing |
+| `setIfPresent(value, key)` | Set only when present |
+| `replace(value, key)` | Replace only when present |
 | `inc(key, by?)` | Increment a numeric entry |
 | `touch(key)` | Ensure a key exists |
-| `mapValues(fn)` / `mapKeys(fn)` | Transform values or keys |
+| `mutate(key, fn)` | Update an existing value in place using the current value |
+| `mapValues(fn)` / `mapKeys(fn)` | Transform values or keys into a new map |
 | `filterKV(pred)` / `filterKeys(pred)` | Filter in place |
 | `partition(pred)` | Split entries into matching and nonmatching maps |
 | `find(pred)` | Find the first matching entry |
@@ -259,19 +261,28 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 | `reduce(fn, initial)` | Reduce entries |
 | `forEachKV(fn)` | Iterate over value, key, and map |
 | `invert()` | Reverse keys and values |
-| `group(fn)` | Group values by computed key |
+| `group(fn)` | Group values by computed key, into a map of `A2` buckets |
 | `unique(fn?)` | Deduplicate by computed or original value |
 | `pick(keys)` / `omit(keys)` | Select or exclude keys |
 | `merge(entries)` | Merge entries into the current map |
-| `clearAndSet(entries)` | Replace all entries |
+| `clearAndSet(entries)` | Replace all entries as a single batch |
 | `toObject()` | Convert entries to an object |
-| `toArray()` / `toKeys()` / `toValues()` | Convert entries, keys, or values to arrays |
+| `toArray()` / `toKeys()` / `toValues()` | Convert entries, keys, or values to an `A2` |
 | `clone()` | Create a shallow copy |
-| `equals(other)` | Compare keys and values |
+| `equals(other)` | Compare keys and values by value-aware equality |
+| `on(fn)` | Subscribe to change events; returns an unsubscribe function |
+| `off(fn)` | Unsubscribe a listener |
+| `batch(fn)` | Run multiple writes, coalescing into one event per key |
+| `dv(key, deps, fn)` | Define a derived value computed from other keys |
+| `dirty(...keys)` | Mark derived values as needing recomputation |
+| `$debug(limit?)` | Enable event history tracking |
+| `$strict()` | Throw if mutated while iterating |
+| `$history()` | Return recorded change events |
+| `$why(key)` | Return the most recent event for a key |
+| `$diff(other)` | Compare against another map: added, deleted, and changed entries |
 | `fromObject(obj)` | Create a map from an object |
 | `fromEntries(entries)` | Create a map from entries |
 | `from(map)` | Create a map from another map |
-
 
 ## `N2` — Number
 
