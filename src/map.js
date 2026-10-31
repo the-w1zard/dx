@@ -1,4 +1,5 @@
 export const rv = (v) => typeof v === "function" ? v() : v;
+export const sameValue = (a, b) => Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 export class M2I extends Map {
     // public g = this.get;
     // public h = this.has;
@@ -59,7 +60,7 @@ export class M2I extends Map {
         d.value = next;
         d.has = true;
         d.dirty = false;
-        if (!had || !Object.is(prev, next)) {
+        if (!had || !sameValue(prev, next)) {
             this.#emit({
                 op: had ? "upd" : "set",
                 k,
@@ -407,13 +408,6 @@ export class M2I extends Map {
             out.s(k, v);
         return out;
     }
-    group(fn) {
-        const out = new M2I();
-        for (const [k, v] of this) {
-            out.getOrM(() => [], fn(v, k)).push(v);
-        }
-        return out;
-    }
     unique(fn) {
         const out = new M2I();
         for (const [k, v] of this) {
@@ -462,14 +456,14 @@ export class M2I extends Map {
             out[k] = v;
         return out;
     }
-    toArray() {
-        return Array.from(this.entries());
-    }
-    toKeys() {
-        return Array.from(this.keys());
-    }
-    toValues() {
-        return Array.from(this.values());
+    toValues() { return A2.from(this.values()); } //                 [TOVALUES]
+    toKeys() { return A2.from(this.keys()); } //                       [TOKEYS]
+    toArray() { return A2.from(this.entries()); } //             [TOARRAY]
+    group(fn) {
+        const out = new M2I();
+        for (const [k, v] of this)
+            out.getOrM(() => new A2(), fn(v, k)).push(v);
+        return out;
     }
     clone() {
         return new M2I(this);
@@ -480,7 +474,7 @@ export class M2I extends Map {
         if (this.size !== other.size)
             return false;
         for (const [k, v] of this) {
-            if (!other.has(k) || !Object.is(other.get(k), v))
+            if (!other.has(k) || !sameValue(other.get(k), v))
                 return false;
         }
         return true;

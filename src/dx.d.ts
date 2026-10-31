@@ -67,54 +67,41 @@ declare global {
 		//g: typeof Map.prototype.get;
 		//h: typeof Map.prototype.has;
 		//d: typeof Map.prototype.delete;
-		g(k: H): T | UD;
-		h(k: H): B;
-		d(k: H): B;
-		//                                                                                        [BASE]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-		s(v: UF<T>, k: H): this;
-		getOrI(v: UF<T>, k: H): T;
-		replace(v: UF<T>, k: H): B;
-		swap(v: UF<T>, k: H): T | UD;
-		update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T;
-		merge(other: Iterable<readonly [H, UF<T>]>): this;
-		clearAndSet(entries: Iterable<readonly [H, UF<T>]>): this;
-		
-		take(key: H): T | UD;
-		peek(key: H): T | false;
-		getOrM(make: () => T, key: H): T;
-		setIfAbsent(v: UF<T>, k: H): B;
-		setIfPresent(v: UF<T>, k: H): B;
-		inc(key: H, by?: N): N;
-		touch(key: H): B;
-		//                                                                                    [REACTIVE]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
-		on(fn: Sub<H, T>): () => void;
-		off(fn: Sub<H, T>): void;
+		on(fn: Sub<H, T>): () => V;
+		off(fn: Sub<H, T>): V;
 		batch(fn: () => void): this;
-		//                                                                                     [DERIVED]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		s(v: UF<T>, k: H): this;
+		mutate(k: H, fn: (old: T, has: true) => T): T | UD
+		d(k: H): B;
+		c(): V
 		dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this;
 		dirty(...keys: AR<H>): this;
-		//                                                                                [DEBUG/SAFETY]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		g(k: H): T | UD;
+		h(k: H): B;
 		$debug(limit?: N): this;
 		$strict(): this;
 		$history(): AR<M2Event<H, T>>;
 		$why(k: H): M2Event<H, T> | UD;
-		$diff(other: Map<H, T>): {
+		$diff(other: M2I<H, T>): {
 			add: AR<[H, T]>;
 			del: AR<H>;
 			chg: AR<[H, T, T]>;
 		};
-		//                                                                                  [MAP/FILTER]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		swap(v: UF<T>, k: H): T | UD;
+		take(key: H): T | UD;
+		peek(key: H): T | false;
+		getOrI(v: UF<T>, k: H): T;
+		getOrM(make: () => T, key: H): T;
+		update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T;
+		setIfAbsent(v: UF<T>, k: H): B;
+		setIfPresent(v: UF<T>, k: H): B;
+		replace(v: UF<T>, k: H): B;
+		inc(key: H, by?: N): N;
+		touch(key: H): B;
 		mapValues<G>(fn: (v: T, k: H) => G): M2<H, G>;
 		mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T>;
 		filterKV(pred: (v: T, k: H) => B): this;
 		filterKeys(pred: (v: T, k: H) => B): this;
-		//                                                                                        [FIND]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>];
 		find(pred: (v: T, k: H) => B): [H, T] | UD;
 		findKey(pred: (v: T, k: H) => B): H | UD;
@@ -123,19 +110,17 @@ declare global {
 		every(pred: (v: T, k: H) => B): B;
 		reduce<G>(fn: (acc: G, v: T, k: H) => G, initial: G): G;
 		forEachKV(fn: (v: T, k: H, map: this) => void): void;
-		//                                                                                        [BASE]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
 		invert(): M2<T, H>;
-		group<G>(fn: (v: T, k: H) => G): M2<G, AR<T>>;
 		unique<G>(fn?: (v: T, k: H) => G): M2<G, T>;
 		pick(keys: Iterable<H>): M2<H, T>;
 		omit(keys: Iterable<H>): M2<H, T>;
-		//                                                                                      [CODECS]
-		// ══════════════════════════════════════════════════════════════════════════════════════════════════════
+		merge(other: Iterable<readonly [H, UF<T>]>): this;
+		clearAndSet(entries: Iterable<readonly [H, UF<T>]>): this;
+		toArray(): A2I<[H, T]>;
+		toKeys(): A2I<H>; 
+		toValues(): A2I<T>
 		toObject(): OB<T>;
-		toArray(): AR<[H, T]>;
-		toKeys(): AR<H>;
-		toValues(): AR<T>;
+		group<G>(fn: (v: T, k: H) => G):  M2<G, A2<T>>;
 		clone(): this;
 		equals(other: Map<H, T>): B;
 	}
@@ -394,7 +379,7 @@ declare global {
 	}
 	interface A2I<T = A> extends A2<T> {}
 	// #endregion 
-	//                                                                                               [ARRAY]
+	//                                                                                                [DATE]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
 	interface R2 {
 		start: D2;
@@ -494,9 +479,18 @@ declare global {
 		withDate(year: N, month: N, day: N): D2;
 		sameTimeOn(other: D): D2;
 		toInputDate(): S;
-	toInputTime(): S;
-	toInputTimeWithSeconds(): S;
-	toInputDateTime(): S;
+		toInputTime(): S;
+		toInputTimeWithSeconds(): S;
+		toInputDateTime(): S;
+		to(other: D): R2;
+		isSameOrBefore(other: D): B;
+		isSameOrAfter(other: D): B;
+		clamp(min: D, max: D): D2;
+		isSame(unit: "day" | "week" | "month" | "quarter" | "year", other: D): B;
+		isToday(): B;
+		isTomorrow(): B;
+		isYesterday(): B;
+		age(unit?: "years" | "months" | "days"): N;
 	}
 	type DAYSD2 = "day" | "week" | "month" | "quarter" | "year" | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
 	interface D2I extends D2 {}

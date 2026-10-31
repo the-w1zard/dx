@@ -1,15 +1,9 @@
 export const DATE_TAG = 0x4432; // "D2"
 export const D2_CODEC = {
     tag: DATE_TAG,
-    test(v) {
-        return v instanceof Date;
-    },
-    enc(d) {
-        return d.getTime();
-    },
-    dec(ms) {
-        return new D2(ms);
-    },
+    test(v) { return v instanceof Date; },
+    enc(d) { return d.getTime(); },
+    dec(ms) { return new D2I(ms); }, // was `new D2(ms)` — D2 is the interface, D2I is the class
 };
 const FORMAT = {
     full: { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" },
@@ -18,7 +12,6 @@ const FORMAT = {
     dmyw: { weekday: "short", year: "numeric", month: "short", day: "numeric" },
     t: { hour: "2-digit", minute: "2-digit" }
 };
-export function ToLocalString(v = FORMAT.full) { return new Date(v).toLocaleString("en-US", v); }
 export class D2I extends Date {
     constructor(value) {
         if (value instanceof Date)
@@ -172,52 +165,36 @@ export class D2I extends Date {
             }
         }
         const plural = n === 1 ? "" : "s";
-        return future
-            ? `in ${n} ${unit}${plural}`
-            : `${n} ${unit}${plural} ago`;
+        return future ? `in ${n} ${unit}${plural}` : `${n} ${unit}${plural} ago`;
     }
     static from(v) {
-        // already a D2
         if (v instanceof D2I)
             return v.clone();
-        // Date
         if (v instanceof Date)
             return new D2I(v.getTime());
-        // epoch ms
         if (typeof v === "number")
             return new D2I(v);
-        // string — dispatch by shape
         if (typeof v === "string") {
             const s = v.trim();
-            // "YYYY-MM-DD" — date-only. Parse as LOCAL, not UTC (JS footgun)
-            if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(s))
                 return D2I.parseDate(s);
-            }
-            // ISO with Z or offset — trust Date, it handles the zone correctly
-            if (/^\d{4}-\d{2}-\d{2}T.*(Z|[+-]\d{2}:?\d{2})$/.test(s)) {
+            if (/^\d{4}-\d{2}-\d{2}T.*(Z|[+-]\d{2}:?\d{2})$/.test(s))
                 return new D2I(s);
-            }
-            // "YYYY-MM-DDTHH:mm..." or "YYYY-MM-DD HH:mm..." — no zone, parse as local
-            if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(s)) {
+            if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(s))
                 return D2I.parseDateTime(s.replace("T", " "));
-            }
-            // fallback — let Date try (may be Invalid)
             return new D2I(s);
         }
-        // array — [year, month, day, hour?, minute?, second?, ms?]
         if (Array.isArray(v)) {
             const [y, m, d, h = 0, min = 0, sec = 0, ms = 0] = v;
             return D2I.fromParts(y, m, d, h, min, sec, ms);
         }
-        // object — split form fields or numeric field bag
         if (typeof v === "object" && v !== null) {
             const o = v;
-            // { date?: "YYYY-MM-DD", time?: "HH:mm[:ss]" } — scheduler split fields
             if ("date" in o || "time" in o) {
                 const dateStr = (o.date ?? "").trim();
                 const timeStr = (o.time ?? "").trim();
                 if (!dateStr)
-                    return new D2I(NaN); // no date = invalid
+                    return new D2I(NaN);
                 const [y, m, d] = dateStr.split("-").map(Number);
                 if (![y, m, d].every(Number.isFinite))
                     return new D2I(NaN);
@@ -225,7 +202,6 @@ export class D2I extends Date {
                 if (timeStr) {
                     const parts = timeStr.split(":").map(Number);
                     [h = 0, min = 0, sec = 0] = parts;
-                    // ms if a 4th segment exists
                     if (parts.length > 3)
                         ms = parts[3];
                     if (![h, min, sec, ms].every(Number.isFinite))
@@ -233,7 +209,6 @@ export class D2I extends Date {
                 }
                 return D2I.fromParts(y, m, d, h, min, sec, ms);
             }
-            // { year, month, day, hour?, minute?, second?, ms? } — numeric field bag
             if ("year" in o || "month" in o || "day" in o) {
                 const y = o.year ?? NaN;
                 const m = o.month ?? NaN;
@@ -243,28 +218,15 @@ export class D2I extends Date {
                 return D2I.fromParts(y, m, d, o.hour ?? 0, o.minute ?? 0, o.second ?? 0, o.ms ?? 0);
             }
         }
-        return new D2I(NaN); // unrecognized → invalid
+        return new D2I(NaN);
     }
-    toInputDate() {
-        return this.fmt("YYYY-MM-DD");
-    }
-    toInputTime() {
-        return this.fmt("HH:mm");
-    }
-    toInputDateTime() {
-        return this.fmt("YYYY-MM-DDTHH:mm");
-    }
-    toInputTimeWithSeconds() {
-        return this.fmt("HH:mm:ss");
-    }
+    toInputDate() { return this.fmt("YYYY-MM-DD"); }
+    toInputTime() { return this.fmt("HH:mm"); }
+    toInputDateTime() { return this.fmt("YYYY-MM-DDTHH:mm"); }
+    toInputTimeWithSeconds() { return this.fmt("HH:mm:ss"); }
     next(unit) {
         const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        if (days.includes(unit)) { // ← was `unit in days` (index check, never true for names)
-            const target = days.indexOf(unit);
-            const diff = (target - this.getDay() + 7) % 7 || 7;
-            return this.addDays(diff);
-        }
-        if (unit in days) {
+        if (days.includes(unit)) {
             const target = days.indexOf(unit);
             const diff = (target - this.getDay() + 7) % 7 || 7;
             return this.addDays(diff);
@@ -283,7 +245,7 @@ export class D2I extends Date {
     }
     prev(unit) {
         const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        if (unit in days) {
+        if (days.includes(unit)) {
             const target = days.indexOf(unit);
             const diff = (this.getDay() - target + 7) % 7 || 7;
             return this.subDays(diff);
@@ -331,13 +293,13 @@ export class D2I extends Date {
     prevBusinessDay() { return this.addBusinessDays(-1); }
     isBusinessDay() { return this.isWeekday(); }
     calendarDays(other) {
-        const a = new D2(this).startOfDay();
-        const b = new D2(other).startOfDay();
+        const a = new D2I(this).startOfDay();
+        const b = new D2I(other).startOfDay();
         return Math.round(b.diffDays(a));
     }
     businessDays(other) {
-        let a = new D2(this).startOfDay();
-        const b = new D2(other).startOfDay();
+        let a = new D2I(this).startOfDay();
+        const b = new D2I(other).startOfDay();
         let n = 0;
         while (a.isBefore(b)) {
             if (a.isWeekday())
@@ -358,9 +320,8 @@ export class D2I extends Date {
             [1000, "s"],
         ];
         for (const [size, label] of units) {
-            if (ms >= size) {
+            if (ms >= size)
                 return `${Math.floor(ms / size)}${label}`;
-            }
         }
         return `${ms}ms`;
     }
@@ -403,16 +364,14 @@ export class D2I extends Date {
     }
     set(f) {
         const out = this.clone();
-        // Date axis — apply as a group, clamp-aware
         if (f.year !== undefined || f.month !== undefined || f.day !== undefined) {
             const y = f.year ?? out.getFullYear();
-            const m = (f.month ?? out.getMonth() + 1) - 1; // 1-based in, 0-based internal
+            const m = (f.month ?? out.getMonth() + 1) - 1;
             const targetDay = f.day ?? out.getDate();
-            out.setDate(1); // pin day so month/year changes don't roll over
-            out.setFullYear(y, m, 1); // apply year + month with day = 1
-            out.setDate(Math.min(targetDay, out.daysInMonth())); // clamp day
+            out.setDate(1);
+            out.setFullYear(y, m, 1);
+            out.setDate(Math.min(targetDay, out.daysInMonth()));
         }
-        // Time axis — independent, order-free
         if (f.hour !== undefined)
             out.setHours(f.hour);
         if (f.minute !== undefined)
@@ -433,6 +392,46 @@ export class D2I extends Date {
             day: other.getDate(),
         });
     }
+    to(other) { return new R2I(this.clone(), D2I.from(other)); }
+    isSameOrBefore(other) { return !this.isAfter(other); }
+    isSameOrAfter(other) { return !this.isBefore(other); }
+    clamp(min, max) {
+        if (this.isBefore(min))
+            return D2I.from(min);
+        if (this.isAfter(max))
+            return D2I.from(max);
+        return this.clone();
+    }
+    isSame(unit, other) {
+        if (unit === "day")
+            return this.sameDay(other);
+        if (unit === "week")
+            return this.startOfWeek(0).sameDay(D2I.from(other).startOfWeek());
+        if (unit === "month")
+            return this.sameMonth(other);
+        if (unit === "quarter")
+            return this.sameYear(other) && this.quarter() === D2I.from(other).quarter();
+        if (unit === "year")
+            return this.sameYear(other);
+        return false;
+    }
+    isToday() { return this.sameDay(new D2I()); }
+    isTomorrow() { return this.sameDay(new D2I().addDays(1)); }
+    isYesterday() { return this.sameDay(new D2I().subDays(1)); }
+    age(unit = "years") {
+        const now = new D2I();
+        if (unit === "days")
+            return Math.floor(now.diffDays(this));
+        if (unit === "months") {
+            return (now.getFullYear() - this.getFullYear()) * 12
+                + (now.getMonth() - this.getMonth())
+                - (now.getDate() < this.getDate() ? 1 : 0);
+        }
+        let years = now.getFullYear() - this.getFullYear();
+        if (now.getMonth() < this.getMonth() || (now.getMonth() === this.getMonth() && now.getDate() < this.getDate()))
+            years--;
+        return years;
+    }
 }
 export class R2I {
     start;
@@ -441,18 +440,10 @@ export class R2I {
         this.start = start;
         this.end = end;
     }
-    contains(d) {
-        return D2.from(d).isBetween(this.start, this.end);
-    }
-    overlaps(other) {
-        return this.start.isBefore(other.end) && other.start.isBefore(this.end);
-    }
-    durationMs() {
-        return this.end.diffMs(this.start);
-    }
-    days() {
-        return Math.floor(this.durationMs() / 86_400_000);
-    }
+    contains(d) { return D2I.from(d).isBetween(this.start, this.end); }
+    overlaps(other) { return this.start.isBefore(other.end) && other.start.isBefore(this.end); }
+    durationMs() { return this.end.diffMs(this.start); }
+    days() { return Math.floor(this.durationMs() / 86_400_000); }
     eachDay(fn) {
         let cur = this.start.startOfDay();
         for (let i = 0; cur.isBefore(this.end); i++) {
@@ -461,12 +452,12 @@ export class R2I {
         }
     }
     toArray() {
-        const out = [];
+        const out = new A2();
         this.eachDay(d => out.push(d));
         return out;
     }
 }
-export const R2II = (start, end) => new R2I(new D2(start), new D2(end));
+export const R2II = (start, end) => new R2I(new D2I(start), new D2I(end));
 globalThis.D2 = D2I;
 globalThis.R2 = R2I;
 globalThis.R2FN = R2II;

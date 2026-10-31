@@ -23,6 +23,6 @@
     "typescript": "^6.0.0"
   },
   "dependencies": {
-    "@the-w1zard/alias_types": "workspace:*"
+    "@the-w1zard/alias_types": "github:the-w1zard/alias_types"
   }
 }

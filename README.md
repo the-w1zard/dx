@@ -51,10 +51,17 @@ The package extends native classes and exposes their implementations through `gl
 
 ## Table of Contents
 
+- [A2 — Array](#a2--array)
+- [D2 — Date](#d2--date)
+- [ER2 — Error](#er2--error)
+- [I2 — Iterator](#i2--iterator)
+- [M2 — Map](#m2--map)
+- [N2 — Number](#n2--number)
+- [O2 — Object](#o2--object)
+- [P2 — Promise](#p2--promise)
 - [USP2 — URLSearchParams](#usp2--urlsearchparams)
 - [U82 — Array](#u82--array)
 - [S2 — String](#s2--string)
-- [P2 — Promise](#p2--promise)
 - [WS2 — WeakSet](#ws2--weakset)
 - [WM2 — WeakMap](#wm2--weakmap)
 - [O2 — Object](#o2--object)
@@ -129,11 +136,12 @@ Static helpers include `A2I.from()` and `A2I.of()`.
 | `dayOfYear()` / `quarter()` | Get day of year or quarter |
 | `unix()` / `toUnix()` | Get Unix timestamp in seconds |
 | `toUnixMs()` | Get Unix timestamp in milliseconds |
+| `age(unit?)` | Get age in years, months, or days from this date to now |
 | `addMs()` / `addSeconds()` / `addMinutes()` / `addHours()` | Add time |
 | `addDays()` / `addWeeks()` / `addMonths()` / `addYears()` | Add calendar units |
-| `subDays()` / `subMonths()` / `subYears()` | Subtract calendar units |
+| `subDays()` / `subWeeks()` / `subMonths()` / `subYears()` | Subtract calendar units |
 | `startOfDay()` / `endOfDay()` | Day boundaries |
-| `startOfWeek()` / `endOfWeek()` | Week boundaries |
+| `startOfWeek(weekStartsOn?)` / `endOfWeek(weekStartsOn?)` | Week boundaries |
 | `startOfMonth()` / `endOfMonth()` | Month boundaries |
 | `startOfQuarter()` / `endOfQuarter()` | Quarter boundaries |
 | `startOfYear()` / `endOfYear()` | Year boundaries |
@@ -141,15 +149,34 @@ Static helpers include `A2I.from()` and `A2I.of()`.
 | `isLeapYear()` | Check leap year |
 | `isWeekend()` / `isWeekday()` | Check day type |
 | `isBefore(date)` / `isAfter(date)` / `isEqual(date)` | Compare timestamps |
+| `isSameOrBefore(date)` / `isSameOrAfter(date)` | Compare timestamps, inclusive |
 | `isBetween(start, end)` | Check an inclusive date range |
+| `clamp(min, max)` | Constrain a date to a range |
 | `diffMs()` / `diffSeconds()` / `diffMinutes()` / `diffHours()` / `diffDays()` | Calculate signed time differences |
 | `sameDay()` / `sameMonth()` / `sameYear()` | Compare calendar components |
+| `isSame(unit, date)` | Compare by day, week, month, quarter, or year |
+| `isToday()` / `isTomorrow()` / `isYesterday()` | Check relative to the current date |
+| `ago()` / `fromNow()` | Relative-time label vs. now |
+| `from(other)` | Relative-time label vs. a given date |
+| `next(unit)` / `prev(unit)` | Jump to the next/previous weekday name or calendar unit |
+| `nextWeek()` / `prevWeek()` / `nextMonth()` / `prevMonth()` / `nextQuarter()` / `prevQuarter()` / `nextYear()` / `prevYear()` | Shortcut unit navigation |
+| `at(hour, minute?, second?, ms?)` | Set a specific time of day |
+| `atNoon()` / `midnight()` | Jump to noon or start of day |
+| `addBusinessDays(n)` / `nextBusinessDay()` / `prevBusinessDay()` | Business-day navigation |
+| `isBusinessDay()` | Check if this date is a weekday |
+| `calendarDays(other)` | Signed whole-day difference, ignoring time of day |
+| `businessDays(other)` | Count weekdays between this date and another |
+| `diffHuman(other?)` | Single-unit human-readable duration (e.g. `"3d"`) |
+| `fmt(format)` | Format using token strings (`YYYY`, `MMM`, `dddd`, etc.) |
+| `toLocalString(format?)` | Format via `Date.prototype.toLocaleString` |
+| `toInputDate()` / `toInputTime()` / `toInputDateTime()` / `toInputTimeWithSeconds()` | Format for HTML `<input>` fields |
+| `set(fields)` | Immutably update one or more date/time fields, preserving the rest |
+| `withDate(year, month, day)` | Shortcut for `set()` on the date portion |
+| `sameTimeOn(other)` | Keep this date's time, swap in another date's day |
+| `to(other)` | Build an `R2` range from this date to another |
 | `toD2()` | Return a cloned `D2` |
 
-Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `today()`, `min()`, and `max()`.
-
-`ToLocalString(value?)` is also exported as a standalone formatting helper.
-
+Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `today()`, `min()`, `max()`, `from(value)` (flexible ingestion from `Date`, epoch ms, ISO/local strings, arrays, or field objects), `parseDate(str)`, and `parseDateTime(str)`.
 
 
 ## `ER2` — Error

@@ -1,5 +1,5 @@
 export const rv = <T>(v: UF<T>): T => typeof v === "function" ? (v as () => T)() : v;
-
+export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 
 
 export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
@@ -66,7 +66,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		d.has = true;
 		d.dirty = false;
 
-		if (!had || !Object.is(prev, next)) {
+		if (!had || !sameValue(prev, next)) {
 			this.#emit({
 				op: had ? "upd" : "set",
 				k,
@@ -84,14 +84,14 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		}
 	}
 	public [Symbol.iterator](): MapIterator<[H, T]> {return this.entries();	}
-	public on(fn: Sub<H, T>): () => V {//                                                [on]
+	public on(fn: Sub<H, T>): () => V {//                                                [ON]
 		(this.#subs ??= new Set()).add(fn);
 		return () => this.off(fn);
 	}
 	public off(fn: Sub<H, T>): V {//                                                    [OFF]
 		this.#subs?.delete(fn);
 	} 
-	public batch(fn: () => V): this {
+	public batch(fn: () => V): this {//                                               [BATCH]
 		this.#batching++;
 		this.#pending ??= new M2I<H, M2Event<H, T>>();
 	
@@ -133,7 +133,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return this;
 	}
-	public mutate(k: H, fn: (old: T, has: true) => T): T | UD {
+	public mutate(k: H, fn: (old: T, has: true) => T): T | UD {//                    [MUTATE]
 		this.#assertNotIterating("mutate");
 	
 		if (!this.h(k)) return undefined;
@@ -144,7 +144,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		this.s(next, k);
 		return next;
 	}
-	public d(k: H): B {//                                                      [DELETE]
+	public d(k: H): B {//                                                            [DELETE]
 		this.#assertNotIterating("delete");
 
 		if (!this.h(k)) return false;
@@ -162,7 +162,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return out;
 	}
-	public c(): V {//                                                              [CLEAR]
+	public c(): V {//                                                                 [CLEAR]
 		
 		this.#assertNotIterating("clear");
 
@@ -205,7 +205,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return this;
 	}
-	public g(k: H): T | undefined {//                                                   [GET]
+	public g(k: H): T | UD {//                                                         [GET]
 		
 		const d = this.#derived?.get(k);
 
@@ -216,7 +216,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return super.get(k);
 	}
-	public h(k: H): boolean {//                                                         [HAS]
+	public h(k: H): B {//                                                              [HAS]
 		
 		const d = this.#derived?.get(k);
 
@@ -294,7 +294,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 			this.#iterating--;
 		}
 	}
-	public swap(value: UF<T>, key: H): T | UD {//                                          [SWAP]
+	public swap(value: UF<T>, key: H): T | UD {//                                      [SWAP]
 		const next = rv(value);
 		const previous = this.has(key) ? this.get(key) : next;
 		this.s(next, key);
@@ -320,7 +320,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		this.s(value, k);
 		return value;
 	}
-	public update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T {
+	public update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T {//           [UPDATE]
 		const has = this.h(k);
 	
 		const old = has
@@ -428,13 +428,6 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		for (const [k, v] of this) out.s(k, v);
 		return out;
 	}
-	public group<G>(fn: (v: T, k: H) => G): M2<G, AR<T>> {//                          [GROUP]
-		const out = new M2I<G, AR<T>>();
-		for (const [k, v] of this) {
-			out.getOrM(() => [], fn(v, k)).push(v);
-		}
-		return out;
-	}
 	public unique<G>(fn?: (v: T, k: H) => G): M2<G, T> {//                           [UNIQUE]
 		const out = new M2I<G, T>();
 		for (const [k, v] of this) {
@@ -458,7 +451,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		}
 		return out;
 	}
-	public merge(other: Iterable<readonly [H, T]>): this {
+	public merge(other: Iterable<readonly [H, T]>): this {//                          [MERGE]
 		for (const [k, v] of other){
 		const n = rv(v);
 			 this.s(n, k);
@@ -480,14 +473,13 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		for (const [k, v] of this) out[k as S] = v;
 		return out;
 	}
-	public toArray(): AR<[H, T]> {//                                                [TOARRAY]
-		return Array.from(this.entries());
-	}
-	public toKeys(): AR<H> {//                                                       [TOKEYS]
-		return Array.from(this.keys());
-	}
-	public toValues(): AR<T> {//                                                   [TOVALUES]
-		return Array.from(this.values());
+	public toValues(): A2I<T> { return A2.from(this.values()); }//                 [TOVALUES]
+	public toKeys(): A2I<H> { return A2.from(this.keys()); }//                       [TOKEYS]
+	public toArray(): A2I<[H, T]> { return A2.from(this.entries()); }//             [TOARRAY]
+	public group<G>(fn: (v: T, k: H) => G): M2<G, A2<T>> {//                          [GROUP]
+		const out = new M2I<G, A2<T>>();
+		for (const [k, v] of this) out.getOrM(() => new A2<T>(), fn(v, k)).push(v);
+		return out;
 	}
 	public clone(): this {//                                                          [CLONE]
 		return new M2I(this) as this;
@@ -497,7 +489,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		if (this.size !== other.size) return false;
 
 		for (const [k, v] of this) {
-			if (!other.has(k) || !Object.is(other.get(k), v)) return false;
+			if (!other.has(k) || !sameValue(other.get(k), v)) return false;
 		}
 
 		return true;
