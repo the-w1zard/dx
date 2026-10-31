@@ -1,6 +1,6 @@
 {
   "name": "@the-w1zard/dx",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "sideEffects": false,
   "type": "module",
   "main": "./src/index.ts",
