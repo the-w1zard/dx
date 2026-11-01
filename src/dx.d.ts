@@ -1,5 +1,8 @@
+import { B2BI } from "./boolean_byte";
 import { M2I } from "./map";
+import { M2BI } from "./map_byte";
 import { SET2I } from "./set";
+import { SET2BI } from "./set_byte";
 import { D2I, R2I, R2II } from "./date";
 import { A2I } from "./array";
 import { O2I } from "./object";
@@ -26,8 +29,11 @@ declare global {
 	================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
 	type MaybePromise<R = any> = R;
 	var MaybePromise: MaybePromise;
+	var B2B: typeof B2BI; // map
 	var M2: typeof M2I; // map
+	var M2B: typeof M2BI; // map
 	var SET2: typeof SET2I; // set
+	var SET2B: typeof SET2BI; // set
 	var D2: typeof D2I; // Date
 	var A2: typeof A2I; // Array
 	var O2: typeof O2I; // Object
@@ -125,6 +131,15 @@ declare global {
 		equals(other: Map<H, T>): B;
 	}
 	interface M2I<H = A, T = A> extends M2<H, T> {}
+	interface B2B {
+		set(pid: number, value: boolean): void 
+		true(pid: number, value: boolean) 
+		false(pid: number, value: boolean) 
+		get(pid: number): boolean
+		toggle(pid: number): boolean
+		clear(): void 
+	}
+	interface B2BI extends B2B {}
 	// #endregion 
 	//                                                                              [R2 — REGEX, THE M2 WAY]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
@@ -289,6 +304,52 @@ declare global {
 	// #endregion 
 	//                                                                                                 [SET]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+	interface SET2B {
+		add(pid: number): this
+		has(pid: number): boolean
+		delete(pid: number): boolean
+		clear(): void 
+		values(): Generator<N>
+		keys(): Generator<N>
+		take(pid: N): N | UD
+		peek(pid: N): N | false 
+		toggle(pid: N): B 
+		first(): N | UD
+		last(): N | UD 
+		union(other: Iterable<N>): SET2BI
+		intersection(other: Iterable<N>): SET2BI
+		difference(other: Iterable<N>): SET2BI
+		symmetricDifference(other: Iterable<N>): SET2BI
+		isSubsetOf(other: Iterable<N>): B
+		isSupersetOf(other: Iterable<N>): B
+		isDisjointFrom(other: Iterable<N>): B
+		equals(other: Iterable<N>): B
+		filter(fn: (pid: N, set: this) => B): SET2BI
+		map(fn: (pid: N, set: this) => N): SET2BI 
+		partition(fn: (pid: N, set: this) => B): [SET2BI, SET2BI] 
+		differenceBy<G>(other: Iterable<N>, fn: (pid: N) => G): SET2BI 
+		uniqueBy<G>(fn: (pid: N) => G): SET2BI 
+		find(fn: (pid: N, set: this) => B): N | UD
+		every(fn: (pid: N, set: this) => B): B 
+		some(fn: (pid: N, set: this) => B): B
+		reduce<G>(fn: (acc: G, pid: N, set: this) => G, initial: G): G
+		addAll(pids: Iterable<N>): this 
+		deleteAll(pids: Iterable<N>): N
+		retainAll(pids: Iterable<N>): this
+		update(pids: Iterable<N>): this 
+		replace(pids: Iterable<N>): this
+		swap(a: N, b: N): B 
+		clone(): SET2BI 
+		toArray(): AR<N>
+		toMap<K, T>(fn: (pid: N) => [K, T]): Map<K, T> 
+		toObject(fn?: (pid: N) => S): OB<N> 
+		toJSON(): AR<N>
+		fromArray(pids: AR<N>, maxParticles?: N): SET2BI
+		fromObject(obj: Record<S, N>, maxParticles?: N): SET2BI
+		fromEntries(entries: I<readonly [A, N]>, maxParticles?: N): SET2BI
+		from(pids: Iterable<N>, maxParticles?: N): SET2BI 
+	}
+	interface SET2BI<T = A> extends SET2B<T> {}
 	interface SET2<T = A> extends Set<T> {
 		s(value: T): this;
 		take(value: T): T | UD;

@@ -40,6 +40,8 @@
 >
 > Take what is currently... lacking in the ux dept. and give it the updates they desperatly need.
 
+
+
 </span>
 
 
@@ -66,6 +68,41 @@ The package extends native classes and exposes their implementations through `gl
 - [WM2 — WeakMap](#wm2--weakmap)
 - [O2 — Object](#o2--object)
 - [SET2 — Set](#set2--set)
+
+> [!IMPORTANT] UPDATE!!@!
+>
+> Where appropriate, there will be some additional functions that will surface as a complete byteop variant where each of the currently defined functions within this solution, will be getting a complete brother... or sister to stand beside it.
+>
+> This is not a priority for the solution, merely some extra goodies.
+>
+> With the performance difference between the two, I have found the use case for myself to create binary versions of each. Items like map and set are already in play and can be used. Items like array, will not be getting conversions.
+> Conversions completed so far:
+> 
+> - map
+>   - fn: M2B
+>   - interface: M2BI
+> - set
+>   - fn: SET2B
+>   - interface: SET2BI
+> - boolean
+>   - fn: B2B 
+>   - interface: B2BI
+>
+> Each fn available globally, so your free to call without actually importing the implementation itself. The byteop variants will be mirror versions.
+>
+> For the ones that aren't familiar, don't worry I got you...
+>
+> There will be some accompanying utilities that will help with the use of the new fns as they either need to be converted to binary, or have values converted to use a pid in its place.
+>
+> The pid converter will come with a 1-1 conversion as well as the ability to convert using the 3/4 scoped channel format.
+>
+> Due to wanting to create the absolute dx possible, despite making a much more complex system available... each of the fns with have the same named fn, taking in the same props where applicable. For exmaple, getNestedMap... already has a stand in... getNestedMap, but inside the byte orientated class, taking in the same 3 props.
+>
+> There will be 2 encoders available, cbor and avro.
+>
+> Cbor being a bit more... lenient of the two, I guess is the right word. As you simply call upon encode or decode... and away you go. Where as with avro, you do need to set up a defined shapped schema in order to use it. Both of their use cases, but avro compresses to a much smaller figure and is 6x faster than cbor, if I remember correctly. It doesn't sound like much... but at these speed it adds up to a lot.
+>
+> For example, while acheiving the 900+ mill ops/sec with benching, obviously that is not a realistic goal when it comes to the users usage path, but we need to get as close as we can and having a 6x mulitplier when your doing 900 mill ops/sec... is fucking huge.
 
 
 ## Global APIs
