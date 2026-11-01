@@ -1,4 +1,4 @@
-class SOA_CODEC {// HIGH_PERFORMANCE_SOA_CODEC
+export class SOA_CODEC {// HIGH_PERFORMANCE_SOA_CODEC
 	public readonly maxPids: number;
 	// SoA Memory Layout (Typed Arrays for Cache Locality)
 	public readonly channelMap: Int32Array;

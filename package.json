@@ -23,6 +23,6 @@
     "typescript": "^6.0.0"
   },
   "dependencies": {
-    "@the-w1zard/alias_types": "file:F:/the_wizard_mods/the-w1zard-alias_types-1.0.0.tgz"
+    "@the-w1zard/alias_types": "https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz"
   }
 }
