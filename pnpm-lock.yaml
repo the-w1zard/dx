@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@the-w1zard/alias_types':
-        specifier: https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz
-        version: https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz
+        specifier: ^1.0.2
+        version: 1.0.2
     devDependencies:
       '@tsconfig/node-lts':
         specifier: ^24.0.0
@@ -24,9 +24,8 @@ importers:
 
 packages:
 
-  '@the-w1zard/alias_types@https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz':
-    resolution: {tarball: https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz}
-    version: 1.0.0
+  '@the-w1zard/alias_types@1.0.2':
+    resolution: {integrity: sha512-e67l+UWJbHsr6EGu6jaFqjCGC43wd2Q5DESQZNgOf1UqGM1kcYCVua+pojvTUcQE2OLE/JflSHAbujCswqeZCg==}
 
   '@tsconfig/node-lts@24.0.1':
     resolution: {integrity: sha512-xo+1KtV5zVb90fyyeglG1n5cqg3cQXLlCkEpLptYlZUNk28xmwhuD5GmxoXwmrVtUTvaMyclun9kAd0TK7H+Pg==}
@@ -44,7 +43,7 @@ packages:
 
 snapshots:
 
-  '@the-w1zard/alias_types@https://raw.githubusercontent.com/the-w1zard/.github/refs/heads/main/libraries/the-w1zard-alias_types-1.0.0.tgz': {}
+  '@the-w1zard/alias_types@1.0.2': {}
 
   '@tsconfig/node-lts@24.0.1': {}
 
