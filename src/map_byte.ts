@@ -48,7 +48,7 @@ export class M2BI {
 	#derived?: Map<N, Derived>;
 	#dependents?: Map<N, Set<N>>;
 
-	constructor(maxParticles: N, stride: N = 1, seed?: I<readonly [N, V128]>) {
+	constructor(maxParticles: N= 65_536, stride: N = 1, seed?: I<readonly [N, V128]>) {
 		this.cap = maxParticles;
 		this.stride = stride;
 		this.pidToSlot = new Int32Array(maxParticles).fill(-1);

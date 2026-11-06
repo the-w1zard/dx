@@ -29,11 +29,14 @@ declare global {
 	================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
 	type MaybePromise<R = any> = R;
 	var MaybePromise: MaybePromise;
-	var B2B: typeof B2BI; // map
+	var B2B: typeof B2BI; // BOOLEAN BINARY
+
 	var M2: typeof M2I; // map
 	var M2B: typeof M2BI; // map
+
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
+	
 	var D2: typeof D2I; // Date
 	var A2: typeof A2I; // Array
 	var O2: typeof O2I; // Object

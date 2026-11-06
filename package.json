@@ -1,43 +1,44 @@
 {
-  "name": "@the-w1zard/dx",
-  "version": "1.0.9",
-  "sideEffects": false,
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./src/dx.d.ts"
-    }
-  },
-  "files": [
-    "dist",
-    "./src/dx.d.ts"
-  ],
-  "scripts": {
-    "1": "git add .",
-    "2": "git commit -m 'first commit'",
-    "3": "git push",
-    "4": "npm version patch",
-    "5": "git push --tags",
-    "6": "npm publish --access public",
-    "build": "rspack build",
-    "dev": "rspack serve",
-    "check": "tsc --noEmit",
-    "*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run *"
-  },
-  "devDependencies": {
-    "@rspack/cli": "^2.3.1",
-    "@rspack/core": "^2.3.1",
-    "@rspack/dev-server": "^2.2.2",
-    "@tsconfig/node-lts": "^24.0.0",
-    "@types/node": "^24.0.0",
-    "typescript": "^6.0.0"
-  },
-  "dependencies": {
-    "@babel/parser": "^8.1.0",
-    "@babel/traverse": "^8.1.0",
-    "@babel/types": "^8.1.0",
-    "@the-w1zard/alias_types": "^1.0.2"
-  }
+	"name": "@the-wizard/dx",
+	"version": "1.0.9",
+	"sideEffects": false,
+	"type": "module",
+	"main": "./dist/index.js",
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./src/dx.d.ts"
+		}
+	},
+	"files": [
+		"dist",
+		"./src/dx.d.ts"
+	],
+	"scripts": {
+		"1": "git add .",
+		"2": "git commit -m 'first commit'",
+		"3": "git push",
+		"4": "npm version patch",
+		"5": "git push --tags",
+		"6": "npm publish --access public",
+		"build": "rspack build",
+		"dev": "rspack serve",
+		"check": "tsc --noEmit",
+		"*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run *"
+	},
+	"devDependencies": {
+		"@rspack/cli": "^2.3.1",
+		"@rspack/core": "^2.3.1",
+		"@rspack/dev-server": "^2.2.2",
+		"@tsconfig/node-lts": "^24.0.0",
+		"@types/node": "^24.0.0",
+		"typescript": "^6.0.0",
+		"jsrepo": "^3.8.3"
+	},
+	"dependencies": {
+		"@babel/parser": "^8.1.0",
+		"@babel/traverse": "^8.1.0",
+		"@babel/types": "^8.1.0",
+		"@the-w1zard/alias_types": "^1.0.2"
+	}
 }
