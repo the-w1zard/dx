@@ -130,7 +130,9 @@ declare global {
 		clone(): this;
 		equals(other: Map<H, T>): B;
 	}
+	interface M2B<H = A, T = A> extends M2<H, T> {}
 	interface M2I<H = A, T = A> extends M2<H, T> {}
+	interface M2BI<H = A, T = A> extends M2B<H, T> {}
 	interface B2B {
 		set(pid: number, value: boolean): void 
 		true(pid: number, value: boolean) 
@@ -455,13 +457,11 @@ declare global {
 	interface D2 extends Date {
 		clone(): D2;
 		isValid(): B;
-	
 		month(): N;
 		dateOfWeek(): N;
 		dayOfYear(): N;
 		quarter(): N;
 		unix(): N;
-	
 		addMs(ms: N): D2;
 		addSeconds(seconds: N): D2;
 		addMinutes(minutes: N): D2;
@@ -470,11 +470,9 @@ declare global {
 		addWeeks(weeks: N): D2;
 		addMonths(months: N): D2;
 		addYears(years: N): D2;
-	
 		subDays(days: N): D2;
 		subMonths(months: N): D2;
 		subYears(years: N): D2;
-	
 		startOfDay(): D2;
 		endOfDay(): D2;
 		startOfWeek(): D2;
@@ -485,33 +483,27 @@ declare global {
 		endOfQuarter(): D2;
 		startOfYear(): D2;
 		endOfYear(): D2;
-	
 		daysInMonth(): N;
 		daysInYear(): N;
 		isLeapYear(): B;
 		isWeekend(): B;
 		isWeekday(): B;
-	
 		isBefore(date: D): B;
 		isAfter(date: D): B;
 		isEqual(date: D): B;
 		isBetween(start: D, end: D): B;
-	
 		diffMs(date: D): N;
 		diffSeconds(date: D): N;
 		diffMinutes(date: D): N;
 		diffHours(date: D): N;
 		diffDays(date: D): N;
-	
 		sameDay(date: D): B;
 		sameMonth(date: D): B;
 		sameYear(date: D): B;
-	
 		toUnixMs(): N;
 		toUnix(): N;
 		toD2(): D2;
 		toLocalString(format?: A): S;
-	
 		subWeeks(weeks: N): D2;
 		endOfWeek(weekStartsOn?: N): D2;
 		at(hour: N, minute?: N, second?: N, ms?: N): D2;

@@ -1,27 +1,29 @@
 {
   "compilerOptions": {
 	"lib": ["DOM", "DOM.Iterable", "ES2022", "ES2021.WeakRef"],
-	"isolatedModules": false,
-	"esModuleInterop": true,
-	"jsx": "react-jsx",
-	"jsxImportSource": "#the_wizard_renderer",
-	"module": "es2022",
 	"target": "ES2022",
-	// "resolveJsonModule": true,
+	"module": "ESNext",
 	"moduleResolution": "bundler",
-	"strict": true,
+	"rootDir": "./src",
+	"outDir": "./dist",
+	"declaration": true,
 	"allowJs": true,
+	"strict": true,
+	"isolatedModules": false,
 	"skipLibCheck": true,
-	"forceConsistentCasingInFileNames": true,
+	"noEmit": true,
+	"verbatimModuleSyntax": true,
     "types":[
-      "node",
-     "@the-w1zard/alias_types",
-	 "./src/dx.d.ts"
-    ]
+		"./src/dx.d.ts",
+		"@the-w1zard/alias_types",
+		"node",
+    ],
+	"ignoreDeprecations": "6.0",
+	"baseUrl": ".",
+	"paths": {
+		"~/*": ["src/*"],
+	}
   },
-  "include": [
-	"./src/**/*",
-    "**/*.ts"
- ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["**/*.ts", "**/*.tsx" ],
+  "exclude": ["node_modules", "dist", "./RKIVE/**/*"],
 }

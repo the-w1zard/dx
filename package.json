@@ -3,26 +3,41 @@
   "version": "1.0.8",
   "sideEffects": false,
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "exports": {
     ".": {
-      "default": "./src/index.ts",
+      "default": "./dist/index.js",
       "types": "./src/dx.d.ts"
     }
   },
   "files": [
-    "src"
+    "dist",
+    "./src/dx.d.ts"
   ],
   "scripts": {
-    "build": "tsc",
-    "check": "tsc --noEmit"
+    "1": "git add .",
+    "2": "git commit -m 'first commit'",
+    "3": "git push",
+    "4": "npm version patch",
+    "5": "git push --tags",
+    "6": "npm publish --access public",
+    "build": "rspack build",
+    "dev": "rspack serve",
+    "check": "tsc --noEmit",
+    "*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run *"
   },
   "devDependencies": {
+    "@rspack/cli": "^2.3.1",
+    "@rspack/core": "^2.3.1",
+    "@rspack/dev-server": "^2.2.2",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/node": "^24.0.0",
     "typescript": "^6.0.0"
   },
   "dependencies": {
+    "@babel/parser": "^8.1.0",
+    "@babel/traverse": "^8.1.0",
+    "@babel/types": "^8.1.0",
     "@the-w1zard/alias_types": "^1.0.2"
   }
 }

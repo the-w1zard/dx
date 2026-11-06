@@ -2,10 +2,18 @@
 <div align="left" style="position: relative;">
 <img src="./icons/gandalf.png" align="right" width="30%" style="margin: -20px 0 0 20px;">
 
-<h1>DX: <span style="font-size:18px;" >The Wizard's Arsenal</span></h1>
+<h3 style="font-size:26px;">DX: <span style="font-size:18px;" >The Wizard's Arsenal</span></h3>
 
 <p align="left"><em>The most opinionated platform... ever.</em></p>
 <p align="left"><em>Trust me... I'm a fucking wizard... 🧙</em></p>
+<p align="left">Platforms stats:</p>
+<p align="left">
+<img src="https://img.shields.io/badge/LINES OF CODE- 10,300,000-95ED27?style=flat">
+<img src="https://img.shields.io/badge/FEATURES- UNKNOWN-95ED27?style=flat">
+<img src="https://img.shields.io/badge/REACTS RULES ON HOOKS- 0-95ED27?style=flat">
+<img src="https://img.shields.io/badge/DISRUPTORS- 18+-95ED27?style=flat">
+<img src="https://img.shields.io/badge/MESSAGE QUEUES- 5-95ED27?style=flat">
+</p>
 <p align="left">VSCode ext:</p>
 <p align="left">
 <img src="https://img.shields.io/badge/THEMES- 251-95ED27?style=flat">
@@ -18,17 +26,17 @@
 <p align="left">Small but powerful repos worth checking out:</p>
 <p align="left">
 
-<a href="https://github.com/the-w1zard/app_store"><img src="https://img.shields.io/badge/Store / Maelstrom-000000.svg?style=flat&logo=JetBrains&logoColor=white" alt="JetBrains"></a>
-<a href="https://github.com/the-w1zard/dx"><img src="https://img.shields.io/badge/UX /DX-34A853.svg?style=flat&logo=Android&logoColor=white" alt="Android"></a>
-<a href="https://github.com/the-w1zard/temporal_shift"><img src="https://img.shields.io/badge/Temporal Shift-77AA99.svg?style=flat&logo=Org&logoColor=white" alt="Org"></a>
-<a href="https://github.com/the-w1zard/the_cloud"><img src="https://img.shields.io/badge/The Cloud-02303A.svg?style=flat&logo=Gradle&logoColor=white" alt="Gradle"></a>
-<a href="https://github.com/the-w1zard/signals"><img src="https://img.shields.io/badge/Signals-02303A.svg?style=flat&logo=Gradle&logoColor=white" alt="Gradle"></a>
-<img src="https://img.shields.io/badge/Sometimes, my genius... It generates gravity.-4285F4.svg?style=flat&logo=🧙&logoColor=white" alt="Google">
-<a href="https://github.com/the-w1zard"><img src="https://img.shields.io/badge/Coming Soon: The Wizard Platform-7F52FF.svg?style=flat&logo=Kotlin&logoColor=white" alt="Kotlin"></a>
-<a href="https://github.com/the-w1zard"><img src="https://img.shields.io/badge/Coming Soon: Hadron Particle Disruptor-%23ED8B00.svg?style=flat&logo=openjdk&logoColor=white" alt="java"></a>
+- [![🧙 Alias Types](https://img.shields.io/badge/Alias%20Types-000000.svg?style=flat&logo=typescript&logoColor=white)](https://github.com/the-w1zard/alias_types) <a href="https://www.npmjs.com/package/@the-w1zard/alias_types"><img src="./icons/npm.png" alt="alias_types" width="20" height="20"></a>
+- [![🧙 The Cloud](https://img.shields.io/badge/%F0%9F%A7%99%20App%20Store-000000.svg?style=flat)](https://github.com/the-w1zard/app_store)  <a href="https://www.npmjs.com/package/@the-w1zard/store"><img src="./icons/npm.png" alt="app_store" width="20" height="20"></a>
+- [![🧙 The Cloud](https://img.shields.io/badge/%F0%9F%A7%99%20DX-95ED27.svg?style=flat)](https://github.com/the-w1zard/dx) <a href="https://www.npmjs.com/package/@the-w1zard/dx"><img src="./icons/npm.png" alt="dx" width="20" height="20"></a>
+- [![🧙 The Cloud](https://img.shields.io/badge/%F0%9F%A7%99%20Temporal%20Shift-77AA99.svg?style=flat)](https://github.com/the-w1zard/temporal_shift) <a href="https://www.npmjs.com/package/@the-w1zard/temporal_shift"><img src="./icons/npm.png" alt="temporal_shift" width="20" height="20"></a>
+- [![🧙 The Cloud](https://img.shields.io/badge/%F0%9F%A7%99%20The%20Cloud-02303A.svg?style=flat)](https://github.com/the-w1zard/the_cloud)  <a href="https://www.npmjs.com/package/@the-w1zard/the-cloud"><img src="./icons/npm.png" alt="app_store" width="20" height="20"></a>
+- [![🧙 SINGULARITY](https://img.shields.io/badge/%F0%9F%A7%99%20SINGULARITY-02303A.svg?style=flat)](https://github.com/the-w1zard)  
+- [![🧙 Sometimes,%20my%20genius...%20It%20generates%20gravity.](https://img.shields.io/badge/%F0%9F%A7%99%20Sometimes,%20my%20genius...%20It%20generates%20gravity.-4285F4.svg?style=flat)](https://github.com/the-w1zard)  
+- [![🧙 The Wizard](https://img.shields.io/badge/%F0%9F%A7%99%20Coming%20Soon:%20The%20Wizard%20Ed.-7F52FF.svg?style=flat)](https://github.com/the-w1zard)  
+- [![🧙 Hadron Particle Disruptor](https://img.shields.io/badge/%F0%9F%A7%99%20Coming%20Soon:%20Hadron%20Particle%20Disruptor-23ED8B00.svg?style=flat)](https://github.com/the-w1zard)  
 </p>
 <p align="left">The goal? To remove all friction, from everything.</p>
-
 </div>
 <br clear="right">
 
@@ -53,21 +61,26 @@ The package extends native classes and exposes their implementations through `gl
 
 ## Table of Contents
 
-- [A2 — Array](#a2--array)
-- [D2 — Date](#d2--date)
-- [ER2 — Error](#er2--error)
-- [I2 — Iterator](#i2--iterator)
-- [M2 — Map](#m2--map)
-- [N2 — Number](#n2--number)
-- [O2 — Object](#o2--object)
-- [P2 — Promise](#p2--promise)
-- [USP2 — URLSearchParams](#usp2--urlsearchparams)
-- [U82 — Array](#u82--array)
-- [S2 — String](#s2--string)
-- [WS2 — WeakSet](#ws2--weakset)
-- [WM2 — WeakMap](#wm2--weakmap)
-- [O2 — Object](#o2--object)
-- [SET2 — Set](#set2--set)
+<ul style="list-style: none; padding-left: 0;">
+  <li><a href="#a2--array">A2 — Array</a></li>
+  <li><a href="#b2--byte-bool">B2 — Byte Boolean</a></li>
+  <li><a href="#d2--date">D2 — Date</a></li>
+  <li><a href="#er2--error">ER2 — Error</a></li>
+  <li><a href="#i2--iterator">I2 — Iterator</a></li>
+  <li><a href="#m2--map">M2 — Map</a></li>
+  <li><a href="#m2b--map-binary">M2B — Map Binary</a></li>
+  <li><a href="#n2--number">N2 — Number</a></li>
+  <li><a href="#o2--object">O2 — Object</a></li>
+  <li><a href="#p2--promise">P2 — Promise</a></li>
+  <li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
+  <li><a href="#u82--array">U82 — Uint8Array</a></li>
+  <li><a href="#s2--string">S2 — String</a></li>
+  <li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
+  <li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
+  <li><a href="#o2--object">O2 — Object</a></li>
+  <li><a href="#set2--set">SET2 — Set</a></li>
+  <li><a href="#set2b--set-binary">SET2B — Set Binary</a></li>
+</ul>
 
 > [!IMPORTANT] UPDATE!!@!
 >
@@ -128,6 +141,7 @@ The global declarations provide TypeScript access to these APIs. `MaybePromise` 
 
 ## Quick Reference
 
+
 ## `A2` — Array
 
 `A2I` extends `Array` and adds collection helpers. Methods returning arrays generally return `A2I` instances.
@@ -164,57 +178,111 @@ The global declarations provide TypeScript access to these APIs. `MaybePromise` 
 Static helpers include `A2I.from()` and `A2I.of()`.
 
 
-## `D2` — Date
+## `B2` — Byte Bool
+
+`B2I` replaces boolean properties and boolean maps with a zero-allocation, PID-indexed `Uint8Array` lane. One byte per PID, no boxing, no `Map`, no per-entry allocation — `set`, `get`, and `toggle` are O(1) array stores, and `clear` is a single `fill(0)`.
 
 | Method | Description |
 |---|---|
-| `clone()` / `isValid()` | Copy a date or check validity |
-| `month()` / `dateOfWeek()` | Get one-based month or weekday index |
-| `dayOfYear()` / `quarter()` | Get day of year or quarter |
-| `unix()` / `toUnix()` | Get Unix timestamp in seconds |
-| `toUnixMs()` | Get Unix timestamp in milliseconds |
-| `age(unit?)` | Get age in years, months, or days from this date to now |
-| `addMs()` / `addSeconds()` / `addMinutes()` / `addHours()` | Add time |
-| `addDays()` / `addWeeks()` / `addMonths()` / `addYears()` | Add calendar units |
-| `subDays()` / `subWeeks()` / `subMonths()` / `subYears()` | Subtract calendar units |
-| `startOfDay()` / `endOfDay()` | Day boundaries |
-| `startOfWeek(weekStartsOn?)` / `endOfWeek(weekStartsOn?)` | Week boundaries |
-| `startOfMonth()` / `endOfMonth()` | Month boundaries |
-| `startOfQuarter()` / `endOfQuarter()` | Quarter boundaries |
-| `startOfYear()` / `endOfYear()` | Year boundaries |
-| `daysInMonth()` / `daysInYear()` | Count days |
-| `isLeapYear()` | Check leap year |
-| `isWeekend()` / `isWeekday()` | Check day type |
-| `isBefore(date)` / `isAfter(date)` / `isEqual(date)` | Compare timestamps |
-| `isSameOrBefore(date)` / `isSameOrAfter(date)` | Compare timestamps, inclusive |
-| `isBetween(start, end)` | Check an inclusive date range |
-| `clamp(min, max)` | Constrain a date to a range |
-| `diffMs()` / `diffSeconds()` / `diffMinutes()` / `diffHours()` / `diffDays()` | Calculate signed time differences |
-| `sameDay()` / `sameMonth()` / `sameYear()` | Compare calendar components |
-| `isSame(unit, date)` | Compare by day, week, month, quarter, or year |
-| `isToday()` / `isTomorrow()` / `isYesterday()` | Check relative to the current date |
-| `ago()` / `fromNow()` | Relative-time label vs. now |
-| `from(other)` | Relative-time label vs. a given date |
-| `next(unit)` / `prev(unit)` | Jump to the next/previous weekday name or calendar unit |
-| `nextWeek()` / `prevWeek()` / `nextMonth()` / `prevMonth()` / `nextQuarter()` / `prevQuarter()` / `nextYear()` / `prevYear()` | Shortcut unit navigation |
-| `at(hour, minute?, second?, ms?)` | Set a specific time of day |
-| `atNoon()` / `midnight()` | Jump to noon or start of day |
-| `addBusinessDays(n)` / `nextBusinessDay()` / `prevBusinessDay()` | Business-day navigation |
-| `isBusinessDay()` | Check if this date is a weekday |
-| `calendarDays(other)` | Signed whole-day difference, ignoring time of day |
-| `businessDays(other)` | Count weekdays between this date and another |
-| `diffHuman(other?)` | Single-unit human-readable duration (e.g. `"3d"`) |
-| `fmt(format)` | Format using token strings (`YYYY`, `MMM`, `dddd`, etc.) |
-| `toLocalString(format?)` | Format via `Date.prototype.toLocaleString` |
-| `toInputDate()` / `toInputTime()` / `toInputDateTime()` / `toInputTimeWithSeconds()` | Format for HTML `<input>` fields |
-| `set(fields)` | Immutably update one or more date/time fields, preserving the rest |
-| `withDate(year, month, day)` | Shortcut for `set()` on the date portion |
-| `sameTimeOn(other)` | Keep this date's time, swap in another date's day |
-| `to(other)` | Build an `R2` range from this date to another |
-| `toD2()` | Return a cloned `D2` |
+| `set(pid, value)` | Set the boolean flag for a PID |
+| `true(pid, value)` | Set the flag to `1` (`value` is accepted for call-site symmetry and ignored) |
+| `false(pid, value)` | Set the flag to `0` (`value` is accepted for call-site symmetry and ignored) |
+| `get(pid)` | Return `true` if the PID's flag is `1`, else `false` |
+| `toggle(pid)` | Flip the PID's flag and return the new state |
+| `clear()` | Zero every flag in place; no reallocation |
+| `flags` | The backing `Uint8Array`, indexed by PID |
 
-Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `today()`, `min()`, `max()`, `from(value)` (flexible ingestion from `Date`, epoch ms, ISO/local strings, arrays, or field objects), `parseDate(str)`, and `parseDateTime(str)`.
+## `D2` — Date
 
+`D2` extends `Date` and keeps the standard `Date` API, adding immutable date arithmetic, calendar helpers, human-readable diffs, custom formatting, and locale-aware parsing. Every method returns a new `D2I`; the receiver is never mutated.
+
+Registered as a codec (`DATE_TAG = 0x4432`, `"D2"`): `enc` writes the epoch-ms as an `i64`, `dec` revives it as a `D2I`.
+
+| Method | Description |
+|---|---|
+| `set(f)` | Return a new date with the given `{ year, month, day, hour, minute, second, ms }` fields applied; unset fields are preserved, `day` is clamped to the target month |
+| `withDate(year, month, day)` | Replace the calendar date, keep the time |
+| `sameTimeOn(other)` | Keep this date's time, adopt `other`'s calendar date |
+| `at(hour, minute?, second?, ms?)` | Return a new date at the given time on this date |
+| `atNoon()` / `midnight()` | `at(12)` / `startOfDay()` |
+| `toInputDate()` / `toInputTime()` / `toInputDateTime()` / `toInputTimeWithSeconds()` | `YYYY-MM-DD`, `HH:mm`, `YYYY-MM-DDTHH:mm`, `HH:mm:ss` for form inputs |
+
+### Arithmetic
+
+| Method | Description |
+|---|---|
+| `addMs` / `addSeconds` / `addMinutes` / `addHours` / `addDays` / `addWeeks` / `addMonths` / `addYears` | Return a new date shifted by the amount |
+| `subDays` / `subWeeks` / `subMonths` / `subYears` | Negative-shift shorthand |
+| `addBusinessDays(n)` / `nextBusinessDay()` / `prevBusinessDay()` | Shift by weekdays, skipping weekends |
+| `next(unit)` / `prev(unit)` | Next/previous `day`, `week`, `month`, `quarter`, `year`, or weekday name (`"friday"`) |
+| `nextWeek` / `prevWeek` / `nextMonth` / `prevMonth` / `nextQuarter` / `prevQuarter` / `nextYear` / `prevYear` | Named shorthands |
+
+### Boundaries
+
+| Method | Description |
+|---|---|
+| `startOfDay` / `endOfDay` | Local day boundaries |
+| `startOfWeek(weekStartsOn?)` / `endOfWeek(weekStartsOn?)` | Week boundaries; `weekStartsOn` defaults to `0` (Sunday) |
+| `startOfMonth` / `endOfMonth` | Month boundaries |
+| `startOfQuarter` / `endOfQuarter` | Quarter boundaries |
+| `startOfYear` / `endOfYear` | Year boundaries |
+
+### Fields and predicates
+
+| Method | Description |
+|---|---|
+| `month()` | 1-based month |
+| `dateOfWeek()` / `dayOfYear()` / `quarter()` | Calendar fields |
+| `daysInMonth()` / `daysInYear()` / `isLeapYear()` | Calendar facts |
+| `isWeekend()` / `isWeekday()` / `isBusinessDay()` | Day-type predicates |
+| `isBefore` / `isAfter` / `isEqual` / `isBetween` / `isSameOrBefore` / `isSameOrAfter` | Instant comparison |
+| `sameDay` / `sameMonth` / `sameYear` / `isSame(unit, other)` | Calendar comparison |
+| `isToday` / `isTomorrow` / `isYesterday` | Relative-day predicates |
+| `clamp(min, max)` | Clamp into a range |
+
+### Differences
+
+| Method | Description |
+|---|---|
+| `diffMs` / `diffSeconds` / `diffMinutes` / `diffHours` / `diffDays` | Numeric difference from `other` |
+| `calendarDays(other)` | Whole calendar days between the two dates |
+| `businessDays(other)` | Weekdays between the two dates |
+| `diffHuman(other?)` | Compact human diff, e.g. `"3d"` |
+| `fromNow()` / `ago()` | Relative description, e.g. `"in 2 hours"`, `"3 minutes ago"` |
+| `from(other)` | Relative description vs. `other` |
+| `age(unit?)` | Elapsed years/months/days since this date |
+
+### Formatting and parsing
+
+| Method | Description |
+|---|---|
+| `fmt(format)` | Token substitution: `YYYY`, `YY`, `MMMM`, `MMM`, `MM`, `M`, `DD`, `D`, `dddd`, `ddd`, `HH`, `H`, `hh`, `h`, `mm`, `m`, `ss`, `s`, `SSS`, `A`, `a` |
+| `toLocalString(format?)` | `toLocaleString("en-US", format)`; `format` defaults to `FORMAT.full` |
+| `D2.from(value)` | Parse from `Date`, number (epoch ms), ISO string, `YYYY-MM-DD`, `YYYY-MM-DD HH:mm`, array `[y,m,d,h?,min?,s?,ms?]`, or object (`{ date, time }` or `{ year, month, day, … }`) |
+| `D2.parseDate("YYYY-MM-DD")` | Local midnight for that date |
+| `D2.parseDateTime("YYYY-MM-DD HH:mm")` | Local date-time |
+| `D2.fromParts(y, m, d, h?, min?, s?, ms?)` | Construct from calendar parts |
+
+### Statics
+
+| Method | Description |
+|---|---|
+| `D2.now()` / `D2.today()` | Current instant / today's `startOfDay()` |
+| `D2.fromUnix(s)` / `D2.fromUnixMs(ms)` | Construct from epoch seconds / milliseconds |
+| `D2.min(...dates)` / `D2.max(...dates)` | Earliest / latest of the inputs |
+
+### Ranges
+
+`R2I` is a half-open `[start, end)` interval.
+
+| Method | Description |
+|---|---|
+| `contains(d)` | Whether `d` falls inside the range |
+| `overlaps(other)` | Whether two ranges intersect |
+| `durationMs()` / `days()` | Length in ms / whole days |
+| `eachDay(fn)` | Iterate each calendar day in the range |
+| `toArray()` | `A2I<D2>` of days |
+| `R2(start, end)` | Build a range from any two `D2`-coercible values |
 
 ## `ER2` — Error
 
@@ -229,13 +297,13 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 | `ER2.wrap(value, message?)` | Wrap an error with a cause |
 | `ER2.aggregate(errors, message?)` | Create an `AggregateError` from multiple errors |
 
-`ER2I` accepts an optional message and standard `ErrorOptions`, including `cause`.
+`ER2` accepts an optional message and standard `ErrorOptions`, including `cause`.
 
 
 
 ## `I2` — Iterator
 
-`I2I` wraps an iterable or iterator and provides lazy transformation pipelines.
+`I2` wraps an iterable or iterator and provides lazy transformation pipelines.
 
 | Method | Description |
 |---|---|
@@ -270,13 +338,14 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 
 ## `M2` — Map
 
-`M2I` extends `Map` and retains the standard `Map` API, plus reactive subscriptions, derived values, and batching.
+`M2` extends `Map` and retains the standard `Map` API, plus reactive subscriptions, derived values, batching, and a large set of convenience methods. Keys are arbitrary — any value `Map` accepts, `M2` accepts.
 
 | Method | Description |
 |---|---|
 | `g(key)` / `h(key)` / `d(key)` / `c()` | Aliases for `get`, `has`, `delete`, and `clear` |
 | `f` | Alias for `forEach` |
 | `s(value, key)` | Set a value; function arguments are evaluated as factories |
+| `mutate(key, fn)` | Update an existing value in place using the current value |
 | `swap(value, key)` | Replace a value and return the previous value |
 | `take(key)` | Get and delete a value |
 | `peek(key)` | Return the value or `false` if absent |
@@ -288,7 +357,6 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 | `replace(value, key)` | Replace only when present |
 | `inc(key, by?)` | Increment a numeric entry |
 | `touch(key)` | Ensure a key exists |
-| `mutate(key, fn)` | Update an existing value in place using the current value |
 | `mapValues(fn)` / `mapKeys(fn)` | Transform values or keys into a new map |
 | `filterKV(pred)` / `filterKeys(pred)` | Filter in place |
 | `partition(pred)` | Split entries into matching and nonmatching maps |
@@ -320,6 +388,64 @@ Static helpers include `now()`, `fromUnix()`, `fromUnixMs()`, `fromParts()`, `to
 | `fromObject(obj)` | Create a map from an object |
 | `fromEntries(entries)` | Create a map from entries |
 | `from(map)` | Create a map from another map |
+
+
+## `M2B` — Map binary
+
+`M2B` is the dense, PID-indexed backing store for `M2`. Where `M2` accepts arbitrary keys and stores values in a `Map`, `M2B` stores fixed-width values in a flat `Float64Array`, indexed by integer PID. `pidToSlot` / `slotToPid` give O(1) lookup in both directions, and iteration walks the dense slot range — no hashing, no per-entry allocation.
+
+`stride` controls how many doubles each PID holds: `stride = 1` stores scalars (`number`), `stride > 1` stores fixed-length `Float64Array` views. `cap` is the maximum PID; values outside `[0, cap)` read as absent.
+
+| Method | Description |
+|---|---|
+| `g(pid)` / `h(pid)` / `d(pid)` / `c()` | Aliases for `get`, `has`, `delete`, and `clear` |
+| `f` | Alias for `forEach` |
+| `s(value, pid)` | Set a value for a PID |
+| `mutate(pid, fn)` | Update an existing value in place using the current value |
+| `swap(value, pid)` | Replace a value and return the previous value |
+| `take(pid)` | Get and delete a value |
+| `peek(pid)` | Return the value or `false` if absent |
+| `getOrI(value, pid)` | Get or insert a supplied value |
+| `getOrM(make, pid)` | Get or lazily create a value |
+| `update(pid, fn, initial?)` | Update using the current value, or an initial value if missing |
+| `setIfAbsent(value, pid)` | Insert only when missing |
+| `setIfPresent(value, pid)` | Set only when present |
+| `replace(value, pid)` | Replace only when present |
+| `inc(pid, by?)` | Increment a numeric entry |
+| `touch(pid)` | Ensure a PID exists |
+| `mapValues(fn)` / `mapKeys(fn)` | Transform values or PIDs into a new map |
+| `filterKV(pred)` / `filterKeys(pred)` | Filter in place |
+| `partition(pred)` | Split entries into matching and nonmatching maps |
+| `find(pred)` | Find the first matching entry |
+| `findKey(pred)` / `findValue(pred)` | Find a matching PID or value |
+| `some(pred)` / `every(pred)` | Predicate checks |
+| `reduce(fn, initial)` | Reduce entries |
+| `forEachKV(fn)` | Iterate over value, PID, and map |
+| `invert()` | Reverse PIDs and values into a plain `Map` |
+| `group(fn)` | Group values by computed key, into a map of arrays |
+| `unique(fn?)` | Deduplicate by computed or original value |
+| `pick(pids)` / `omit(pids)` | Select or exclude PIDs |
+| `merge(entries)` | Merge entries into the current map |
+| `clearAndSet(entries)` | Replace all entries as a single batch |
+| `toObject()` | Convert entries to an object |
+| `toArray()` / `toKeys()` / `toValues()` | Convert entries, PIDs, or values to an array |
+| `clone()` | Create a shallow copy |
+| `equals(other)` | Compare PIDs and values by value-aware equality |
+| `on(fn)` | Subscribe to change events; returns an unsubscribe function |
+| `off(fn)` | Unsubscribe a listener |
+| `batch(fn)` | Run multiple writes, coalescing into one event per PID |
+| `dv(pid, deps, fn)` | Define a derived value computed from other PIDs |
+| `dirty(...pids)` | Mark derived values as needing recomputation |
+| `$debug(limit?)` | Enable event history tracking |
+| `$strict()` | Throw if mutated while iterating |
+| `$history()` | Return recorded change events |
+| `$why(pid)` | Return the most recent event for a PID |
+| `$diff(other)` | Compare against another map: added, deleted, and changed entries |
+| `fromObject(obj, cap, stride?)` | Create a map from an object |
+| `fromEntries(entries, cap, stride?)` | Create a map from entries |
+| `from(map, cap, stride?)` | Create a map from another map |
+
+`cap`, `stride`, and `size` are exposed as readonly properties. `pidToSlot`, `slotToPid`, and `vals` are the backing arrays.
 
 ## `N2` — Number
 
@@ -478,46 +604,93 @@ Also inherits the native `String` API. `S2` is registered as a callable and cons
 
 ## `SET2` — Set
 
-Extends `Set<T>` with convenience accessors, set algebra, predicate operations, and conversions.
+`SET2` extends `Set` and retains the standard `Set` API, plus functional transforms, bulk mutation, set algebra, and conversion helpers. Like `M2`, keys are arbitrary — any value `Set` accepts, `SET2` accepts.
 
 | Method | Description |
 |---|---|
 | `s(value)` | Alias for `add` |
-| `take(value)` | Deletes and returns the value if present |
-| `peek(value)` | Returns the value if present, otherwise `false` |
-| `toggle(value)` | Adds an absent value or deletes a present value |
-| `first()` / `last()` | Gets the first or last iterated value |
-| `union(other)` | Returns the union |
-| `intersection(other)` | Returns the intersection |
-| `difference(other)` | Returns values absent from another iterable |
-| `symmetricDifference(other)` | Returns values exclusive to either set |
-| `isSubsetOf(other)` / `isSupersetOf(other)` | Checks subset or superset relationships |
-| `isDisjointFrom(other)` | Checks whether sets have no shared values |
-| `equals(other)` | Checks set equality |
-| `filter(fn)` / `map(fn)` | Filters or transforms values into a `SET2I` |
-| `partition(fn)` | Splits values into matching and nonmatching sets |
-| `differenceBy(other, fn)` | Computes a difference using computed keys |
-| `uniqueBy(fn)` | Keeps the first value for each computed key |
-| `find(fn)` | Returns the first matching value |
-| `every(fn)` / `some(fn)` | Tests values against a predicate |
-| `reduce(fn, initial)` | Reduces values to an accumulated result |
-| `addAll(values)` | Adds multiple values |
-| `deleteAll(values)` | Deletes values and returns the deletion count |
-| `retainAll(values)` | Keeps only values present in another iterable |
-| `update(values)` | Adds values from another iterable |
-| `replace(values)` | Replaces all members |
-| `swap(a, b)` | Removes `a` and adds `b` if `a` exists |
-| `clone()` | Creates a copy |
-| `toArray()` | Converts to an array |
-| `toMap(fn)` | Converts values into a map using returned key-value pairs |
-| `toObject(fn?)` | Converts values to an object using generated or stringified keys |
-| `toJSON()` | Returns the values as an array |
+| `take(value)` | Delete and return the value, or `undefined` if absent |
+| `peek(value)` | Return the value or `false` if absent |
+| `toggle(value)` | Add if absent, delete if present; returns the new membership |
+| `first()` / `last()` | First or last value in iteration order |
+| `union(other)` | New set of all values in either set |
+| `intersection(other)` | New set of values in both sets |
+| `difference(other)` | New set of values in this set but not the other |
+| `symmetricDifference(other)` | New set of values in either set but not both |
+| `isSubsetOf(other)` / `isSupersetOf(other)` | Containment checks |
+| `isDisjointFrom(other)` | Whether the two sets share no values |
+| `equals(other)` | Whether the two sets contain the same values |
+| `filter(fn)` | New set of values matching the predicate |
+| `map(fn)` | New set of mapped values |
+| `partition(fn)` | Split into matching and nonmatching sets |
+| `differenceBy(other, fn)` | Difference by computed key |
+| `uniqueBy(fn)` | Deduplicate by computed key |
+| `find(fn)` | First matching value, or `undefined` |
+| `every(fn)` / `some(fn)` | Predicate checks |
+| `reduce(fn, initial)` | Reduce values |
+| `addAll(values)` | Add many values |
+| `deleteAll(values)` | Delete many values; returns the count removed |
+| `retainAll(values)` | Delete every value not in `values` |
+| `update(values)` | Alias for `addAll` |
+| `replace(values)` | Clear, then add all values |
+| `swap(a, b)` | If `a` is present, delete `a` and add `b` |
+| `clone()` | Create a shallow copy |
+| `toArray()` | Convert to an array |
+| `toMap(fn)` | Convert to an `M2`, using `fn` to produce `[key, value]` per entry |
+| `toObject(fn?)` | Convert to an object, keyed by `fn(value)` or `String(value)` |
+| `toJSON()` | Alias for `toArray` |
+| `fromArray(values)` | Create a set from an array |
+| `fromObject(obj)` | Create a set from an object's values |
+| `fromEntries(entries)` | Create a set from the values of `[key, value]` pairs |
+| `from(values)` | Create a set from any iterable |
 
-Static constructors: `fromArray(values)`, `fromObject(obj)`, `fromEntries(entries)`, and `from(values)`.
+## `SET2B` — Set Binary
 
+`SET2BI` is the dense, PID-indexed backing store for `SET2`. Membership lives in a `Uint8Array` (`flags[pid] → 0/1`), dense iteration walks `slots`, and `pidToIdx` gives O(1) delete via swap-remove. `cap` is the maximum PID; values outside `[0, cap)` read as absent.
 
+| Method | Description |
+|---|---|
+| `s(pid)` | Alias for `add` |
+| `add(pid)` | Add a PID |
+| `has(pid)` | Whether the PID is a member |
+| `delete(pid)` | Remove a PID; returns whether it was present |
+| `clear()` | Remove every member in place |
+| `take(pid)` | Delete and return the PID, or `undefined` if absent |
+| `peek(pid)` | Return the PID or `false` if absent |
+| `toggle(pid)` | Add if absent, delete if present; returns the new membership |
+| `first()` / `last()` | First or last PID in dense order |
+| `union(other)` | New set of all PIDs in either set |
+| `intersection(other)` | New set of PIDs in both sets |
+| `difference(other)` | New set of PIDs in this set but not the other |
+| `symmetricDifference(other)` | New set of PIDs in either set but not both |
+| `isSubsetOf(other)` / `isSupersetOf(other)` | Containment checks |
+| `isDisjointFrom(other)` | Whether the two sets share no PIDs |
+| `equals(other)` | Whether the two sets contain the same PIDs |
+| `filter(fn)` | New set of PIDs matching the predicate |
+| `map(fn)` | New set of mapped PIDs |
+| `partition(fn)` | Split into matching and nonmatching sets |
+| `differenceBy(other, fn)` | Difference by computed key |
+| `uniqueBy(fn)` | Deduplicate by computed key |
+| `find(fn)` | First matching PID, or `undefined` |
+| `every(fn)` / `some(fn)` | Predicate checks |
+| `reduce(fn, initial)` | Reduce PIDs |
+| `addAll(pids)` | Add many PIDs |
+| `deleteAll(pids)` | Delete many PIDs; returns the count removed |
+| `retainAll(pids)` | Delete every PID not in `pids` |
+| `update(pids)` | Alias for `addAll` |
+| `replace(pids)` | Clear, then add all PIDs |
+| `swap(a, b)` | If `a` is present, delete `a` and add `b` |
+| `clone()` | Create a shallow copy |
+| `toArray()` | Convert to an array of PIDs |
+| `toMap(fn)` | Convert to a plain `Map`, using `fn` to produce `[key, value]` per PID |
+| `toObject(fn?)` | Convert to an object, keyed by `fn(pid)` or `String(pid)` |
+| `toJSON()` | Alias for `toArray` |
+| `fromArray(pids, cap?)` | Create a set from an array of PIDs |
+| `fromObject(obj, cap?)` | Create a set from an object's values |
+| `fromEntries(entries, cap?)` | Create a set from the values of `[key, value]` pairs |
+| `from(pids, cap?)` | Create a set from any iterable of PIDs |
 
-## `U82` — Array
+## `U82` — Uint8Array
 
 Extends `Array<T>` with collection access, transformations, set-like operations, and in-place utilities.
 
@@ -677,4 +850,12 @@ iterator.filter(value => value % 2 === 0).toArray();
 const error = ER2.from("Something failed");
 error.toJSON();
 ```
+
+
+
+
+
+
+</div>
+<div style="font-size: 9px;  text-align: right">
 
