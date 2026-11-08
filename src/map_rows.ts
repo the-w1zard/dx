@@ -100,7 +100,7 @@ export class M2RI<K = N> {
     [Symbol.iterator](): MapIterator<[K, F64]> {
         return this.entries();
     }
-    forEach(fn: (v: F64, k: K, m: Map<K, F64>) => V, thisArg?: U): V {
+    forEach(fn: (v: F64, k: K, m: M2RI<K>) => V, thisArg?: U): V {
         for (const [k, v] of this.entries()) fn.call(thisArg, v, k, this);
     }
     forEachRaw(fn: (pid: N, slot: N) => V): V {

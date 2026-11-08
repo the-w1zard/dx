@@ -4,21 +4,25 @@ import { M2BINI } from "./map_bin";
 import { B2BI } from "./boolean_byte";
 import { M2I } from "./map";
 import { M2BI } from "./map_byte";
-import { SET2I } from "./set";
-import { SET2BI } from "./set_byte";
-import { D2I, R2I, R2II } from "./date";
+
 import { A2I } from "./array";
-import { O2I } from "./object";
-import { WM2I } from "./weak_map";
+import { D2I, R2I, R2II } from "./date";
+import { ER2I } from './error'
 import { I2I } from "./iterator";
 import { N2I } from "./number";
+import { O2I } from "./object";
 import { P2I } from "./promise";
+import { REC2, RECC2 } from './reg_ex'
+import { SET2I } from "./set";
+import { SET2BI } from "./set_byte";
+import { SOA_CODEC, soa_codeci } from './soa_codec'
 import { S2I } from "./string";
 import { U82I } from "./unit8array";
-import { WS2I } from "./weak_set";
 import { USP2I } from "./url_search_params";
-import { ER2I } from "./error";
-import {MaybePromise} from '../bag_of_tricks/maybe_promise'
+
+import { WM2I } from "./weak_map";
+import { WS2I } from "./weak_set";
+import { MaybePromisei, type MaybePromise } from './index'
 export {};
 
 
@@ -31,7 +35,7 @@ declare global {
      it.
 	================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
 	type MaybePromise<R = any> = R;
-	var MaybePromise: MaybePromise;
+	var MaybePromise: MaybePromisei;
 	var B2B: typeof B2BI; // BOOLEAN BINARY
 
 	var M2: typeof M2I; // map
@@ -43,6 +47,9 @@ declare global {
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
 
+	var RES2: typeof RECC2; // reg ex static
+	var RE2: typeof REC2; // reg ex
+	var ER2: typeof ER2I; // error
 	var D2: typeof D2I; // Date
 	var A2: typeof A2I; // Array
 	var O2: typeof O2I; // Object
@@ -52,17 +59,30 @@ declare global {
 	var S2: typeof S2I; // String
 	var N2: typeof N2I; // Number
 	var USP2: typeof USP2I; // URLSearchParams
-	var ER2: typeof ER2I; // Error
 	var U82: typeof U82I; // Uint8Array
 	var I2: typeof I2I; // Iterator
 	var R2: typeof R2I;
     var R2FN: typeof R2II;
+    var soa_codec: typeof soa_codeci;
+	interface soa_codec {
+		readonly maxPids: number;
+		readonly channelMap: Int32Array;
+		readonly subChannelMap: Int32Array;
+		readonly tripChannelMap: Int32Array;
+		readonly keyMap: Int32Array;
+		readonly listeners: Array<((pid: number, val?: number) => void) | undefined>;
+		nextPid: number;
+	  
+		allocatePid(rId: number, mId: number, sId: number, kId: number): number;
+	  }
+	interface soa_codeci extends soa_codec {}
+
 	//                                                                                                 [MAP]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
 	type M2Op = "set" | "del" | "upd" | "dirty";
 	interface M2Event<H = A, T = A> {
 		op: M2Op;
-		pid: H;
+		pid?: H;
 		k: H;
 		v?: T;
 		prev?: T;

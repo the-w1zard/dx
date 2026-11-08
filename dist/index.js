@@ -14,35 +14,76 @@ function _array_like_to_array(arr, len) {
 function _array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
-function _array_without_holes(arr) {
-    if (Array.isArray(arr)) return _array_like_to_array(arr);
+function _check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
 }
-function _assert_this_initialized(self) {
-    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    return self;
+function _class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
 }
-function _call_super(_this, derived, args) {
-    derived = _get_prototype_of(derived);
-    return _possible_constructor_return(_this, array_is_native_reflect_construct() ? Reflect.construct(derived, args || [], _get_prototype_of(_this).constructor) : derived.apply(_this, args));
+function _class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function _class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
 }
 function _class_call_check(instance, Constructor) {
     if (!_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
 }
-function _construct(Parent, args, Class) {
-    if (array_is_native_reflect_construct()) _construct = Reflect.construct;
-    else {
-        _construct = function construct(Parent, args, Class) {
-            var a = [
-                null
-            ];
-            a.push.apply(a, args);
-            var Constructor = Function.bind.apply(Parent, a);
-            var instance = new Constructor();
-            if (Class) _set_prototype_of(instance, Class.prototype);
-            return instance;
-        };
-    }
-    return _construct.apply(null, arguments);
+function _class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function _class_private_field_get(receiver, privateMap) {
+    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "get");
+    return _class_apply_descriptor_get(receiver, descriptor);
+}
+function _class_private_field_init(obj, privateMap, value) {
+    _check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function _class_private_field_set(receiver, privateMap, value) {
+    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "set");
+    _class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function _class_private_field_update(receiver, privateMap) {
+    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "update");
+    return _class_apply_descriptor_update(receiver, descriptor);
+}
+function _class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function _class_private_method_init(obj, privateSet) {
+    _check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
 }
 function _defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -57,6 +98,1925 @@ function _create_class(Constructor, protoProps, staticProps) {
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
     return Constructor;
+}
+function _define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function _iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function _non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _sliced_to_array(arr, i) {
+    return _array_with_holes(arr) || _iterable_to_array_limit(arr, i) || _unsupported_iterable_to_array(arr, i) || _non_iterable_rest();
+}
+function _ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function _unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _array_like_to_array(o, minLen);
+}
+var _vals = /*#__PURE__*/ new WeakMap(), _pidToSlot = /*#__PURE__*/ new WeakMap(), _slotToPid = /*#__PURE__*/ new WeakMap(), _size = /*#__PURE__*/ new WeakMap(), _open = /*#__PURE__*/ new WeakSet(), _grow = /*#__PURE__*/ new WeakSet();
+var map_rows_M2RI = /*#__PURE__*/ function() {
+    "use strict";
+    function M2RI() {
+        var capacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 1024, stride = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 3;
+        _class_call_check(this, M2RI);
+        _class_private_method_init(this, _open);
+        _class_private_method_init(this, _grow);
+        _class_private_field_init(this, _vals, {
+            writable: true,
+            value: void 0
+        });
+        _class_private_field_init(this, _pidToSlot, {
+            writable: true,
+            value: void 0
+        });
+        _class_private_field_init(this, _slotToPid, {
+            writable: true,
+            value: void 0
+        });
+        _class_private_field_init(this, _size, {
+            writable: true,
+            value: 0
+        });
+        _define_property(this, "stride", void 0);
+        this.stride = Math.max(1, stride | 0);
+        var cap = Math.max(1, capacity | 0);
+        _class_private_field_set(this, _pidToSlot, new Int32Array(cap).fill(-1));
+        _class_private_field_set(this, _slotToPid, new Int32Array(cap).fill(-1));
+        _class_private_field_set(this, _vals, new Float64Array(cap * this.stride));
+    }
+    _create_class(M2RI, [
+        {
+            key: "size",
+            get: function get() {
+                return _class_private_field_get(this, _size);
+            }
+        },
+        {
+            key: "capacity",
+            get: function get() {
+                return _class_private_field_get(this, _pidToSlot).length;
+            }
+        },
+        {
+            key: "buffer",
+            get: function get() {
+                return _class_private_field_get(this, _vals);
+            }
+        },
+        {
+            key: "get",
+            value: function get(pid) {
+                var i = _class_private_field_get(this, _pidToSlot)[pid];
+                if (i < 0) return undefined;
+                var o = i * this.stride;
+                return _class_private_field_get(this, _vals).subarray(o, o + this.stride);
+            }
+        },
+        {
+            key: "has",
+            value: function has(pid) {
+                var i = _class_private_field_get(this, _pidToSlot)[pid];
+                return i !== undefined && i !== -1;
+            }
+        },
+        {
+            key: "set",
+            value: function set(pid, v) {
+                this.write(pid, v);
+                return this;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(pid) {
+                var i = _class_private_field_get(this, _pidToSlot)[pid];
+                if (i === undefined || i < 0) return false;
+                var st = this.stride;
+                var last = --_class_private_field_update(this, _size).value;
+                var lastPid = _class_private_field_get(this, _slotToPid)[last];
+                if (i !== last) {
+                    _class_private_field_get(this, _vals).copyWithin(i * st, last * st, last * st + st);
+                    _class_private_field_get(this, _slotToPid)[i] = lastPid;
+                    _class_private_field_get(this, _pidToSlot)[lastPid] = i;
+                }
+                _class_private_field_get(this, _pidToSlot)[pid] = -1;
+                _class_private_field_get(this, _slotToPid)[last] = -1;
+                return true;
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                _class_private_field_get(this, _pidToSlot).fill(-1);
+                _class_private_field_get(this, _slotToPid).fill(-1);
+                _class_private_field_set(this, _size, 0);
+            }
+        },
+        {
+            /** copy a row in, no validation per component */ key: "write",
+            value: function write(pid, v) {
+                var o = _class_private_method_get(this, _open, map_rows_open).call(this, pid) * this.stride;
+                _class_private_field_get(this, _vals).set(v, o);
+            }
+        },
+        {
+            /** single component: row[c] = v */ key: "put",
+            value: function put(pid, c, v) {
+                _class_private_field_get(this, _vals)[_class_private_method_get(this, _open, map_rows_open).call(this, pid) * this.stride + c] = v;
+            }
+        },
+        {
+            /** single component: row[c] */ key: "at",
+            value: function at(pid, c) {
+                return _class_private_field_get(this, _vals)[_class_private_field_get(this, _pidToSlot)[pid] * this.stride + c];
+            }
+        },
+        {
+            /** pid -> slot, or -1 */ key: "slotOf",
+            value: function slotOf(pid) {
+                var i = _class_private_field_get(this, _pidToSlot)[pid];
+                return i === undefined ? -1 : i;
+            }
+        },
+        {
+            /** zero-copy row view you can write through */ key: "row",
+            value: function row(pid) {
+                return this.get(pid);
+            }
+        },
+        {
+            /** view over the live prefix of the whole table — feed straight to a shader/worker */ key: "live",
+            value: function live() {
+                return _class_private_field_get(this, _vals).subarray(0, _class_private_field_get(this, _size) * this.stride);
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                var i;
+                return _ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < _class_private_field_get(this, _size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                _class_private_field_get(this, _slotToPid)[i]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                var st, i;
+                return _ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            st = this.stride;
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < _class_private_field_get(this, _size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                _class_private_field_get(this, _vals).subarray(i * st, i * st + st)
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var st, i;
+                return _ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            st = this.stride;
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < _class_private_field_get(this, _size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                [
+                                    _class_private_field_get(this, _slotToPid)[i],
+                                    _class_private_field_get(this, _vals).subarray(i * st, i * st + st)
+                                ]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                return this.entries();
+            }
+        },
+        {
+            key: "forEach",
+            value: function forEach(fn, thisArg) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = _sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        fn.call(thisArg, v, k, this);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "forEachRaw",
+            value: function forEachRaw(fn) {
+                for(var i = 0; i < _class_private_field_get(this, _size); i++)fn(_class_private_field_get(this, _slotToPid)[i], i);
+            }
+        }
+    ]);
+    return M2RI;
+}();
+function map_rows_open(pid) {
+    var p = _class_private_field_get(this, _pidToSlot);
+    if (pid >= p.length) {
+        _class_private_method_get(this, _grow, grow).call(this, pid);
+        p = _class_private_field_get(this, _pidToSlot);
+    }
+    var i = p[pid];
+    if (i < 0) {
+        if (_class_private_field_get(this, _size) === p.length) {
+            _class_private_method_get(this, _grow, grow).call(this, _class_private_field_get(this, _size));
+            p = _class_private_field_get(this, _pidToSlot);
+        }
+        i = _class_private_field_update(this, _size).value++;
+        p[pid] = i;
+        _class_private_field_get(this, _slotToPid)[i] = pid;
+    }
+    return i;
+}
+function grow(need) {
+    var cap = _class_private_field_get(this, _pidToSlot).length;
+    while(cap <= need)cap *= 2;
+    var p2s = new Int32Array(cap).fill(-1);
+    p2s.set(_class_private_field_get(this, _pidToSlot));
+    _class_private_field_set(this, _pidToSlot, p2s);
+    var s2p = new Int32Array(cap).fill(-1);
+    s2p.set(_class_private_field_get(this, _slotToPid));
+    _class_private_field_set(this, _slotToPid, s2p);
+    var v = new Float64Array(cap * this.stride);
+    v.set(_class_private_field_get(this, _vals));
+    _class_private_field_set(this, _vals, v);
+}
+Object.setPrototypeOf(map_rows_M2RI.prototype, Map.prototype);
+globalThis.M2R = map_rows_M2RI;
+
+function map_dense_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_dense_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _array_without_holes(arr) {
+    if (Array.isArray(arr)) return map_dense_array_like_to_array(arr);
+}
+function map_dense_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function map_dense_class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
+}
+function map_dense_class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function map_dense_class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
+}
+function map_dense_class_call_check(instance, Constructor) {
+    if (!map_dense_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_dense_class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function map_dense_class_private_field_get(receiver, privateMap) {
+    var descriptor = map_dense_class_extract_field_descriptor(receiver, privateMap, "get");
+    return map_dense_class_apply_descriptor_get(receiver, descriptor);
+}
+function map_dense_class_private_field_init(obj, privateMap, value) {
+    map_dense_check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function map_dense_class_private_field_set(receiver, privateMap, value) {
+    var descriptor = map_dense_class_extract_field_descriptor(receiver, privateMap, "set");
+    map_dense_class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function map_dense_class_private_field_update(receiver, privateMap) {
+    var descriptor = map_dense_class_extract_field_descriptor(receiver, privateMap, "update");
+    return map_dense_class_apply_descriptor_update(receiver, descriptor);
+}
+function map_dense_class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function map_dense_class_private_method_init(obj, privateSet) {
+    map_dense_check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
+}
+function map_dense_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_dense_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_dense_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_dense_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function _iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function _non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _to_consumable_array(arr) {
+    return _array_without_holes(arr) || _iterable_to_array(arr) || map_dense_unsupported_iterable_to_array(arr) || _non_iterable_spread();
+}
+function map_dense_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function _ts_values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) {
+        return m.call(o);
+    }
+    if (o && typeof o.length === "number") {
+        return {
+            next: function next() {
+                if (o && i >= o.length) {
+                    o = void 0;
+                }
+                return {
+                    value: o && o[i++],
+                    done: !o
+                };
+            }
+        };
+    }
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+function map_dense_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return map_dense_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_dense_array_like_to_array(o, minLen);
+}
+var map_dense_vals = /*#__PURE__*/ new WeakMap(), _live = /*#__PURE__*/ new WeakMap(), map_dense_size = /*#__PURE__*/ new WeakMap(), _odd = /*#__PURE__*/ new WeakMap(), map_dense_grow = /*#__PURE__*/ new WeakSet();
+var map_dense_M2DI = /*#__PURE__*/ function() {
+    "use strict";
+    function M2DI() {
+        var capacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 1024;
+        map_dense_class_call_check(this, M2DI);
+        map_dense_class_private_method_init(this, map_dense_grow);
+        map_dense_class_private_field_init(this, map_dense_vals, {
+            writable: true,
+            value: void 0
+        });
+        map_dense_class_private_field_init(this, _live, {
+            writable: true,
+            value: void 0
+        });
+        map_dense_class_private_field_init(this, map_dense_size, {
+            writable: true,
+            value: 0
+        });
+        map_dense_class_private_field_init(this, _odd, {
+            writable: true,
+            value: null
+        });
+        var cap = Math.max(1, capacity | 0);
+        map_dense_class_private_field_set(this, map_dense_vals, new F64(cap));
+        map_dense_class_private_field_set(this, _live, new U8(cap));
+    }
+    map_dense_create_class(M2DI, [
+        {
+            key: "size",
+            get: function get() {
+                return map_dense_class_private_field_get(this, map_dense_size) + (map_dense_class_private_field_get(this, _odd) === null ? 0 : map_dense_class_private_field_get(this, _odd).size);
+            }
+        },
+        {
+            key: "capacity",
+            get: function get() {
+                return map_dense_class_private_field_get(this, map_dense_vals).length;
+            }
+        },
+        {
+            key: "buffer",
+            get: /** live backing buffer: value of pid p is buffer[p], valid where live[p] === 1 */ function get() {
+                return map_dense_class_private_field_get(this, map_dense_vals);
+            }
+        },
+        {
+            key: "live",
+            get: function get() {
+                return map_dense_class_private_field_get(this, _live);
+            }
+        },
+        {
+            // ---- Map API ----------------------------------------------------------
+            key: "get",
+            value: function get(k) {
+                var l = map_dense_class_private_field_get(this, _live);
+                if (typeof k === "number" && k >= 0 && k < l.length && l[k] === 1) return map_dense_class_private_field_get(this, map_dense_vals)[k];
+                if (typeof k !== "number" || k < 0) return map_dense_class_private_field_get(this, _odd) === null ? undefined : map_dense_class_private_field_get(this, _odd).get(k);
+                return undefined;
+            }
+        },
+        {
+            key: "has",
+            value: function has(k) {
+                var l = map_dense_class_private_field_get(this, _live);
+                if (typeof k === "number" && k >= 0 && k < l.length) return l[k] === 1;
+                return map_dense_class_private_field_get(this, _odd) !== null && map_dense_class_private_field_get(this, _odd).has(k);
+            }
+        },
+        {
+            key: "set",
+            value: function set(k, v) {
+                var _$_class_private_field_get;
+                if (typeof v === "number" && typeof k === "number" && k >= 0) {
+                    if (k >= map_dense_class_private_field_get(this, _live).length) map_dense_class_private_method_get(this, map_dense_grow, src_map_dense_grow).call(this, k);
+                    if (map_dense_class_private_field_get(this, _live)[k] === 0) {
+                        map_dense_class_private_field_get(this, _live)[k] = 1;
+                        map_dense_class_private_field_update(this, map_dense_size).value++;
+                    }
+                    map_dense_class_private_field_get(this, map_dense_vals)[k] = v;
+                    return this;
+                }
+                map_dense_class_private_field_set(this, _odd, (_$_class_private_field_get = map_dense_class_private_field_get(this, _odd)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2()).set(k, v);
+                return this;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(k) {
+                var l = map_dense_class_private_field_get(this, _live);
+                if (typeof k === "number" && k >= 0) {
+                    if (k >= l.length || l[k] === 0) return false;
+                    l[k] = 0;
+                    map_dense_class_private_field_update(this, map_dense_size).value--;
+                    return true;
+                }
+                return map_dense_class_private_field_get(this, _odd) !== null && map_dense_class_private_field_get(this, _odd).delete(k);
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                var _$_class_private_field_get;
+                map_dense_class_private_field_get(this, _live).fill(0);
+                map_dense_class_private_field_set(this, map_dense_size, 0);
+                (_$_class_private_field_get = map_dense_class_private_field_get(this, _odd)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.clear();
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                var l, n, k;
+                return map_dense_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            l = map_dense_class_private_field_get(this, _live), n = l.length;
+                            k = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(k < n)) return [
+                                3,
+                                4
+                            ];
+                            if (!(l[k] === 1)) return [
+                                3,
+                                3
+                            ];
+                            return [
+                                4,
+                                k
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            k++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            if (!(map_dense_class_private_field_get(this, _odd) !== null)) return [
+                                3,
+                                6
+                            ];
+                            return [
+                                5,
+                                _ts_values(map_dense_class_private_field_get(this, _odd).keys())
+                            ];
+                        case 5:
+                            _state.sent();
+                            _state.label = 6;
+                        case 6:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                var _$_class_private_field_get, l, n, odd, seen, k, seen1, k1;
+                return map_dense_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            l = map_dense_class_private_field_get(this, _live), n = map_dense_class_private_field_get(this, map_dense_size);
+                            if (!((_$_class_private_field_get = map_dense_class_private_field_get(this, _odd)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.size)) return [
+                                3,
+                                6
+                            ];
+                            odd = _to_consumable_array(map_dense_class_private_field_get(this, _odd).values());
+                            seen = 0;
+                            k = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(k < l.length && seen < n)) return [
+                                3,
+                                4
+                            ];
+                            if (!(l[k] === 1)) return [
+                                3,
+                                3
+                            ];
+                            seen++;
+                            return [
+                                4,
+                                map_dense_class_private_field_get(this, map_dense_vals)[k]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            k++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                5,
+                                _ts_values(odd)
+                            ];
+                        case 5:
+                            _state.sent();
+                            return [
+                                2
+                            ];
+                        case 6:
+                            seen1 = 0;
+                            k1 = 0;
+                            _state.label = 7;
+                        case 7:
+                            if (!(k1 < l.length && seen1 < n)) return [
+                                3,
+                                10
+                            ];
+                            if (!(l[k1] === 1)) return [
+                                3,
+                                9
+                            ];
+                            seen1++;
+                            return [
+                                4,
+                                map_dense_class_private_field_get(this, map_dense_vals)[k1]
+                            ];
+                        case 8:
+                            _state.sent();
+                            _state.label = 9;
+                        case 9:
+                            k1++;
+                            return [
+                                3,
+                                7
+                            ];
+                        case 10:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var l, k;
+                return map_dense_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            l = map_dense_class_private_field_get(this, _live);
+                            k = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(k < l.length)) return [
+                                3,
+                                4
+                            ];
+                            if (!(l[k] === 1)) return [
+                                3,
+                                3
+                            ];
+                            return [
+                                4,
+                                [
+                                    k,
+                                    map_dense_class_private_field_get(this, map_dense_vals)[k]
+                                ]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            k++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            if (!(map_dense_class_private_field_get(this, _odd) !== null)) return [
+                                3,
+                                6
+                            ];
+                            return [
+                                5,
+                                _ts_values(map_dense_class_private_field_get(this, _odd).entries())
+                            ];
+                        case 5:
+                            _state.sent();
+                            _state.label = 6;
+                        case 6:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                return this.entries();
+            }
+        },
+        {
+            key: "forEach",
+            value: function forEach(fn, thisArg) {
+                var _this = this;
+                var _$_class_private_field_get;
+                var l = map_dense_class_private_field_get(this, _live);
+                for(var k = 0; k < l.length; k++)if (l[k] === 1) fn.call(thisArg, map_dense_class_private_field_get(this, map_dense_vals)[k], k, this);
+                (_$_class_private_field_get = map_dense_class_private_field_get(this, _odd)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(v, k) {
+                    return fn.call(thisArg, v, k, _this);
+                });
+            }
+        },
+        {
+            // ---- binary lane -------------------------------------------------------
+            /** read by pid — no typeof guard: pids are numbers */ key: "g",
+            value: function g(pid) {
+                return map_dense_class_private_field_get(this, _live)[pid] === 1 ? map_dense_class_private_field_get(this, map_dense_vals)[pid] : undefined;
+            }
+        },
+        {
+            /** write by pid */ key: "s",
+            value: function s(v, pid) {
+                if (pid >= map_dense_class_private_field_get(this, _live).length) map_dense_class_private_method_get(this, map_dense_grow, src_map_dense_grow).call(this, pid);
+                if (map_dense_class_private_field_get(this, _live)[pid] === 0) {
+                    map_dense_class_private_field_get(this, _live)[pid] = 1;
+                    map_dense_class_private_field_update(this, map_dense_size).value++;
+                }
+                map_dense_class_private_field_get(this, map_dense_vals)[pid] = v;
+                return this;
+            }
+        },
+        {
+            key: "getOr",
+            value: function getOr(pid) {
+                var dflt = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
+                return map_dense_class_private_field_get(this, _live)[pid] === 1 ? map_dense_class_private_field_get(this, map_dense_vals)[pid] : dflt;
+            }
+        },
+        {
+            /** pid += delta, returns the new value */ key: "add",
+            value: function add(pid, delta) {
+                if (pid >= map_dense_class_private_field_get(this, _live).length) map_dense_class_private_method_get(this, map_dense_grow, src_map_dense_grow).call(this, pid);
+                if (map_dense_class_private_field_get(this, _live)[pid] === 0) {
+                    map_dense_class_private_field_get(this, _live)[pid] = 1;
+                    map_dense_class_private_field_update(this, map_dense_size).value++;
+                }
+                return map_dense_class_private_field_get(this, map_dense_vals)[pid] += delta;
+            }
+        },
+        {
+            key: "in",
+            value: function _in(pid) {
+                return map_dense_class_private_field_get(this, _live)[pid] === 1;
+            }
+        },
+        {
+            /** walk live pids without allocating an iterator */ key: "forEachRaw",
+            value: function forEachRaw(fn) {
+                var l = map_dense_class_private_field_get(this, _live);
+                for(var k = 0; k < l.length; k++)if (l[k] === 1) fn(k, map_dense_class_private_field_get(this, map_dense_vals)[k]);
+            }
+        },
+        {
+            /** values for a list of pids, NaN where absent */ key: "gather",
+            value: function gather(pids) {
+                var out = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : new Float64Array(pids.length);
+                for(var i = 0; i < pids.length; i++){
+                    var p = pids[i];
+                    out[i] = map_dense_class_private_field_get(this, _live)[p] === 1 ? map_dense_class_private_field_get(this, map_dense_vals)[p] : NaN;
+                }
+                return out;
+            }
+        }
+    ]);
+    return M2DI;
+}();
+function src_map_dense_grow(need) {
+    var cap = map_dense_class_private_field_get(this, _live).length;
+    while(cap <= need)cap *= 2;
+    var v = new Float64Array(cap);
+    v.set(map_dense_class_private_field_get(this, map_dense_vals));
+    map_dense_class_private_field_set(this, map_dense_vals, v);
+    var l = new Uint8Array(cap);
+    l.set(map_dense_class_private_field_get(this, _live));
+    map_dense_class_private_field_set(this, _live, l);
+}
+globalThis.M2D = map_dense_M2DI;
+
+function map_bin_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_bin_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function map_bin_class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
+}
+function map_bin_class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function map_bin_class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
+}
+function map_bin_class_call_check(instance, Constructor) {
+    if (!map_bin_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_bin_class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function map_bin_class_private_field_get(receiver, privateMap) {
+    var descriptor = map_bin_class_extract_field_descriptor(receiver, privateMap, "get");
+    return map_bin_class_apply_descriptor_get(receiver, descriptor);
+}
+function map_bin_class_private_field_init(obj, privateMap, value) {
+    map_bin_check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function map_bin_class_private_field_set(receiver, privateMap, value) {
+    var descriptor = map_bin_class_extract_field_descriptor(receiver, privateMap, "set");
+    map_bin_class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function map_bin_class_private_field_update(receiver, privateMap) {
+    var descriptor = map_bin_class_extract_field_descriptor(receiver, privateMap, "update");
+    return map_bin_class_apply_descriptor_update(receiver, descriptor);
+}
+function map_bin_class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function map_bin_class_private_method_init(obj, privateSet) {
+    map_bin_check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
+}
+function map_bin_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_bin_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_bin_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_bin_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function map_bin_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function map_bin_ts_values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) {
+        return m.call(o);
+    }
+    if (o && typeof o.length === "number") {
+        return {
+            next: function next() {
+                if (o && i >= o.length) {
+                    o = void 0;
+                }
+                return {
+                    value: o && o[i++],
+                    done: !o
+                };
+            }
+        };
+    }
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+var map_bin_vals = /*#__PURE__*/ new WeakMap(), map_bin_pidToSlot = /*#__PURE__*/ new WeakMap(), map_bin_slotToPid = /*#__PURE__*/ new WeakMap(), map_bin_size = /*#__PURE__*/ new WeakMap(), map_bin_odd = /*#__PURE__*/ new WeakMap(), map_bin_open = /*#__PURE__*/ new WeakSet(), map_bin_grow = /*#__PURE__*/ new WeakSet();
+var map_bin_M2BINI = /*#__PURE__*/ function() {
+    "use strict";
+    function M2BINI() {
+        var capacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 1024;
+        map_bin_class_call_check(this, M2BINI);
+        map_bin_class_private_method_init(this, map_bin_open);
+        map_bin_class_private_method_init(this, map_bin_grow);
+        map_bin_class_private_field_init(this, map_bin_vals, {
+            writable: true,
+            value: void 0
+        });
+        map_bin_class_private_field_init(this, map_bin_pidToSlot, {
+            writable: true,
+            value: void 0
+        });
+        map_bin_class_private_field_init(this, map_bin_slotToPid, {
+            writable: true,
+            value: void 0
+        });
+        map_bin_class_private_field_init(this, map_bin_size, {
+            writable: true,
+            value: 0
+        });
+        map_bin_class_private_field_init(this, map_bin_odd, {
+            writable: true,
+            value: null
+        });
+        var cap = Math.max(1, capacity | 0);
+        map_bin_class_private_field_set(this, map_bin_pidToSlot, new Int32Array(cap).fill(-1));
+        map_bin_class_private_field_set(this, map_bin_slotToPid, new Int32Array(cap).fill(-1));
+        map_bin_class_private_field_set(this, map_bin_vals, new Float64Array(cap));
+    }
+    map_bin_create_class(M2BINI, [
+        {
+            key: "size",
+            get: function get() {
+                return map_bin_class_private_field_get(this, map_bin_size) + (map_bin_class_private_field_get(this, map_bin_odd) === null ? 0 : map_bin_class_private_field_get(this, map_bin_odd).size);
+            }
+        },
+        {
+            key: "capacity",
+            get: function get() {
+                return map_bin_class_private_field_get(this, map_bin_vals).length;
+            }
+        },
+        {
+            key: "buffer",
+            get: /** live backing buffer: floating-point value of slot i is buffer[i] */ function get() {
+                return map_bin_class_private_field_get(this, map_bin_vals);
+            }
+        },
+        {
+            // ---- Map API ----------------------------------------------------------
+            key: "get",
+            value: function get(k) {
+                var p = map_bin_class_private_field_get(this, map_bin_pidToSlot);
+                if (typeof k === "number" && k >= 0 && k < p.length) {
+                    var i = p[k];
+                    return i < 0 ? undefined : map_bin_class_private_field_get(this, map_bin_vals)[i];
+                }
+                return map_bin_class_private_field_get(this, map_bin_odd) === null ? undefined : map_bin_class_private_field_get(this, map_bin_odd).get(k);
+            }
+        },
+        {
+            key: "has",
+            value: function has(k) {
+                if (typeof k === "number" && k >= 0) return k < map_bin_class_private_field_get(this, map_bin_pidToSlot).length && map_bin_class_private_field_get(this, map_bin_pidToSlot)[k] !== -1;
+                return map_bin_class_private_field_get(this, map_bin_odd) !== null && map_bin_class_private_field_get(this, map_bin_odd).has(k);
+            }
+        },
+        {
+            key: "set",
+            value: function set(k, v) {
+                var _$_class_private_field_get;
+                if (typeof v === "number" && typeof k === "number" && k >= 0) {
+                    map_bin_class_private_field_get(this, map_bin_vals)[map_bin_class_private_method_get(this, map_bin_open, src_map_bin_open).call(this, k)] = v;
+                    return this;
+                }
+                map_bin_class_private_field_set(this, map_bin_odd, (_$_class_private_field_get = map_bin_class_private_field_get(this, map_bin_odd)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Map()).set(k, v);
+                return this;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(k) {
+                if (typeof k === "number" && k >= 0) {
+                    if (k >= map_bin_class_private_field_get(this, map_bin_pidToSlot).length) return false;
+                    var i = map_bin_class_private_field_get(this, map_bin_pidToSlot)[k];
+                    if (i < 0) return false;
+                    var last = --map_bin_class_private_field_update(this, map_bin_size).value;
+                    var lastPid = map_bin_class_private_field_get(this, map_bin_slotToPid)[last];
+                    if (i !== last) {
+                        map_bin_class_private_field_get(this, map_bin_vals)[i] = map_bin_class_private_field_get(this, map_bin_vals)[last];
+                        map_bin_class_private_field_get(this, map_bin_slotToPid)[i] = lastPid;
+                        map_bin_class_private_field_get(this, map_bin_pidToSlot)[lastPid] = i;
+                    }
+                    map_bin_class_private_field_get(this, map_bin_pidToSlot)[k] = -1;
+                    map_bin_class_private_field_get(this, map_bin_slotToPid)[last] = -1;
+                    return true;
+                }
+                return map_bin_class_private_field_get(this, map_bin_odd) !== null && map_bin_class_private_field_get(this, map_bin_odd).delete(k);
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                var _$_class_private_field_get;
+                map_bin_class_private_field_get(this, map_bin_pidToSlot).fill(-1);
+                map_bin_class_private_field_get(this, map_bin_slotToPid).fill(-1);
+                map_bin_class_private_field_set(this, map_bin_size, 0);
+                (_$_class_private_field_get = map_bin_class_private_field_get(this, map_bin_odd)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.clear();
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                var i;
+                return map_bin_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < map_bin_class_private_field_get(this, map_bin_size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                map_bin_class_private_field_get(this, map_bin_slotToPid)[i]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            if (!(map_bin_class_private_field_get(this, map_bin_odd) !== null)) return [
+                                3,
+                                6
+                            ];
+                            return [
+                                5,
+                                map_bin_ts_values(map_bin_class_private_field_get(this, map_bin_odd).keys())
+                            ];
+                        case 5:
+                            _state.sent();
+                            _state.label = 6;
+                        case 6:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                var i;
+                return map_bin_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < map_bin_class_private_field_get(this, map_bin_size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                map_bin_class_private_field_get(this, map_bin_vals)[i]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            if (!(map_bin_class_private_field_get(this, map_bin_odd) !== null)) return [
+                                3,
+                                6
+                            ];
+                            return [
+                                5,
+                                map_bin_ts_values(map_bin_class_private_field_get(this, map_bin_odd).values())
+                            ];
+                        case 5:
+                            _state.sent();
+                            _state.label = 6;
+                        case 6:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var i;
+                return map_bin_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < map_bin_class_private_field_get(this, map_bin_size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                [
+                                    map_bin_class_private_field_get(this, map_bin_slotToPid)[i],
+                                    map_bin_class_private_field_get(this, map_bin_vals)[i]
+                                ]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            if (!(map_bin_class_private_field_get(this, map_bin_odd) !== null)) return [
+                                3,
+                                6
+                            ];
+                            return [
+                                5,
+                                map_bin_ts_values(map_bin_class_private_field_get(this, map_bin_odd).entries())
+                            ];
+                        case 5:
+                            _state.sent();
+                            _state.label = 6;
+                        case 6:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                return this.entries();
+            }
+        },
+        {
+            key: "forEach",
+            value: function forEach(fn, thisArg) {
+                var _this = this;
+                var _$_class_private_field_get;
+                for(var i = 0; i < map_bin_class_private_field_get(this, map_bin_size); i++)fn.call(thisArg, map_bin_class_private_field_get(this, map_bin_vals)[i], map_bin_class_private_field_get(this, map_bin_slotToPid)[i], this);
+                (_$_class_private_field_get = map_bin_class_private_field_get(this, map_bin_odd)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(v, k) {
+                    return fn.call(thisArg, v, k, _this);
+                });
+            }
+        },
+        {
+            // ---- binary lane: no Map ceremony, no boxing ---------------------------
+            /** read by pid */ key: "g",
+            value: function g(pid) {
+                var i = map_bin_class_private_field_get(this, map_bin_pidToSlot)[pid];
+                return i < 0 ? undefined : map_bin_class_private_field_get(this, map_bin_vals)[i];
+            }
+        },
+        {
+            /** write by pid */ key: "s",
+            value: function s(v, pid) {
+                map_bin_class_private_field_get(this, map_bin_vals)[map_bin_class_private_method_get(this, map_bin_open, src_map_bin_open).call(this, pid)] = v;
+                return this;
+            }
+        },
+        {
+            /** read with fallback — the accumulator primitive */ key: "getOr",
+            value: function getOr(pid) {
+                var dflt = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
+                var i = map_bin_class_private_field_get(this, map_bin_pidToSlot)[pid];
+                return i < 0 ? dflt : map_bin_class_private_field_get(this, map_bin_vals)[i];
+            }
+        },
+        {
+            /** pid += delta, returns the new value */ key: "add",
+            value: function add(pid, delta) {
+                var i = map_bin_class_private_method_get(this, map_bin_open, src_map_bin_open).call(this, pid);
+                return map_bin_class_private_field_get(this, map_bin_vals)[i] += delta;
+            }
+        },
+        {
+            key: "in",
+            value: function _in(pid) {
+                return map_bin_class_private_field_get(this, map_bin_pidToSlot)[pid] !== -1;
+            }
+        },
+        {
+            key: "d",
+            value: function d(pid) {
+                return this.delete(pid);
+            }
+        },
+        {
+            /** walk (pid, slot) without allocating an iterator */ key: "forEachRaw",
+            value: function forEachRaw(fn) {
+                for(var i = 0; i < map_bin_class_private_field_get(this, map_bin_size); i++)fn(map_bin_class_private_field_get(this, map_bin_slotToPid)[i], i);
+            }
+        },
+        {
+            /** values for a list of pids, NaN where absent */ key: "gather",
+            value: function gather(pids) {
+                var out = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : new Float64Array(pids.length);
+                for(var i = 0; i < pids.length; i++){
+                    var s = map_bin_class_private_field_get(this, map_bin_pidToSlot)[pids[i]];
+                    out[i] = s < 0 ? NaN : map_bin_class_private_field_get(this, map_bin_vals)[s];
+                }
+                return out;
+            }
+        }
+    ]);
+    return M2BINI;
+}();
+function src_map_bin_open(pid) {
+    var p = map_bin_class_private_field_get(this, map_bin_pidToSlot);
+    if (pid >= p.length) {
+        map_bin_class_private_method_get(this, map_bin_grow, src_map_bin_grow).call(this, pid);
+        p = map_bin_class_private_field_get(this, map_bin_pidToSlot);
+    }
+    var i = p[pid];
+    if (i < 0) {
+        if (map_bin_class_private_field_get(this, map_bin_size) === p.length) {
+            map_bin_class_private_method_get(this, map_bin_grow, src_map_bin_grow).call(this, map_bin_class_private_field_get(this, map_bin_size));
+            p = map_bin_class_private_field_get(this, map_bin_pidToSlot);
+        }
+        i = map_bin_class_private_field_update(this, map_bin_size).value++;
+        p[pid] = i;
+        map_bin_class_private_field_get(this, map_bin_slotToPid)[i] = pid;
+    }
+    return i;
+}
+function src_map_bin_grow(need) {
+    var cap = map_bin_class_private_field_get(this, map_bin_pidToSlot).length;
+    while(cap <= need)cap *= 2;
+    var p2s = new Int32Array(cap).fill(-1);
+    p2s.set(map_bin_class_private_field_get(this, map_bin_pidToSlot));
+    map_bin_class_private_field_set(this, map_bin_pidToSlot, p2s);
+    var s2p = new Int32Array(cap).fill(-1);
+    s2p.set(map_bin_class_private_field_get(this, map_bin_slotToPid));
+    map_bin_class_private_field_set(this, map_bin_slotToPid, s2p);
+    var v = new Float64Array(cap);
+    v.set(map_bin_class_private_field_get(this, map_bin_vals));
+    map_bin_class_private_field_set(this, map_bin_vals, v);
+}
+Object.setPrototypeOf(map_bin_M2BINI.prototype, Map.prototype);
+globalThis.M2BIN = map_bin_M2BINI;
+
+function boolean_byte_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function boolean_byte_class_call_check(instance, Constructor) {
+    if (!boolean_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function boolean_byte_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function boolean_byte_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) boolean_byte_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) boolean_byte_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function boolean_byte_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+/*  ==========================================================================================================================
+    SITH - PURE BINARY BYTE_BOOL
+    Replaces boolean properties and boolean maps with a zero-allocation, PID-indexed Uint8Array lane.
+    ================================================================================================================    ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [BYTE_BOOL] */ var boolean_byte_B2BI = /*#__PURE__*/ function() {
+    "use strict";
+    function B2BI() {
+        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192;
+        boolean_byte_class_call_check(this, B2BI);
+        boolean_byte_define_property(this, "flags", void 0);
+        this.flags = new Uint8Array(maxParticles);
+    }
+    boolean_byte_create_class(B2BI, [
+        {
+            key: "set",
+            value: function set(pid, value) {
+                this.flags[pid] = value ? 1 : 0;
+            }
+        },
+        {
+            key: "true",
+            value: function _true(pid, value) {
+                this.flags[pid] = 1;
+            }
+        },
+        {
+            key: "false",
+            value: function _false(pid, value) {
+                this.flags[pid] = 0;
+            }
+        },
+        {
+            key: "get",
+            value: /** Get the boolean state for a PID. O(1) time complexity. */ function get(pid) {
+                return this.flags[pid] === 1;
+            }
+        },
+        {
+            key: "toggle",
+            value: /** Toggle the boolean state for a PID. O(1) time complexity. */ function toggle(pid) {
+                this.flags[pid] = this.flags[pid] === 1 ? 0 : 1;
+                return this.flags[pid] === 1;
+            } /** Clear all flags instantly without reallocating memory. */ 
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                this.flags.fill(0);
+            }
+        }
+    ]);
+    return B2BI;
+}();
+globalThis.B2B = boolean_byte_B2BI;
+
+function map_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function map_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function map_array_without_holes(arr) {
+    if (Array.isArray(arr)) return map_array_like_to_array(arr);
+}
+function _assert_this_initialized(self) {
+    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return self;
+}
+function _call_super(_this, derived, args) {
+    derived = _get_prototype_of(derived);
+    return _possible_constructor_return(_this, map_is_native_reflect_construct() ? Reflect.construct(derived, args || [], _get_prototype_of(_this).constructor) : derived.apply(_this, args));
+}
+function map_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function map_class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
+}
+function map_class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function map_class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
+}
+function map_class_call_check(instance, Constructor) {
+    if (!map_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function map_class_private_field_get(receiver, privateMap) {
+    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "get");
+    return map_class_apply_descriptor_get(receiver, descriptor);
+}
+function map_class_private_field_init(obj, privateMap, value) {
+    map_check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function map_class_private_field_set(receiver, privateMap, value) {
+    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "set");
+    map_class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function map_class_private_field_update(receiver, privateMap) {
+    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "update");
+    return map_class_apply_descriptor_update(receiver, descriptor);
+}
+function map_class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function map_class_private_method_init(obj, privateSet) {
+    map_check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
+}
+function _construct(Parent, args, Class) {
+    if (map_is_native_reflect_construct()) _construct = Reflect.construct;
+    else {
+        _construct = function construct(Parent, args, Class) {
+            var a = [
+                null
+            ];
+            a.push.apply(a, args);
+            var Constructor = Function.bind.apply(Parent, a);
+            var instance = new Constructor();
+            if (Class) _set_prototype_of(instance, Class.prototype);
+            return instance;
+        };
+    }
+    return _construct.apply(null, arguments);
+}
+function map_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function map_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) _get = Reflect.get;
+    else {
+        _get = function get(target, property, receiver) {
+            var base = _super_prop_base(target, property);
+            if (!base) return;
+            var desc = Object.getOwnPropertyDescriptor(base, property);
+            if (desc.get) return desc.get.call(receiver || target);
+            return desc.value;
+        };
+    }
+    return _get(target, property, receiver || target);
 }
 function _get_prototype_of(o) {
     _get_prototype_of = Object.setPrototypeOf ? Object.getPrototypeOf : function getPrototypeOf(o) {
@@ -86,20 +2046,20 @@ function _instanceof1(left, right) {
 function _is_native_function(fn) {
     return Function.toString.call(fn).indexOf("[native code]") !== -1;
 }
-function array_is_native_reflect_construct() {
+function map_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (array_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (map_is_native_reflect_construct = function _is_native_reflect_construct() {
         return !!result;
     })();
 }
-function _iterable_to_array(iter) {
+function map_iterable_to_array(iter) {
     if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
         return Array.from(iter);
     }
 }
-function _iterable_to_array_limit(arr, i) {
+function map_iterable_to_array_limit(arr, i) {
     var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
     if (_i == null) return;
     var _arr = [];
@@ -123,11 +2083,49 @@ function _iterable_to_array_limit(arr, i) {
     }
     return _arr;
 }
-function _non_iterable_rest() {
+function map_non_iterable_rest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _non_iterable_spread() {
+function map_non_iterable_spread() {
     throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            map_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function map_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        map_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
 }
 function _possible_constructor_return(self, call) {
     if (call && (_type_of(call) === "object" || typeof call === "function")) return call;
@@ -140,27 +2138,133 @@ function _set_prototype_of(o, p) {
     };
     return _set_prototype_of(o, p);
 }
-function _sliced_to_array(arr, i) {
-    return _array_with_holes(arr) || _iterable_to_array_limit(arr, i) || _unsupported_iterable_to_array(arr, i) || _non_iterable_rest();
+function map_sliced_to_array(arr, i) {
+    return map_array_with_holes(arr) || map_iterable_to_array_limit(arr, i) || map_unsupported_iterable_to_array(arr, i) || map_non_iterable_rest();
 }
-function _to_consumable_array(arr) {
-    return _array_without_holes(arr) || _iterable_to_array(arr) || _unsupported_iterable_to_array(arr) || _non_iterable_spread();
+function _super_prop_base(object, property) {
+    while(!Object.prototype.hasOwnProperty.call(object, property)){
+        object = _get_prototype_of(object);
+        if (object === null) break;
+    }
+    return object;
+}
+function map_to_consumable_array(arr) {
+    return map_array_without_holes(arr) || map_iterable_to_array(arr) || map_unsupported_iterable_to_array(arr) || map_non_iterable_spread();
+}
+function map_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
 }
 function _type_of(obj) {
     "@swc/helpers - typeof";
     return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
 }
-function _unsupported_iterable_to_array(o, minLen) {
+function map_unsupported_iterable_to_array(o, minLen) {
     if (!o) return;
-    if (typeof o === "string") return _array_like_to_array(o, minLen);
+    if (typeof o === "string") return map_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
     if (n === "Map" || n === "Set") return Array.from(n);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _array_like_to_array(o, minLen);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_array_like_to_array(o, minLen);
 }
-function array_wrap_native_super(Class) {
+function map_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    array_wrap_native_super = function _wrap_native_super(Class) {
+    map_wrap_native_super = function _wrap_native_super(Class) {
         if (Class === null || !_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -180,22 +2284,3385 @@ function array_wrap_native_super(Class) {
         });
         return _set_prototype_of(Wrapper, Class);
     };
+    return map_wrap_native_super(Class);
+}
+var map_rv = function rv(v) {
+    return typeof v === "function" ? v() : v;
+};
+var map_sameValue = function sameValue(a, b) {
+    return Object.is(a, b) || _instanceof1(a, Date) && _instanceof1(b, Date) && +a === +b;
+};
+var _subs = /*#__PURE__*/ new WeakMap(), _hist = /*#__PURE__*/ new WeakMap(), _histLimit = /*#__PURE__*/ new WeakMap(), _strict = /*#__PURE__*/ new WeakMap(), _iterating = /*#__PURE__*/ new WeakMap(), _batching = /*#__PURE__*/ new WeakMap(), _pending = /*#__PURE__*/ new WeakMap(), _derived = /*#__PURE__*/ new WeakMap(), _dependents = /*#__PURE__*/ new WeakMap(), _emit = /*#__PURE__*/ new WeakSet(), _record = /*#__PURE__*/ new WeakSet(), _invalidate = /*#__PURE__*/ new WeakSet(), _computeDerived = /*#__PURE__*/ new WeakSet(), _assertNotIterating = /*#__PURE__*/ new WeakSet();
+var map_M2I = /*#__PURE__*/ function(Map1) {
+    "use strict";
+    _inherits(M2I, Map1);
+    function M2I() {
+        map_class_call_check(this, M2I);
+        var _this;
+        _this = _call_super(this, M2I, arguments), map_class_private_method_init(_this, _emit), map_class_private_method_init(_this, _record), map_class_private_method_init(_this, _invalidate), map_class_private_method_init(_this, _computeDerived), map_class_private_method_init(_this, _assertNotIterating), // public h = this.has;
+        // public d = this.delete;
+        // public c = this.clear
+        map_define_property(_this, "f", _this.forEach) //                                                     [FOR EACH]
+        , map_class_private_field_init(_this, _subs, {
+            writable: true,
+            value: void 0
+        }), map_class_private_field_init(_this, _hist, {
+            writable: true,
+            value: void 0
+        }), map_class_private_field_init(_this, _histLimit, {
+            writable: true,
+            value: 0
+        }), map_class_private_field_init(_this, _strict, {
+            writable: true,
+            value: false
+        }), map_class_private_field_init(_this, _iterating, {
+            writable: true,
+            value: 0
+        }), map_class_private_field_init(_this, _batching, {
+            writable: true,
+            value: 0
+        }), map_class_private_field_init(_this, _pending, {
+            writable: true,
+            value: void 0
+        }), map_class_private_field_init(_this, _derived, {
+            writable: true,
+            value: void 0
+        }), map_class_private_field_init(_this, _dependents, {
+            writable: true,
+            value: void 0
+        });
+        return _this;
+    }
+    map_create_class(M2I, [
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                return this.entries();
+            }
+        },
+        {
+            key: "on",
+            value: function on(fn) {
+                var _this = this;
+                var _$_class_private_field_get;
+                map_class_private_field_set(this, _subs, (_$_class_private_field_get = map_class_private_field_get(this, _subs)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Set()).add(fn);
+                return function() {
+                    return _this.off(fn);
+                };
+            }
+        },
+        {
+            key: "off",
+            value: function off(fn) {
+                var _$_class_private_field_get;
+                (_$_class_private_field_get = map_class_private_field_get(this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.delete(fn);
+            }
+        },
+        {
+            key: "batch",
+            value: function batch(fn) {
+                var _$_class_private_field_get;
+                map_class_private_field_update(this, _batching).value++;
+                map_class_private_field_set(this, _pending, (_$_class_private_field_get = map_class_private_field_get(this, _pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I());
+                try {
+                    fn();
+                } finally{
+                    map_class_private_field_update(this, _batching).value--;
+                    if (map_class_private_field_get(this, _batching) === 0) {
+                        var events = map_to_consumable_array(map_class_private_field_get(this, _pending).values());
+                        map_class_private_field_set(this, _pending, undefined);
+                        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                        try {
+                            var _this, _loop = function _loop() {
+                                var e = _step.value;
+                                var _$_class_private_field_get;
+                                map_class_private_method_get(_this, _record, record).call(_this, e);
+                                (_$_class_private_field_get = map_class_private_field_get(_this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
+                                    return sub(e);
+                                });
+                            };
+                            for(var _iterator = events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true)_this = this, _loop();
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally{
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                    _iterator.return();
+                                }
+                            } finally{
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "s",
+            value: function s(v, k) {
+                map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "s");
+                var next = map_rv(v);
+                var has = this.h(k);
+                var prev = has ? this.g(k) : undefined;
+                _get(_get_prototype_of(M2I.prototype), "set", this).call(this, k, next);
+                map_class_private_method_get(this, _invalidate, invalidate).call(this, k);
+                map_class_private_method_get(this, _emit, emit).call(this, {
+                    op: "set",
+                    k: k,
+                    v: next,
+                    prev: prev,
+                    has: has
+                });
+                return this;
+            }
+        },
+        {
+            key: "mutate",
+            value: function mutate(k, fn) {
+                map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "mutate");
+                if (!this.h(k)) return undefined;
+                var old = this.g(k);
+                var next = fn(old, true);
+                this.s(next, k);
+                return next;
+            }
+        },
+        {
+            key: "d",
+            value: function d(k) {
+                map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "delete");
+                if (!this.h(k)) return false;
+                var prev = this.g(k);
+                var out = _get(_get_prototype_of(M2I.prototype), "delete", this).call(this, k);
+                map_class_private_method_get(this, _invalidate, invalidate).call(this, k);
+                map_class_private_method_get(this, _emit, emit).call(this, {
+                    op: "del",
+                    k: k,
+                    prev: prev,
+                    has: false
+                });
+                return out;
+            }
+        },
+        {
+            key: "c",
+            value: function c() {
+                map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "clear");
+                var entries = map_to_consumable_array(this.entries());
+                _get(_get_prototype_of(M2I.prototype), "clear", this).call(this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], prev = _step_value[1];
+                        map_class_private_method_get(this, _invalidate, invalidate).call(this, k);
+                        map_class_private_method_get(this, _emit, emit).call(this, {
+                            op: "del",
+                            k: k,
+                            prev: prev,
+                            has: false
+                        });
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "dv",
+            value: function dv(k, deps, fn) {
+                var _$_class_private_field_get;
+                map_class_private_field_set(this, _derived, (_$_class_private_field_get = map_class_private_field_get(this, _derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I()).set(k, {
+                    deps: deps,
+                    fn: fn,
+                    dirty: true,
+                    has: false
+                });
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var dep = _step.value;
+                        var _$_class_private_field_get1;
+                        map_class_private_field_set(this, _dependents, (_$_class_private_field_get1 = map_class_private_field_get(this, _dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new M2I()).getOrM(function() {
+                            return new Set();
+                        }, dep).add(k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "dirty",
+            value: function dirty() {
+                for(var _len = arguments.length, keys = new Array(_len), _key = 0; _key < _len; _key++){
+                    keys[_key] = arguments[_key];
+                }
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var k = _step.value;
+                        var _$_class_private_field_get;
+                        var d = (_$_class_private_field_get = map_class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
+                        if (d && !d.dirty) {
+                            d.dirty = true;
+                            map_class_private_method_get(this, _emit, emit).call(this, {
+                                op: "dirty",
+                                k: k,
+                                has: d.has
+                            });
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "g",
+            value: function g(k) {
+                var _$_class_private_field_get;
+                var d = (_$_class_private_field_get = map_class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
+                if (d) {
+                    if (d.dirty || !d.has) return map_class_private_method_get(this, _computeDerived, computeDerived).call(this, k, d);
+                    return d.value;
+                }
+                return _get(_get_prototype_of(M2I.prototype), "get", this).call(this, k);
+            }
+        },
+        {
+            key: "h",
+            value: function h(k) {
+                var _$_class_private_field_get;
+                var d = (_$_class_private_field_get = map_class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
+                if (d) {
+                    if (d.dirty || !d.has) map_class_private_method_get(this, _computeDerived, computeDerived).call(this, k, d);
+                    return true;
+                }
+                return _get(_get_prototype_of(M2I.prototype), "has", this).call(this, k);
+            }
+        },
+        {
+            key: "$debug",
+            value: function $debug() {
+                var limit = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
+                var _$_class_private_field_get;
+                map_class_private_field_set(this, _hist, (_$_class_private_field_get = map_class_private_field_get(this, _hist)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : []);
+                map_class_private_field_set(this, _histLimit, limit);
+                return this;
+            }
+        },
+        {
+            key: "$strict",
+            value: function $strict() {
+                map_class_private_field_set(this, _strict, true);
+                return this;
+            }
+        },
+        {
+            key: "$history",
+            value: function $history() {
+                return map_class_private_field_get(this, _hist) ? map_to_consumable_array(map_class_private_field_get(this, _hist)) : [];
+            }
+        },
+        {
+            key: "$why",
+            value: function $why(k) {
+                if (!map_class_private_field_get(this, _hist)) return undefined;
+                for(var i = map_class_private_field_get(this, _hist).length - 1; i >= 0; i--){
+                    if (Object.is(map_class_private_field_get(this, _hist)[i].k, k)) return map_class_private_field_get(this, _hist)[i];
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "$diff",
+            value: function $diff(other) {
+                var add = [];
+                var del = [];
+                var chg = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (!other.has(k)) {
+                            add.push([
+                                k,
+                                v
+                            ]);
+                        } else if (!Object.is(other.get(k), v)) {
+                            chg.push([
+                                k,
+                                v,
+                                other.get(k)
+                            ]);
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                try {
+                    for(var _iterator1 = other.keys()[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                        var k1 = _step1.value;
+                        if (!this.has(k1)) del.push(k1);
+                    }
+                } catch (err) {
+                    _didIteratorError1 = true;
+                    _iteratorError1 = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                            _iterator1.return();
+                        }
+                    } finally{
+                        if (_didIteratorError1) {
+                            throw _iteratorError1;
+                        }
+                    }
+                }
+                return {
+                    add: add,
+                    del: del,
+                    chg: chg
+                };
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, entry, err;
+                return map_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_class_private_field_update(this, _iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                10,
+                                11
+                            ]);
+                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                            _state.label = 2;
+                        case 2:
+                            _state.trys.push([
+                                2,
+                                7,
+                                8,
+                                9
+                            ]);
+                            _iterator = _get(_get_prototype_of(M2I.prototype), "entries", this).call(this)[Symbol.iterator]();
+                            _state.label = 3;
+                        case 3:
+                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
+                                3,
+                                6
+                            ];
+                            entry = _step.value;
+                            return [
+                                4,
+                                entry
+                            ];
+                        case 4:
+                            _state.sent();
+                            _state.label = 5;
+                        case 5:
+                            _iteratorNormalCompletion = true;
+                            return [
+                                3,
+                                3
+                            ];
+                        case 6:
+                            return [
+                                3,
+                                9
+                            ];
+                        case 7:
+                            err = _state.sent();
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                            return [
+                                3,
+                                9
+                            ];
+                        case 8:
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                    _iterator.return();
+                                }
+                            } finally{
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                            return [
+                                7
+                            ];
+                        case 9:
+                            return [
+                                3,
+                                11
+                            ];
+                        case 10:
+                            map_class_private_field_update(this, _iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 11:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, k, err;
+                return map_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_class_private_field_update(this, _iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                10,
+                                11
+                            ]);
+                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                            _state.label = 2;
+                        case 2:
+                            _state.trys.push([
+                                2,
+                                7,
+                                8,
+                                9
+                            ]);
+                            _iterator = _get(_get_prototype_of(M2I.prototype), "keys", this).call(this)[Symbol.iterator]();
+                            _state.label = 3;
+                        case 3:
+                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
+                                3,
+                                6
+                            ];
+                            k = _step.value;
+                            return [
+                                4,
+                                k
+                            ];
+                        case 4:
+                            _state.sent();
+                            _state.label = 5;
+                        case 5:
+                            _iteratorNormalCompletion = true;
+                            return [
+                                3,
+                                3
+                            ];
+                        case 6:
+                            return [
+                                3,
+                                9
+                            ];
+                        case 7:
+                            err = _state.sent();
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                            return [
+                                3,
+                                9
+                            ];
+                        case 8:
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                    _iterator.return();
+                                }
+                            } finally{
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                            return [
+                                7
+                            ];
+                        case 9:
+                            return [
+                                3,
+                                11
+                            ];
+                        case 10:
+                            map_class_private_field_update(this, _iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 11:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, v, err;
+                return map_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_class_private_field_update(this, _iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                10,
+                                11
+                            ]);
+                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                            _state.label = 2;
+                        case 2:
+                            _state.trys.push([
+                                2,
+                                7,
+                                8,
+                                9
+                            ]);
+                            _iterator = _get(_get_prototype_of(M2I.prototype), "values", this).call(this)[Symbol.iterator]();
+                            _state.label = 3;
+                        case 3:
+                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
+                                3,
+                                6
+                            ];
+                            v = _step.value;
+                            return [
+                                4,
+                                v
+                            ];
+                        case 4:
+                            _state.sent();
+                            _state.label = 5;
+                        case 5:
+                            _iteratorNormalCompletion = true;
+                            return [
+                                3,
+                                3
+                            ];
+                        case 6:
+                            return [
+                                3,
+                                9
+                            ];
+                        case 7:
+                            err = _state.sent();
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                            return [
+                                3,
+                                9
+                            ];
+                        case 8:
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                    _iterator.return();
+                                }
+                            } finally{
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                            return [
+                                7
+                            ];
+                        case 9:
+                            return [
+                                3,
+                                11
+                            ];
+                        case 10:
+                            map_class_private_field_update(this, _iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 11:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "swap",
+            value: function swap(value, key) {
+                var next = map_rv(value);
+                var previous = this.has(key) ? this.get(key) : next;
+                this.s(next, key);
+                return previous;
+            }
+        },
+        {
+            key: "take",
+            value: function take(k) {
+                var value = this.g(k);
+                this.d(k);
+                return value;
+            }
+        },
+        {
+            key: "peek",
+            value: function peek(k) {
+                return this.h(k) ? this.g(k) : false;
+            }
+        },
+        {
+            key: "getOrI",
+            value: function getOrI(value, k) {
+                if (this.h(k)) return this.g(k);
+                var next = map_rv(value);
+                this.s(next, k);
+                return next;
+            }
+        },
+        {
+            key: "getOrM",
+            value: function getOrM(make, k) {
+                if (this.h(k)) return this.g(k);
+                var value = make();
+                this.s(value, k);
+                return value;
+            }
+        },
+        {
+            key: "update",
+            value: function update(k, fn, initial) {
+                var has = this.h(k);
+                var old = has ? this.g(k) : initial === undefined ? undefined : map_rv(initial);
+                var next = map_rv(fn(old, has));
+                this.s(next, k);
+                return next;
+            }
+        },
+        {
+            key: "setIfAbsent",
+            value: function setIfAbsent(value, k) {
+                if (this.h(k)) return false;
+                var next = map_rv(value);
+                this.s(next, k);
+                return true;
+            }
+        },
+        {
+            key: "setIfPresent",
+            value: function setIfPresent(value, k) {
+                if (!this.h(k)) return false;
+                var next = map_rv(value);
+                this.s(next, k);
+                return true;
+            }
+        },
+        {
+            key: "replace",
+            value: function replace(value, k) {
+                var next = map_rv(value);
+                return this.setIfPresent(next, k);
+            }
+        },
+        {
+            key: "inc",
+            value: function inc(key) {
+                var by = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
+                return this.update(key, function(old) {
+                    return (old !== null && old !== void 0 ? old : 0) + by;
+                }, 0);
+            }
+        },
+        {
+            key: "touch",
+            value: function touch(k) {
+                return this.setIfAbsent(undefined, k);
+            }
+        },
+        {
+            key: "mapValues",
+            value: function mapValues(fn) {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        out.s(fn(v, k), k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "mapKeys",
+            value: function mapKeys(fn) {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        out.s(v, fn(v, k));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "filterKV",
+            value: function filterKV(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (!pred(v, k)) this.d(k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "filterKeys",
+            value: function filterKeys(pred) {
+                return this.filterKV(pred);
+            }
+        },
+        {
+            key: "partition",
+            value: function partition(pred) {
+                var yes = new M2I();
+                var no = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        (pred(v, k) ? yes : no).s(v, k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return [
+                    yes,
+                    no
+                ];
+            }
+        },
+        {
+            key: "find",
+            value: function find(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (pred(v, k)) return [
+                            k,
+                            v
+                        ];
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "findKey",
+            value: function findKey(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (pred(v, k)) return k;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "findValue",
+            value: function findValue(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (pred(v, k)) return v;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "some",
+            value: function some(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (pred(v, k)) return true;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return false;
+            }
+        },
+        {
+            key: "every",
+            value: function every(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (!pred(v, k)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "reduce",
+            value: function reduce(fn, initial) {
+                var acc = initial;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        acc = fn(acc, v, k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return acc;
+            }
+        },
+        {
+            key: "forEachKV",
+            value: function forEachKV(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        fn(v, k, this);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "invert",
+            value: function invert() {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        out.s(k, v);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "unique",
+            value: function unique(fn) {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        var key = fn ? fn(v, k) : v;
+                        if (!out.h(key)) out.s(v, key);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "pick",
+            value: function pick(keys) {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var k = _step.value;
+                        if (this.h(k)) out.s(this.g(k), k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "omit",
+            value: function omit(keys) {
+                var omitted = new Set(keys);
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (!omitted.has(k)) out.s(v, k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "merge",
+            value: function merge(other) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        var n = map_rv(v);
+                        this.s(n, k);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "clearAndSet",
+            value: function clearAndSet(entries) {
+                var _this = this;
+                return this.batch(function() {
+                    _this.clear();
+                    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                    try {
+                        for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                            var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                            var n = map_rv(v);
+                            _this.s(n, k);
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally{
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                _iterator.return();
+                            }
+                        } finally{
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        {
+            key: "toObject",
+            value: function toObject() {
+                var out = {};
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        out[k] = v;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "toValues",
+            value: function toValues() {
+                return A2.from(this.values());
+            } //                 [TOVALUES]
+        },
+        {
+            key: "toKeys",
+            value: function toKeys() {
+                return A2.from(this.keys());
+            } //                       [TOKEYS]
+        },
+        {
+            key: "toArray",
+            value: function toArray() {
+                return A2.from(this.entries());
+            } //             [TOARRAY]
+        },
+        {
+            key: "group",
+            value: function group(fn) {
+                var out = new M2I();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        out.getOrM(function() {
+                            return new A2();
+                        }, fn(v, k)).push(v);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "clone",
+            value: function clone() {
+                return new M2I(this);
+            }
+        },
+        {
+            key: "equals",
+            value: function equals(other) {
+                if (other === this) return true;
+                if (this.size !== other.size) return false;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
+                        if (!other.has(k) || !map_sameValue(other.get(k), v)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+    ], [
+        {
+            key: "fromObject",
+            value: function fromObject(obj) {
+                return new M2I(Object.entries(obj));
+            }
+        },
+        {
+            key: "fromEntries",
+            value: function fromEntries(entries) {
+                return new M2I(entries);
+            }
+        },
+        {
+            key: "from",
+            value: function from(map) {
+                return new M2I(map);
+            }
+        }
+    ]);
+    return M2I;
+}(map_wrap_native_super(Map));
+function emit(e) {
+    var _$_class_private_field_get;
+    if (map_class_private_field_get(this, _batching) > 0) {
+        // coalesce: last write per key wins, keep prev from first event
+        var pending = map_class_private_field_get(this, _pending).get(e.k);
+        map_class_private_field_get(this, _pending).set(e.k, pending ? _object_spread_props(_object_spread({}, e), {
+            prev: pending.prev,
+            batch: true
+        }) : _object_spread_props(_object_spread({}, e), {
+            batch: true
+        }));
+        return;
+    }
+    map_class_private_method_get(this, _record, record).call(this, e);
+    (_$_class_private_field_get = map_class_private_field_get(this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
+        try {
+            sub(e);
+        } catch (err) {
+            process.emitWarning(err);
+        }
+    });
+}
+function record(e) {
+    if (!map_class_private_field_get(this, _hist)) return;
+    map_class_private_field_get(this, _hist).push(e);
+    if (map_class_private_field_get(this, _hist).length > map_class_private_field_get(this, _histLimit)) {
+        map_class_private_field_get(this, _hist).splice(0, map_class_private_field_get(this, _hist).length - map_class_private_field_get(this, _histLimit));
+    }
+}
+function invalidate(k) {
+    var _$_class_private_field_get;
+    var deps = (_$_class_private_field_get = map_class_private_field_get(this, _dependents)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
+    if (!deps) return;
+    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+    try {
+        for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+            var dk = _step.value;
+            var _$_class_private_field_get1;
+            var d = (_$_class_private_field_get1 = map_class_private_field_get(this, _derived)) === null || _$_class_private_field_get1 === void 0 ? void 0 : _$_class_private_field_get1.get(dk);
+            if (!d || d.dirty) continue;
+            d.dirty = true;
+            map_class_private_method_get(this, _emit, emit).call(this, {
+                op: "dirty",
+                k: dk,
+                has: d.has
+            });
+        }
+    } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+    } finally{
+        try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                _iterator.return();
+            }
+        } finally{
+            if (_didIteratorError) {
+                throw _iteratorError;
+            }
+        }
+    }
+}
+function computeDerived(k, d) {
+    var _this = this;
+    var _d;
+    var vals = d.deps.map(function(dep) {
+        return _this.g(dep);
+    });
+    var next = (_d = d).fn.apply(_d, map_to_consumable_array(vals));
+    var had = d.has;
+    var prev = d.value;
+    d.value = next;
+    d.has = true;
+    d.dirty = false;
+    if (!had || !map_sameValue(prev, next)) {
+        map_class_private_method_get(this, _emit, emit).call(this, {
+            op: had ? "upd" : "set",
+            k: k,
+            v: next,
+            prev: prev,
+            has: true
+        });
+    }
+    return next;
+}
+function assertNotIterating(op) {
+    if (map_class_private_field_get(this, _strict) && map_class_private_field_get(this, _iterating) > 0) {
+        throw new Error("M2.".concat(op, "() during iteration. Use filterKV(), collect keys first, or disable $strict()."));
+    }
+}
+globalThis.M2 = map_M2I; /*  ====================================================================================================
+    
+    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ 
+
+function map_byte_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_byte_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function map_byte_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function map_byte_array_without_holes(arr) {
+    if (Array.isArray(arr)) return map_byte_array_like_to_array(arr);
+}
+function map_byte_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function map_byte_class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
+}
+function map_byte_class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function map_byte_class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
+}
+function map_byte_class_call_check(instance, Constructor) {
+    if (!map_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_byte_class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function map_byte_class_private_field_get(receiver, privateMap) {
+    var descriptor = map_byte_class_extract_field_descriptor(receiver, privateMap, "get");
+    return map_byte_class_apply_descriptor_get(receiver, descriptor);
+}
+function map_byte_class_private_field_init(obj, privateMap, value) {
+    map_byte_check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function map_byte_class_private_field_set(receiver, privateMap, value) {
+    var descriptor = map_byte_class_extract_field_descriptor(receiver, privateMap, "set");
+    map_byte_class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function map_byte_class_private_field_update(receiver, privateMap) {
+    var descriptor = map_byte_class_extract_field_descriptor(receiver, privateMap, "update");
+    return map_byte_class_apply_descriptor_update(receiver, descriptor);
+}
+function map_byte_class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function map_byte_class_private_method_init(obj, privateSet) {
+    map_byte_check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
+}
+function map_byte_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_byte_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_byte_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_byte_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function map_byte_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function map_byte_instanceof1(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_byte_iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function map_byte_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function map_byte_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function map_byte_non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function map_byte_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            map_byte_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function map_byte_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function map_byte_object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        map_byte_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function map_byte_sliced_to_array(arr, i) {
+    return map_byte_array_with_holes(arr) || map_byte_iterable_to_array_limit(arr, i) || map_byte_unsupported_iterable_to_array(arr, i) || map_byte_non_iterable_rest();
+}
+function map_byte_to_consumable_array(arr) {
+    return map_byte_array_without_holes(arr) || map_byte_iterable_to_array(arr) || map_byte_unsupported_iterable_to_array(arr) || map_byte_non_iterable_spread();
+}
+function map_byte_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function map_byte_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return map_byte_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_byte_array_like_to_array(o, minLen);
+}
+var map_byte_sameValue128 = function sameValue128(a, b) {
+    if (a === b) return true;
+    if (map_byte_instanceof1(a, Float64Array) && map_byte_instanceof1(b, Float64Array)) {
+        if (a.length !== b.length) return false;
+        for(var i = 0; i < a.length; i++)if (!Object.is(a[i], b[i])) return false;
+        return true;
+    }
+    return Object.is(a, b);
+};
+var map_byte_size = /*#__PURE__*/ new WeakMap(), map_byte_subs = /*#__PURE__*/ new WeakMap(), map_byte_hist = /*#__PURE__*/ new WeakMap(), map_byte_histLimit = /*#__PURE__*/ new WeakMap(), map_byte_strict = /*#__PURE__*/ new WeakMap(), map_byte_iterating = /*#__PURE__*/ new WeakMap(), map_byte_batching = /*#__PURE__*/ new WeakMap(), map_byte_pending = /*#__PURE__*/ new WeakMap(), map_byte_derived = /*#__PURE__*/ new WeakMap(), map_byte_dependents = /*#__PURE__*/ new WeakMap(), map_byte_emit = /*#__PURE__*/ new WeakSet(), map_byte_record = /*#__PURE__*/ new WeakSet(), map_byte_invalidate = /*#__PURE__*/ new WeakSet(), map_byte_computeDerived = /*#__PURE__*/ new WeakSet(), map_byte_assertNotIterating = /*#__PURE__*/ new WeakSet(), _readSlot = /*#__PURE__*/ new WeakSet(), _writeSlot = /*#__PURE__*/ new WeakSet(), _fresh = /*#__PURE__*/ new WeakSet();
+var map_byte_M2BI = /*#__PURE__*/ function() {
+    "use strict";
+    function M2BI() {
+        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 65536, stride = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1, seed = arguments.length > 2 ? arguments[2] : void 0;
+        map_byte_class_call_check(this, M2BI);
+        map_byte_class_private_method_init(this, map_byte_emit);
+        map_byte_class_private_method_init(this, map_byte_record);
+        map_byte_class_private_method_init(this, map_byte_invalidate);
+        map_byte_class_private_method_init(this, map_byte_computeDerived);
+        map_byte_class_private_method_init(this, map_byte_assertNotIterating);
+        map_byte_class_private_method_init(this, _readSlot);
+        map_byte_class_private_method_init(this, _writeSlot);
+        map_byte_class_private_method_init(this, _fresh); //                     [sibling-store factory]
+        map_byte_define_property(this, "cap", void 0);
+        map_byte_define_property(this, "stride", void 0);
+        map_byte_define_property(this, "pidToSlot", void 0);
+        map_byte_define_property(this, "slotToPid", void 0);
+        map_byte_define_property(this, "vals", void 0);
+        map_byte_class_private_field_init(this, map_byte_size, {
+            writable: true,
+            value: 0
+        });
+        map_byte_class_private_field_init(this, map_byte_subs, {
+            writable: true,
+            value: void 0
+        });
+        map_byte_class_private_field_init(this, map_byte_hist, {
+            writable: true,
+            value: void 0
+        });
+        map_byte_class_private_field_init(this, map_byte_histLimit, {
+            writable: true,
+            value: 0
+        });
+        map_byte_class_private_field_init(this, map_byte_strict, {
+            writable: true,
+            value: false
+        });
+        map_byte_class_private_field_init(this, map_byte_iterating, {
+            writable: true,
+            value: 0
+        });
+        map_byte_class_private_field_init(this, map_byte_batching, {
+            writable: true,
+            value: 0
+        });
+        map_byte_class_private_field_init(this, map_byte_pending, {
+            writable: true,
+            value: void 0
+        });
+        map_byte_class_private_field_init(this, map_byte_derived, {
+            writable: true,
+            value: void 0
+        });
+        map_byte_class_private_field_init(this, map_byte_dependents, {
+            writable: true,
+            value: void 0
+        });
+        // ---------------------------------------------------------------- alias / has/has-not helpers
+        map_byte_define_property(this, "has", this.h); //                                                                             [has alias]
+        map_byte_define_property(this, "get", this.g); //                                                                             [get alias]
+        map_byte_define_property(this, "delete", this.d); //                                                                        [delete alias]
+        map_byte_define_property(this, "clear", this.c); //                                                                           [clear alias]
+        map_byte_define_property(this, "f", this.forEach.bind(this)); //                                                            [FOR EACH]
+        this.cap = maxParticles;
+        this.stride = stride;
+        this.pidToSlot = new Int32Array(maxParticles).fill(-1);
+        this.slotToPid = new Int32Array(maxParticles).fill(-1);
+        this.vals = new Float64Array(maxParticles * stride);
+        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+        if (seed) try {
+            for(var _iterator = seed[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                this.s(v, pid);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally{
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                    _iterator.return();
+                }
+            } finally{
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    }
+    map_byte_create_class(M2BI, [
+        {
+            key: "size",
+            get: function get() {
+                return map_byte_class_private_field_get(this, map_byte_size);
+            }
+        },
+        {
+            key: "on",
+            value: function on(fn) {
+                var _this = this;
+                var _$_class_private_field_get;
+                map_byte_class_private_field_set(this, map_byte_subs, (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_subs)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Set()).add(fn);
+                return function() {
+                    return _this.off(fn);
+                };
+            } //      [ON]
+        },
+        {
+            key: "off",
+            value: function off(fn) {
+                var _$_class_private_field_get;
+                (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.delete(fn);
+            } //                                                  [OFF]
+        },
+        {
+            key: "batch",
+            value: function batch(fn) {
+                var _$_class_private_field_get;
+                map_byte_class_private_field_update(this, map_byte_batching).value++;
+                map_byte_class_private_field_set(this, map_byte_pending, (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Map());
+                try {
+                    fn();
+                } finally{
+                    map_byte_class_private_field_update(this, map_byte_batching).value--;
+                    if (map_byte_class_private_field_get(this, map_byte_batching) === 0) {
+                        var events = map_byte_to_consumable_array(map_byte_class_private_field_get(this, map_byte_pending).values());
+                        map_byte_class_private_field_set(this, map_byte_pending, undefined);
+                        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                        try {
+                            var _this, _loop = function _loop() {
+                                var e = _step.value;
+                                var _$_class_private_field_get;
+                                map_byte_class_private_method_get(_this, map_byte_record, src_map_byte_record).call(_this, e);
+                                (_$_class_private_field_get = map_byte_class_private_field_get(_this, map_byte_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
+                                    return sub(e);
+                                });
+                            };
+                            for(var _iterator = events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true)_this = this, _loop();
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally{
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                    _iterator.return();
+                                }
+                            } finally{
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "s",
+            value: function s(v, pid) {
+                map_byte_class_private_method_get(this, map_byte_assertNotIterating, src_map_byte_assertNotIterating).call(this, "s");
+                var slot = this.pidToSlot[pid];
+                var has = slot !== -1;
+                var prev = has ? map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, slot) : undefined;
+                if (!has) {
+                    slot = map_byte_class_private_field_get(this, map_byte_size);
+                    this.pidToSlot[pid] = slot;
+                    this.slotToPid[slot] = pid;
+                    map_byte_class_private_field_update(this, map_byte_size).value++;
+                }
+                map_byte_class_private_method_get(this, _writeSlot, writeSlot).call(this, slot, v);
+                map_byte_class_private_method_get(this, map_byte_invalidate, src_map_byte_invalidate).call(this, pid);
+                map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+                    op: has ? "upd" : "set",
+                    pid: pid,
+                    v: v,
+                    prev: prev,
+                    has: has
+                });
+                return this;
+            }
+        },
+        {
+            key: "mutate",
+            value: function mutate(pid, fn) {
+                map_byte_class_private_method_get(this, map_byte_assertNotIterating, src_map_byte_assertNotIterating).call(this, "mutate");
+                if (!this.h(pid)) return undefined;
+                var next = fn(this.g(pid), true);
+                this.s(next, pid);
+                return next;
+            }
+        },
+        {
+            key: "d",
+            value: function d(pid) {
+                map_byte_class_private_method_get(this, map_byte_assertNotIterating, src_map_byte_assertNotIterating).call(this, "delete");
+                var slot = this.pidToSlot[pid];
+                if (slot === -1) return false;
+                var prev = map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, slot);
+                var lastSlot = map_byte_class_private_field_get(this, map_byte_size) - 1;
+                var lastPid = this.slotToPid[lastSlot];
+                if (slot !== lastSlot) {
+                    map_byte_class_private_method_get(this, _writeSlot, writeSlot).call(this, slot, map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, lastSlot));
+                    this.slotToPid[slot] = lastPid;
+                    this.pidToSlot[lastPid] = slot;
+                }
+                this.pidToSlot[pid] = -1;
+                this.slotToPid[lastSlot] = -1;
+                map_byte_class_private_field_update(this, map_byte_size).value--;
+                map_byte_class_private_method_get(this, map_byte_invalidate, src_map_byte_invalidate).call(this, pid);
+                map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+                    op: "del",
+                    pid: pid,
+                    prev: prev,
+                    has: false
+                });
+                return true;
+            }
+        },
+        {
+            key: "c",
+            value: function c() {
+                map_byte_class_private_method_get(this, map_byte_assertNotIterating, src_map_byte_assertNotIterating).call(this, "clear");
+                for(var i = map_byte_class_private_field_get(this, map_byte_size) - 1; i >= 0; i--){
+                    var pid = this.slotToPid[i];
+                    var prev = map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, i);
+                    this.pidToSlot[pid] = -1;
+                    this.slotToPid[i] = -1;
+                    map_byte_class_private_method_get(this, map_byte_invalidate, src_map_byte_invalidate).call(this, pid);
+                    map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+                        op: "del",
+                        pid: pid,
+                        prev: prev,
+                        has: false
+                    });
+                }
+                map_byte_class_private_field_set(this, map_byte_size, 0);
+            }
+        },
+        {
+            key: "dv",
+            value: function dv(pid, deps, fn) {
+                var _$_class_private_field_get;
+                map_byte_class_private_field_set(this, map_byte_derived, (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Map()).set(pid, {
+                    deps: deps,
+                    fn: fn,
+                    dirty: true,
+                    has: false
+                });
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var dep = _step.value;
+                        var _$_class_private_field_get1;
+                        var set = map_byte_class_private_field_set(this, map_byte_dependents, (_$_class_private_field_get1 = map_byte_class_private_field_get(this, map_byte_dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new Map());
+                        if (!set.has(dep)) set.set(dep, new Set());
+                        set.get(dep).add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "dirty",
+            value: function dirty() {
+                for(var _len = arguments.length, pids = new Array(_len), _key = 0; _key < _len; _key++){
+                    pids[_key] = arguments[_key];
+                }
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        var _$_class_private_field_get;
+                        var d = (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
+                        if (d && !d.dirty) {
+                            d.dirty = true;
+                            map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+                                op: "dirty",
+                                pid: pid,
+                                has: d.has
+                            });
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "g",
+            value: function g(pid) {
+                var _$_class_private_field_get;
+                var d = (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
+                if (d) return d.dirty || !d.has ? map_byte_class_private_method_get(this, map_byte_computeDerived, src_map_byte_computeDerived).call(this, pid, d) : d.value;
+                var slot = this.pidToSlot[pid];
+                return slot === -1 ? undefined : map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, slot);
+            }
+        },
+        {
+            key: "h",
+            value: function h(pid) {
+                var _$_class_private_field_get;
+                var d = (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
+                if (d) {
+                    if (d.dirty || !d.has) map_byte_class_private_method_get(this, map_byte_computeDerived, src_map_byte_computeDerived).call(this, pid, d);
+                    return true;
+                }
+                return this.pidToSlot[pid] !== -1;
+            }
+        },
+        {
+            key: "$debug",
+            value: function $debug() {
+                var limit = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
+                var _$_class_private_field_get;
+                map_byte_class_private_field_set(this, map_byte_hist, (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_hist)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : []);
+                map_byte_class_private_field_set(this, map_byte_histLimit, limit);
+                return this;
+            } //  [$DEBUG]
+        },
+        {
+            key: "$strict",
+            value: function $strict() {
+                map_byte_class_private_field_set(this, map_byte_strict, true);
+                return this;
+            } //                                     [$STRICT]
+        },
+        {
+            key: "$history",
+            value: function $history() {
+                return map_byte_class_private_field_get(this, map_byte_hist) ? map_byte_to_consumable_array(map_byte_class_private_field_get(this, map_byte_hist)) : [];
+            } //                    [$HISTORY]
+        },
+        {
+            key: "$why",
+            value: function $why(pid) {
+                if (!map_byte_class_private_field_get(this, map_byte_hist)) return undefined;
+                for(var i = map_byte_class_private_field_get(this, map_byte_hist).length - 1; i >= 0; i--)if (map_byte_class_private_field_get(this, map_byte_hist)[i].pid === pid) return map_byte_class_private_field_get(this, map_byte_hist)[i];
+                return undefined;
+            }
+        },
+        {
+            key: "$diff",
+            value: function $diff(other) {
+                var add = [];
+                var del = [];
+                var chg = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (!other.has(pid)) add.push([
+                            pid,
+                            v
+                        ]);
+                        else if (!map_byte_sameValue128(other.get(pid), v)) chg.push([
+                            pid,
+                            v,
+                            other.get(pid)
+                        ]);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                try {
+                    for(var _iterator1 = other.keys()[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                        var pid1 = _step1.value;
+                        if (!this.has(pid1)) del.push(pid1);
+                    }
+                } catch (err) {
+                    _didIteratorError1 = true;
+                    _iteratorError1 = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                            _iterator1.return();
+                        }
+                    } finally{
+                        if (_didIteratorError1) {
+                            throw _iteratorError1;
+                        }
+                    }
+                }
+                return {
+                    add: add,
+                    del: del,
+                    chg: chg
+                };
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var i;
+                return map_byte_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                6,
+                                7
+                            ]);
+                            i = 0;
+                            _state.label = 2;
+                        case 2:
+                            if (!(i < map_byte_class_private_field_get(this, map_byte_size))) return [
+                                3,
+                                5
+                            ];
+                            return [
+                                4,
+                                [
+                                    this.slotToPid[i],
+                                    map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, i)
+                                ]
+                            ];
+                        case 3:
+                            _state.sent();
+                            _state.label = 4;
+                        case 4:
+                            i++;
+                            return [
+                                3,
+                                2
+                            ];
+                        case 5:
+                            return [
+                                3,
+                                7
+                            ];
+                        case 6:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 7:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                var i;
+                return map_byte_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                6,
+                                7
+                            ]);
+                            i = 0;
+                            _state.label = 2;
+                        case 2:
+                            if (!(i < map_byte_class_private_field_get(this, map_byte_size))) return [
+                                3,
+                                5
+                            ];
+                            return [
+                                4,
+                                this.slotToPid[i]
+                            ];
+                        case 3:
+                            _state.sent();
+                            _state.label = 4;
+                        case 4:
+                            i++;
+                            return [
+                                3,
+                                2
+                            ];
+                        case 5:
+                            return [
+                                3,
+                                7
+                            ];
+                        case 6:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 7:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                var i;
+                return map_byte_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value++;
+                            _state.label = 1;
+                        case 1:
+                            _state.trys.push([
+                                1,
+                                ,
+                                6,
+                                7
+                            ]);
+                            i = 0;
+                            _state.label = 2;
+                        case 2:
+                            if (!(i < map_byte_class_private_field_get(this, map_byte_size))) return [
+                                3,
+                                5
+                            ];
+                            return [
+                                4,
+                                map_byte_class_private_method_get(this, _readSlot, readSlot).call(this, i)
+                            ];
+                        case 3:
+                            _state.sent();
+                            _state.label = 4;
+                        case 4:
+                            i++;
+                            return [
+                                3,
+                                2
+                            ];
+                        case 5:
+                            return [
+                                3,
+                                7
+                            ];
+                        case 6:
+                            map_byte_class_private_field_update(this, map_byte_iterating).value--;
+                            return [
+                                7
+                            ];
+                        case 7:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                return this.entries();
+            }
+        },
+        {
+            key: "forEach",
+            value: function forEach(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        fn(v, pid, this);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "swap",
+            value: function swap(value, pid) {
+                var previous = this.has(pid) ? this.get(pid) : value;
+                this.s(value, pid);
+                return previous;
+            }
+        },
+        {
+            key: "take",
+            value: function take(pid) {
+                var value = this.g(pid);
+                this.d(pid);
+                return value;
+            } //             [TAKE]
+        },
+        {
+            key: "peek",
+            value: function peek(pid) {
+                return this.h(pid) ? this.g(pid) : false;
+            } //            [PEEK]
+        },
+        {
+            key: "getOrI",
+            value: function getOrI(value, pid) {
+                if (this.h(pid)) return this.g(pid);
+                this.s(value, pid);
+                return value;
+            }
+        },
+        {
+            key: "getOrM",
+            value: function getOrM(make, pid) {
+                if (this.h(pid)) return this.g(pid);
+                var value = make();
+                this.s(value, pid);
+                return value;
+            }
+        },
+        {
+            key: "update",
+            value: function update(pid, fn, initial) {
+                var has = this.h(pid);
+                var old = has ? this.g(pid) : initial === undefined ? 0 : initial;
+                var next = fn(old, has);
+                this.s(next, pid);
+                return next;
+            }
+        },
+        {
+            key: "setIfAbsent",
+            value: function setIfAbsent(value, pid) {
+                if (this.h(pid)) return false;
+                this.s(value, pid);
+                return true;
+            }
+        },
+        {
+            key: "setIfPresent",
+            value: function setIfPresent(value, pid) {
+                if (!this.h(pid)) return false;
+                this.s(value, pid);
+                return true;
+            }
+        },
+        {
+            key: "replace",
+            value: function replace(value, pid) {
+                return this.setIfPresent(value, pid);
+            } //                 [REPLACE]
+        },
+        {
+            key: "inc",
+            value: function inc(pid) {
+                var by = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
+                return this.update(pid, function(old) {
+                    return (old !== null && old !== void 0 ? old : 0) + by;
+                }, 0);
+            }
+        },
+        {
+            key: "touch",
+            value: function touch(pid) {
+                return this.setIfAbsent(0, pid);
+            } //                            [SWTOUCHAP]
+        },
+        {
+            key: "mapValues",
+            value: function mapValues(fn) {
+                var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        out.s(fn(v, pid), pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "mapKeys",
+            value: function mapKeys(fn) {
+                var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this); // target pids must still fit within cap
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        out.s(v, fn(v, pid));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "filterKV",
+            value: function filterKV(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = map_byte_to_consumable_array(this.keys())[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!pred(this.g(pid), pid)) this.d(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "filterKeys",
+            value: function filterKeys(pred) {
+                return this.filterKV(pred);
+            } //          [FILTERKEYS]
+        },
+        {
+            key: "partition",
+            value: function partition(pred) {
+                var yes = map_byte_class_private_method_get(this, _fresh, fresh).call(this), no = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        (pred(v, pid) ? yes : no).s(v, pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return [
+                    yes,
+                    no
+                ];
+            }
+        },
+        {
+            key: "find",
+            value: function find(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (pred(v, pid)) return [
+                            pid,
+                            v
+                        ];
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "findKey",
+            value: function findKey(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (pred(v, pid)) return pid;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "findValue",
+            value: function findValue(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (pred(v, pid)) return v;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "some",
+            value: function some(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (pred(v, pid)) return true;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return false;
+            }
+        },
+        {
+            key: "every",
+            value: function every(pred) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (!pred(v, pid)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "reduce",
+            value: function reduce(fn, initial) {
+                var acc = initial;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        acc = fn(acc, v, pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return acc;
+            }
+        },
+        {
+            key: "forEachKV",
+            value: function forEachKV(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        fn(v, pid, this);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            } // [FOREACH]
+        },
+        {
+            key: "invert",
+            value: function invert() {
+                var out = new Map(); // values aren't valid pids/Int32 slots in general -> plain Map, not M2BI
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        out.set(this.stride === 1 ? String(v) : Array.from(v).join(","), pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "unique",
+            value: function unique(fn) {
+                var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
+                var seen = new Set();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        var keyFor = fn ? fn(v, pid) : pid;
+                        var dedupeKey = this.stride === 1 ? String(v) : Array.from(v).join(",");
+                        if (!seen.has(dedupeKey)) {
+                            seen.add(dedupeKey);
+                            out.s(v, keyFor);
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "pick",
+            value: function pick(pids) {
+                var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (this.h(pid)) out.s(this.g(pid), pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "omit",
+            value: function omit(pids) {
+                var omitted = new Set(pids);
+                var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (!omitted.has(pid)) out.s(v, pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "merge",
+            value: function merge(other) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        this.s(v, pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "clearAndSet",
+            value: function clearAndSet(entries) {
+                var _this = this;
+                return this.batch(function() {
+                    _this.clear();
+                    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                    try {
+                        for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                            var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                            _this.s(v, pid);
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally{
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                _iterator.return();
+                            }
+                        } finally{
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        {
+            key: "toObject",
+            value: function toObject() {
+                var out = {};
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        out[pid] = v;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "toValues",
+            value: function toValues() {
+                return map_byte_to_consumable_array(this.values());
+            } //                                       [TOVALUES]
+        },
+        {
+            key: "toKeys",
+            value: function toKeys() {
+                return map_byte_to_consumable_array(this.keys());
+            } //                                                [TOKEYS]
+        },
+        {
+            key: "toArray",
+            value: function toArray() {
+                return map_byte_to_consumable_array(this.entries());
+            } //                                   [TOARRAY]
+        },
+        {
+            key: "group",
+            value: function group(fn) {
+                var out = new Map();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        var k = fn(v, pid);
+                        if (!out.has(k)) out.set(k, []);
+                        out.get(k).push(v);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "clone",
+            value: function clone() {
+                return new M2BI(this.cap, this.stride, this.entries());
+            }
+        },
+        {
+            key: "equals",
+            value: function equals(other) {
+                if (other === this) return true;
+                if (this.size !== other.size) return false;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
+                        if (!other.has(pid) || !map_byte_sameValue128(other.get(pid), v)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+    ], [
+        {
+            key: "fromObject",
+            value: function fromObject(obj, maxParticles) {
+                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
+                return new M2BI(maxParticles, stride, Object.entries(obj).map(function(param) {
+                    var _param = map_byte_sliced_to_array(param, 2), k = _param[0], v = _param[1];
+                    return [
+                        Number(k),
+                        v
+                    ];
+                }));
+            }
+        },
+        {
+            key: "fromEntries",
+            value: function fromEntries(entries, maxParticles) {
+                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
+                return new M2BI(maxParticles, stride, entries);
+            }
+        },
+        {
+            key: "from",
+            value: function from(map, maxParticles) {
+                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
+                return new M2BI(maxParticles, stride, map);
+            }
+        }
+    ]);
+    return M2BI;
+}();
+function src_map_byte_emit(e) {
+    var _$_class_private_field_get;
+    if (map_byte_class_private_field_get(this, map_byte_batching) > 0) {
+        var _$_class_private_field_get1;
+        map_byte_class_private_field_set(this, map_byte_pending, (_$_class_private_field_get1 = map_byte_class_private_field_get(this, map_byte_pending)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new Map());
+        var pending = map_byte_class_private_field_get(this, map_byte_pending).get(e.pid);
+        map_byte_class_private_field_get(this, map_byte_pending).set(e.pid, pending ? map_byte_object_spread_props(map_byte_object_spread({}, e), {
+            prev: pending.prev,
+            batch: true
+        }) : map_byte_object_spread_props(map_byte_object_spread({}, e), {
+            batch: true
+        }));
+        return;
+    }
+    map_byte_class_private_method_get(this, map_byte_record, src_map_byte_record).call(this, e);
+    (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
+        try {
+            sub(e);
+        } catch (err) {
+            process.emitWarning(err);
+        }
+    });
+}
+function src_map_byte_record(e) {
+    if (!map_byte_class_private_field_get(this, map_byte_hist)) return;
+    map_byte_class_private_field_get(this, map_byte_hist).push(e);
+    if (map_byte_class_private_field_get(this, map_byte_hist).length > map_byte_class_private_field_get(this, map_byte_histLimit)) map_byte_class_private_field_get(this, map_byte_hist).splice(0, map_byte_class_private_field_get(this, map_byte_hist).length - map_byte_class_private_field_get(this, map_byte_histLimit));
+}
+function src_map_byte_invalidate(pid) {
+    var _$_class_private_field_get;
+    var deps = (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_dependents)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
+    if (!deps) return;
+    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+    try {
+        for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+            var dk = _step.value;
+            var _$_class_private_field_get1;
+            var d = (_$_class_private_field_get1 = map_byte_class_private_field_get(this, map_byte_derived)) === null || _$_class_private_field_get1 === void 0 ? void 0 : _$_class_private_field_get1.get(dk);
+            if (!d || d.dirty) continue;
+            d.dirty = true;
+            map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+                op: "dirty",
+                pid: dk,
+                has: d.has
+            });
+        }
+    } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+    } finally{
+        try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                _iterator.return();
+            }
+        } finally{
+            if (_didIteratorError) {
+                throw _iteratorError;
+            }
+        }
+    }
+}
+function src_map_byte_computeDerived(pid, d) {
+    var _this = this;
+    var _d;
+    var vals = d.deps.map(function(dep) {
+        return _this.g(dep);
+    });
+    var next = (_d = d).fn.apply(_d, map_byte_to_consumable_array(vals));
+    var had = d.has;
+    var prev = d.value;
+    d.value = next;
+    d.has = true;
+    d.dirty = false;
+    if (!had || !map_byte_sameValue128(prev, next)) {
+        map_byte_class_private_method_get(this, map_byte_emit, src_map_byte_emit).call(this, {
+            op: had ? "upd" : "set",
+            pid: pid,
+            v: next,
+            prev: prev,
+            has: true
+        });
+    }
+    return next;
+}
+function src_map_byte_assertNotIterating(op) {
+    if (map_byte_class_private_field_get(this, map_byte_strict) && map_byte_class_private_field_get(this, map_byte_iterating) > 0) {
+        throw new Error("M2BI.".concat(op, "() during iteration. Snapshot keys first, or disable $strict()."));
+    }
+}
+function readSlot(slot) {
+    return this.stride === 1 ? this.vals[slot] : this.vals.subarray(slot * this.stride, slot * this.stride + this.stride);
+}
+function writeSlot(slot, v) {
+    if (this.stride === 1) this.vals[slot] = v;
+    else this.vals.set(v, slot * this.stride);
+}
+function fresh() {
+    return new map_byte_M2BI(this.cap, this.stride);
+}
+globalThis.M2B = map_byte_M2BI;
+
+function array_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function array_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function array_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function array_array_without_holes(arr) {
+    if (Array.isArray(arr)) return array_array_like_to_array(arr);
+}
+function array_assert_this_initialized(self) {
+    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return self;
+}
+function array_call_super(_this, derived, args) {
+    derived = array_get_prototype_of(derived);
+    return array_possible_constructor_return(_this, array_is_native_reflect_construct() ? Reflect.construct(derived, args || [], array_get_prototype_of(_this).constructor) : derived.apply(_this, args));
+}
+function array_class_call_check(instance, Constructor) {
+    if (!array_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function array_construct(Parent, args, Class) {
+    if (array_is_native_reflect_construct()) array_construct = Reflect.construct;
+    else {
+        array_construct = function construct(Parent, args, Class) {
+            var a = [
+                null
+            ];
+            a.push.apply(a, args);
+            var Constructor = Function.bind.apply(Parent, a);
+            var instance = new Constructor();
+            if (Class) array_set_prototype_of(instance, Class.prototype);
+            return instance;
+        };
+    }
+    return array_construct.apply(null, arguments);
+}
+function array_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function array_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) array_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) array_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function array_get_prototype_of(o) {
+    array_get_prototype_of = Object.setPrototypeOf ? Object.getPrototypeOf : function getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return array_get_prototype_of(o);
+}
+function array_inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function");
+    }
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            writable: true,
+            configurable: true
+        }
+    });
+    if (superClass) array_set_prototype_of(subClass, superClass);
+}
+function array_instanceof1(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function array_is_native_function(fn) {
+    return Function.toString.call(fn).indexOf("[native code]") !== -1;
+}
+function array_is_native_reflect_construct() {
+    try {
+        var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
+    } catch (_) {}
+    return (array_is_native_reflect_construct = function _is_native_reflect_construct() {
+        return !!result;
+    })();
+}
+function array_iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function array_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function array_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function array_non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function array_possible_constructor_return(self, call) {
+    if (call && (array_type_of(call) === "object" || typeof call === "function")) return call;
+    return array_assert_this_initialized(self);
+}
+function array_set_prototype_of(o, p) {
+    array_set_prototype_of = Object.setPrototypeOf || function setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+    };
+    return array_set_prototype_of(o, p);
+}
+function array_sliced_to_array(arr, i) {
+    return array_array_with_holes(arr) || array_iterable_to_array_limit(arr, i) || array_unsupported_iterable_to_array(arr, i) || array_non_iterable_rest();
+}
+function array_to_consumable_array(arr) {
+    return array_array_without_holes(arr) || array_iterable_to_array(arr) || array_unsupported_iterable_to_array(arr) || array_non_iterable_spread();
+}
+function array_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function array_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return array_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return array_array_like_to_array(o, minLen);
+}
+function array_wrap_native_super(Class) {
+    var _cache = typeof Map === "function" ? new Map() : undefined;
+    array_wrap_native_super = function _wrap_native_super(Class) {
+        if (Class === null || !array_is_native_function(Class)) return Class;
+        if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
+        if (typeof _cache !== "undefined") {
+            if (_cache.has(Class)) return _cache.get(Class);
+            _cache.set(Class, Wrapper);
+        }
+        function Wrapper() {
+            return array_construct(Class, arguments, array_get_prototype_of(this).constructor);
+        }
+        Wrapper.prototype = Object.create(Class.prototype, {
+            constructor: {
+                value: Wrapper,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        return array_set_prototype_of(Wrapper, Class);
+    };
     return array_wrap_native_super(Class);
 }
 var array_A2I = /*#__PURE__*/ function _target(Array1) {
     "use strict";
-    _inherits(A2I, Array1);
+    array_inherits(A2I, Array1);
     function A2I() {
         for(var _len = arguments.length, items = new Array(_len), _key = 0; _key < _len; _key++){
             items[_key] = arguments[_key];
         }
-        _class_call_check(this, A2I);
+        array_class_call_check(this, A2I);
         var _this;
-        _this = _call_super(this, A2I, _to_consumable_array(items));
-        Object.setPrototypeOf(_this, (_instanceof1(this, A2I) ? this.constructor : void 0).prototype);
+        _this = array_call_super(this, A2I, array_to_consumable_array(items));
+        Object.setPrototypeOf(_this, (array_instanceof1(this, A2I) ? this.constructor : void 0).prototype);
         return _this;
     }
-    _create_class(A2I, [
+    array_create_class(A2I, [
         {
             key: "first",
             value: function first() {
@@ -230,19 +5697,19 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
         {
             key: "clone",
             value: function clone() {
-                return _construct(A2I, _to_consumable_array(this));
+                return array_construct(A2I, array_to_consumable_array(this));
             }
         },
         {
             key: "unique",
             value: function unique() {
-                return _construct(A2I, _to_consumable_array(new Set(this)));
+                return array_construct(A2I, array_to_consumable_array(new Set(this)));
             }
         },
         {
             key: "compact",
             value: function compact() {
-                return _construct(A2, _to_consumable_array(this.filter(function(value) {
+                return array_construct(A2, array_to_consumable_array(this.filter(function(value) {
                     return value != null;
                 })));
             }
@@ -250,25 +5717,25 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
         {
             key: "take",
             value: function take(count) {
-                return _construct(A2I, _to_consumable_array(this.slice(0, Math.max(0, count))));
+                return array_construct(A2I, array_to_consumable_array(this.slice(0, Math.max(0, count))));
             }
         },
         {
             key: "takeLast",
             value: function takeLast(count) {
-                return _construct(A2I, _to_consumable_array(this.slice(Math.max(0, this.length - Math.max(0, count)))));
+                return array_construct(A2I, array_to_consumable_array(this.slice(Math.max(0, this.length - Math.max(0, count)))));
             }
         },
         {
             key: "drop",
             value: function drop(count) {
-                return _construct(A2I, _to_consumable_array(this.slice(Math.max(0, count))));
+                return array_construct(A2I, array_to_consumable_array(this.slice(Math.max(0, count))));
             }
         },
         {
             key: "dropLast",
             value: function dropLast(count) {
-                return _construct(A2I, _to_consumable_array(this.slice(0, Math.max(0, this.length - Math.max(0, count)))));
+                return array_construct(A2I, array_to_consumable_array(this.slice(0, Math.max(0, this.length - Math.max(0, count)))));
             }
         },
         {
@@ -279,7 +5746,7 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
                 }
                 var result = new A2();
                 for(var i = 0; i < this.length; i += size){
-                    result.push(_construct(A2I, _to_consumable_array(this.slice(i, i + size))));
+                    result.push(array_construct(A2I, array_to_consumable_array(this.slice(i, i + size))));
                 }
                 return result;
             }
@@ -288,14 +5755,14 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
             key: "flatten",
             value: function flatten() {
                 var depth = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : Infinity;
-                return _construct(A2, _to_consumable_array(this.flat(depth)));
+                return array_construct(A2, array_to_consumable_array(this.flat(depth)));
             }
         },
         {
             key: "flatMap",
             value: function flatMap(callback) {
                 var _this = this;
-                return _construct(A2, _to_consumable_array(this.flatMap(function(value, index) {
+                return array_construct(A2, array_to_consumable_array(this.flatMap(function(value, index) {
                     return callback(value, index, _this);
                 })));
             }
@@ -354,7 +5821,7 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
                 this.splice.apply(this, [
                     index,
                     0
-                ].concat(_to_consumable_array(items)));
+                ].concat(array_to_consumable_array(items)));
                 return this;
             }
         },
@@ -412,7 +5879,7 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
                 if (source < 0 || source >= this.length || target < 0 || target >= this.length || source === target) {
                     return this;
                 }
-                var _this_splice = _sliced_to_array(this.splice(source, 1), 1), item = _this_splice[0];
+                var _this_splice = array_sliced_to_array(this.splice(source, 1), 1), item = _this_splice[0];
                 this.splice(target, 0, item);
                 return this;
             }
@@ -542,7 +6009,7 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
         {
             key: "from",
             value: function from(arrayLike) {
-                return _construct(A2I, _to_consumable_array(Array.from(arrayLike)));
+                return array_construct(A2I, array_to_consumable_array(Array.from(arrayLike)));
             }
         },
         {
@@ -551,101 +6018,13 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
                 for(var _len = arguments.length, items = new Array(_len), _key = 0; _key < _len; _key++){
                     items[_key] = arguments[_key];
                 }
-                return _construct(A2I, _to_consumable_array(items));
+                return array_construct(A2I, array_to_consumable_array(items));
             }
         }
     ]);
     return A2I;
 }(array_wrap_native_super(Array));
 globalThis.A2 = array_A2I;
-
-function boolean_byte_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
-function boolean_byte_class_call_check(instance, Constructor) {
-    if (!boolean_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
-}
-function boolean_byte_defineProperties(target, props) {
-    for(var i = 0; i < props.length; i++){
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-    }
-}
-function boolean_byte_create_class(Constructor, protoProps, staticProps) {
-    if (protoProps) boolean_byte_defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) boolean_byte_defineProperties(Constructor, staticProps);
-    return Constructor;
-}
-function _define_property(obj, key, value) {
-    if (key in obj) {
-        Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else obj[key] = value;
-    return obj;
-}
-/*  ==========================================================================================================================
-    SITH - PURE BINARY BYTE_BOOL
-    Replaces boolean properties and boolean maps with a zero-allocation, PID-indexed Uint8Array lane.
-    ================================================================================================================    ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [BYTE_BOOL] */ var boolean_byte_B2BI = /*#__PURE__*/ function() {
-    "use strict";
-    function B2BI() {
-        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192;
-        boolean_byte_class_call_check(this, B2BI);
-        _define_property(this, "flags", void 0);
-        this.flags = new Uint8Array(maxParticles);
-    }
-    boolean_byte_create_class(B2BI, [
-        {
-            key: "set",
-            value: function set(pid, value) {
-                this.flags[pid] = value ? 1 : 0;
-            }
-        },
-        {
-            key: "true",
-            value: function _true(pid, value) {
-                this.flags[pid] = 1;
-            }
-        },
-        {
-            key: "false",
-            value: function _false(pid, value) {
-                this.flags[pid] = 0;
-            }
-        },
-        {
-            key: "get",
-            value: /** Get the boolean state for a PID. O(1) time complexity. */ function get(pid) {
-                return this.flags[pid] === 1;
-            }
-        },
-        {
-            key: "toggle",
-            value: /** Toggle the boolean state for a PID. O(1) time complexity. */ function toggle(pid) {
-                this.flags[pid] = this.flags[pid] === 1 ? 0 : 1;
-                return this.flags[pid] === 1;
-            } /** Clear all flags instantly without reallocating memory. */ 
-        },
-        {
-            key: "clear",
-            value: function clear() {
-                this.flags.fill(0);
-            }
-        }
-    ]);
-    return B2BI;
-}();
-globalThis.B2B = boolean_byte_B2BI;
 
 function date_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -716,18 +6095,18 @@ function date_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function _get(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) _get = Reflect.get;
+function date_get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) date_get = Reflect.get;
     else {
-        _get = function get(target, property, receiver) {
-            var base = _super_prop_base(target, property);
+        date_get = function get(target, property, receiver) {
+            var base = date_super_prop_base(target, property);
             if (!base) return;
             var desc = Object.getOwnPropertyDescriptor(base, property);
             if (desc.get) return desc.get.call(receiver || target);
             return desc.value;
         };
     }
-    return _get(target, property, receiver || target);
+    return date_get(target, property, receiver || target);
 }
 function date_get_prototype_of(o) {
     date_get_prototype_of = Object.setPrototypeOf ? Object.getPrototypeOf : function getPrototypeOf(o) {
@@ -814,7 +6193,7 @@ function date_set_prototype_of(o, p) {
 function date_sliced_to_array(arr, i) {
     return date_array_with_holes(arr) || date_iterable_to_array_limit(arr, i) || date_unsupported_iterable_to_array(arr, i) || date_non_iterable_rest();
 }
-function _super_prop_base(object, property) {
+function date_super_prop_base(object, property) {
     while(!Object.prototype.hasOwnProperty.call(object, property)){
         object = date_get_prototype_of(object);
         if (object === null) break;
@@ -922,7 +6301,7 @@ var date_D2I = /*#__PURE__*/ function(Date1) {
             key: "toLocalString",
             value: function toLocalString() {
                 var format = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : FORMAT.full;
-                return _get(date_get_prototype_of(D2I.prototype), "toLocaleString", this).call(this, "en-US", format);
+                return date_get(date_get_prototype_of(D2I.prototype), "toLocaleString", this).call(this, "en-US", format);
             }
         },
         {
@@ -3177,3605 +8556,6 @@ var iterator_I2I = /*#__PURE__*/ function() {
     return I2I;
 }();
 globalThis.I2 = iterator_I2I;
-
-function map_byte_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
-function map_byte_array_like_to_array(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
-    return arr2;
-}
-function map_byte_array_with_holes(arr) {
-    if (Array.isArray(arr)) return arr;
-}
-function map_byte_array_without_holes(arr) {
-    if (Array.isArray(arr)) return map_byte_array_like_to_array(arr);
-}
-function _check_private_redeclaration(obj, privateCollection) {
-    if (privateCollection.has(obj)) {
-        throw new TypeError("Cannot initialize the same private elements twice on an object");
-    }
-}
-function _class_apply_descriptor_get(receiver, descriptor) {
-    if (descriptor.get) return descriptor.get.call(receiver);
-    return descriptor.value;
-}
-function _class_apply_descriptor_set(receiver, descriptor, value) {
-    if (descriptor.set) descriptor.set.call(receiver, value);
-    else {
-        if (!descriptor.writable) {
-            throw new TypeError("attempted to set read only private field");
-        }
-        descriptor.value = value;
-    }
-}
-function _class_apply_descriptor_update(receiver, descriptor) {
-    if (descriptor.set) {
-        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
-        if (!("__destrWrapper" in descriptor)) {
-            descriptor.__destrWrapper = {
-                set value (v){
-                    descriptor.set.call(receiver, v);
-                },
-                get value () {
-                    return descriptor.get.call(receiver);
-                }
-            };
-        }
-        return descriptor.__destrWrapper;
-    } else {
-        if (!descriptor.writable) {
-            throw new TypeError("attempted to set read only private field");
-        }
-        return descriptor;
-    }
-}
-function map_byte_class_call_check(instance, Constructor) {
-    if (!map_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
-}
-function _class_extract_field_descriptor(receiver, privateMap, action) {
-    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
-    return privateMap.get(receiver);
-}
-function _class_private_field_get(receiver, privateMap) {
-    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "get");
-    return _class_apply_descriptor_get(receiver, descriptor);
-}
-function _class_private_field_init(obj, privateMap, value) {
-    _check_private_redeclaration(obj, privateMap);
-    privateMap.set(obj, value);
-}
-function _class_private_field_set(receiver, privateMap, value) {
-    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "set");
-    _class_apply_descriptor_set(receiver, descriptor, value);
-    return value;
-}
-function _class_private_field_update(receiver, privateMap) {
-    var descriptor = _class_extract_field_descriptor(receiver, privateMap, "update");
-    return _class_apply_descriptor_update(receiver, descriptor);
-}
-function _class_private_method_get(receiver, privateSet, fn) {
-    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
-    return fn;
-}
-function _class_private_method_init(obj, privateSet) {
-    _check_private_redeclaration(obj, privateSet);
-    privateSet.add(obj);
-}
-function map_byte_defineProperties(target, props) {
-    for(var i = 0; i < props.length; i++){
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-    }
-}
-function map_byte_create_class(Constructor, protoProps, staticProps) {
-    if (protoProps) map_byte_defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) map_byte_defineProperties(Constructor, staticProps);
-    return Constructor;
-}
-function map_byte_define_property(obj, key, value) {
-    if (key in obj) {
-        Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else obj[key] = value;
-    return obj;
-}
-function map_byte_instanceof1(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
-function map_byte_iterable_to_array(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
-        return Array.from(iter);
-    }
-}
-function map_byte_iterable_to_array_limit(arr, i) {
-    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i == null) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _s, _e;
-    try {
-        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
-            _arr.push(_s.value);
-            if (i && _arr.length === i) break;
-        }
-    } catch (err) {
-        _d = true;
-        _e = err;
-    } finally{
-        try {
-            if (!_n && _i["return"] != null) _i["return"]();
-        } finally{
-            if (_d) throw _e;
-        }
-    }
-    return _arr;
-}
-function map_byte_non_iterable_rest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function map_byte_non_iterable_spread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _object_spread(target) {
-    for(var i = 1; i < arguments.length; i++){
-        var source = arguments[i] != null ? arguments[i] : {};
-        var ownKeys = Object.keys(source);
-        if (typeof Object.getOwnPropertySymbols === "function") {
-            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-            }));
-        }
-        ownKeys.forEach(function(key) {
-            map_byte_define_property(target, key, source[key]);
-        });
-    }
-    return target;
-}
-function map_byte_ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-        var symbols = Object.getOwnPropertySymbols(object);
-        if (enumerableOnly) {
-            symbols = symbols.filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-            });
-        }
-        keys.push.apply(keys, symbols);
-    }
-    return keys;
-}
-function _object_spread_props(target, source) {
-    source = source != null ? source : {};
-    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    else {
-        map_byte_ownKeys(Object(source)).forEach(function(key) {
-            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-    }
-    return target;
-}
-function map_byte_sliced_to_array(arr, i) {
-    return map_byte_array_with_holes(arr) || map_byte_iterable_to_array_limit(arr, i) || map_byte_unsupported_iterable_to_array(arr, i) || map_byte_non_iterable_rest();
-}
-function map_byte_to_consumable_array(arr) {
-    return map_byte_array_without_holes(arr) || map_byte_iterable_to_array(arr) || map_byte_unsupported_iterable_to_array(arr) || map_byte_non_iterable_spread();
-}
-function _ts_generator(thisArg, body) {
-    var f, y, t, _ = {
-        label: 0,
-        sent: function sent() {
-            if (t[0] & 1) throw t[1];
-            return t[1];
-        },
-        trys: [],
-        ops: []
-    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
-    return d(g, "next", {
-        value: verb(0)
-    }), d(g, "throw", {
-        value: verb(1)
-    }), d(g, "return", {
-        value: verb(2)
-    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
-            return this;
-        }
-    }), g;
-    function verb(n) {
-        return function(v) {
-            return step([
-                n,
-                v
-            ]);
-        };
-    }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while(g && (g = 0, op[0] && (_ = 0)), _)try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [
-                op[0] & 2,
-                t.value
-            ];
-            switch(op[0]){
-                case 0:
-                case 1:
-                    t = op;
-                    break;
-                case 4:
-                    _.label++;
-                    return {
-                        value: op[1],
-                        done: false
-                    };
-                case 5:
-                    _.label++;
-                    y = op[1];
-                    op = [
-                        0
-                    ];
-                    continue;
-                case 7:
-                    op = _.ops.pop();
-                    _.trys.pop();
-                    continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                        _ = 0;
-                        continue;
-                    }
-                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                        _.label = op[1];
-                        break;
-                    }
-                    if (op[0] === 6 && _.label < t[1]) {
-                        _.label = t[1];
-                        t = op;
-                        break;
-                    }
-                    if (t && _.label < t[2]) {
-                        _.label = t[2];
-                        _.ops.push(op);
-                        break;
-                    }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop();
-                    continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) {
-            op = [
-                6,
-                e
-            ];
-            y = 0;
-        } finally{
-            f = t = 0;
-        }
-        if (op[0] & 5) throw op[1];
-        return {
-            value: op[0] ? op[1] : void 0,
-            done: true
-        };
-    }
-}
-function map_byte_unsupported_iterable_to_array(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return map_byte_array_like_to_array(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_byte_array_like_to_array(o, minLen);
-}
-var map_byte_sameValue128 = function sameValue128(a, b) {
-    if (a === b) return true;
-    if (map_byte_instanceof1(a, Float64Array) && map_byte_instanceof1(b, Float64Array)) {
-        if (a.length !== b.length) return false;
-        for(var i = 0; i < a.length; i++)if (!Object.is(a[i], b[i])) return false;
-        return true;
-    }
-    return Object.is(a, b);
-};
-var _size = /*#__PURE__*/ new WeakMap(), _subs = /*#__PURE__*/ new WeakMap(), _hist = /*#__PURE__*/ new WeakMap(), _histLimit = /*#__PURE__*/ new WeakMap(), _strict = /*#__PURE__*/ new WeakMap(), _iterating = /*#__PURE__*/ new WeakMap(), _batching = /*#__PURE__*/ new WeakMap(), _pending = /*#__PURE__*/ new WeakMap(), _derived = /*#__PURE__*/ new WeakMap(), _dependents = /*#__PURE__*/ new WeakMap(), _emit = /*#__PURE__*/ new WeakSet(), _record = /*#__PURE__*/ new WeakSet(), _invalidate = /*#__PURE__*/ new WeakSet(), _computeDerived = /*#__PURE__*/ new WeakSet(), _assertNotIterating = /*#__PURE__*/ new WeakSet(), _readSlot = /*#__PURE__*/ new WeakSet(), _writeSlot = /*#__PURE__*/ new WeakSet(), _fresh = /*#__PURE__*/ new WeakSet();
-var map_byte_M2BI = /*#__PURE__*/ function() {
-    "use strict";
-    function M2BI() {
-        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 65536, stride = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1, seed = arguments.length > 2 ? arguments[2] : void 0;
-        map_byte_class_call_check(this, M2BI);
-        _class_private_method_init(this, _emit);
-        _class_private_method_init(this, _record);
-        _class_private_method_init(this, _invalidate);
-        _class_private_method_init(this, _computeDerived);
-        _class_private_method_init(this, _assertNotIterating);
-        _class_private_method_init(this, _readSlot);
-        _class_private_method_init(this, _writeSlot);
-        _class_private_method_init(this, _fresh); //                     [sibling-store factory]
-        map_byte_define_property(this, "cap", void 0);
-        map_byte_define_property(this, "stride", void 0);
-        map_byte_define_property(this, "pidToSlot", void 0);
-        map_byte_define_property(this, "slotToPid", void 0);
-        map_byte_define_property(this, "vals", void 0);
-        _class_private_field_init(this, _size, {
-            writable: true,
-            value: 0
-        });
-        _class_private_field_init(this, _subs, {
-            writable: true,
-            value: void 0
-        });
-        _class_private_field_init(this, _hist, {
-            writable: true,
-            value: void 0
-        });
-        _class_private_field_init(this, _histLimit, {
-            writable: true,
-            value: 0
-        });
-        _class_private_field_init(this, _strict, {
-            writable: true,
-            value: false
-        });
-        _class_private_field_init(this, _iterating, {
-            writable: true,
-            value: 0
-        });
-        _class_private_field_init(this, _batching, {
-            writable: true,
-            value: 0
-        });
-        _class_private_field_init(this, _pending, {
-            writable: true,
-            value: void 0
-        });
-        _class_private_field_init(this, _derived, {
-            writable: true,
-            value: void 0
-        });
-        _class_private_field_init(this, _dependents, {
-            writable: true,
-            value: void 0
-        });
-        // ---------------------------------------------------------------- alias / has/has-not helpers
-        map_byte_define_property(this, "has", this.h); //                                                                             [has alias]
-        map_byte_define_property(this, "get", this.g); //                                                                             [get alias]
-        map_byte_define_property(this, "delete", this.d); //                                                                        [delete alias]
-        map_byte_define_property(this, "clear", this.c); //                                                                           [clear alias]
-        map_byte_define_property(this, "f", this.forEach.bind(this)); //                                                            [FOR EACH]
-        this.cap = maxParticles;
-        this.stride = stride;
-        this.pidToSlot = new Int32Array(maxParticles).fill(-1);
-        this.slotToPid = new Int32Array(maxParticles).fill(-1);
-        this.vals = new Float64Array(maxParticles * stride);
-        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-        if (seed) try {
-            for(var _iterator = seed[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                this.s(v, pid);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally{
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                    _iterator.return();
-                }
-            } finally{
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
-    }
-    map_byte_create_class(M2BI, [
-        {
-            key: "size",
-            get: function get() {
-                return _class_private_field_get(this, _size);
-            }
-        },
-        {
-            key: "on",
-            value: function on(fn) {
-                var _this = this;
-                var _$_class_private_field_get;
-                _class_private_field_set(this, _subs, (_$_class_private_field_get = _class_private_field_get(this, _subs)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Set()).add(fn);
-                return function() {
-                    return _this.off(fn);
-                };
-            } //      [ON]
-        },
-        {
-            key: "off",
-            value: function off(fn) {
-                var _$_class_private_field_get;
-                (_$_class_private_field_get = _class_private_field_get(this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.delete(fn);
-            } //                                                  [OFF]
-        },
-        {
-            key: "batch",
-            value: function batch(fn) {
-                var _$_class_private_field_get;
-                _class_private_field_update(this, _batching).value++;
-                _class_private_field_set(this, _pending, (_$_class_private_field_get = _class_private_field_get(this, _pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Map());
-                try {
-                    fn();
-                } finally{
-                    _class_private_field_update(this, _batching).value--;
-                    if (_class_private_field_get(this, _batching) === 0) {
-                        var events = map_byte_to_consumable_array(_class_private_field_get(this, _pending).values());
-                        _class_private_field_set(this, _pending, undefined);
-                        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                        try {
-                            var _this, _loop = function _loop() {
-                                var e = _step.value;
-                                var _$_class_private_field_get;
-                                _class_private_method_get(_this, _record, record).call(_this, e);
-                                (_$_class_private_field_get = _class_private_field_get(_this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
-                                    return sub(e);
-                                });
-                            };
-                            for(var _iterator = events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true)_this = this, _loop();
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally{
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                    _iterator.return();
-                                }
-                            } finally{
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "s",
-            value: function s(v, pid) {
-                _class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "s");
-                var slot = this.pidToSlot[pid];
-                var has = slot !== -1;
-                var prev = has ? _class_private_method_get(this, _readSlot, readSlot).call(this, slot) : undefined;
-                if (!has) {
-                    slot = _class_private_field_get(this, _size);
-                    this.pidToSlot[pid] = slot;
-                    this.slotToPid[slot] = pid;
-                    _class_private_field_update(this, _size).value++;
-                }
-                _class_private_method_get(this, _writeSlot, writeSlot).call(this, slot, v);
-                _class_private_method_get(this, _invalidate, invalidate).call(this, pid);
-                _class_private_method_get(this, _emit, emit).call(this, {
-                    op: has ? "upd" : "set",
-                    pid: pid,
-                    v: v,
-                    prev: prev,
-                    has: has
-                });
-                return this;
-            }
-        },
-        {
-            key: "mutate",
-            value: function mutate(pid, fn) {
-                _class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "mutate");
-                if (!this.h(pid)) return undefined;
-                var next = fn(this.g(pid), true);
-                this.s(next, pid);
-                return next;
-            }
-        },
-        {
-            key: "d",
-            value: function d(pid) {
-                _class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "delete");
-                var slot = this.pidToSlot[pid];
-                if (slot === -1) return false;
-                var prev = _class_private_method_get(this, _readSlot, readSlot).call(this, slot);
-                var lastSlot = _class_private_field_get(this, _size) - 1;
-                var lastPid = this.slotToPid[lastSlot];
-                if (slot !== lastSlot) {
-                    _class_private_method_get(this, _writeSlot, writeSlot).call(this, slot, _class_private_method_get(this, _readSlot, readSlot).call(this, lastSlot));
-                    this.slotToPid[slot] = lastPid;
-                    this.pidToSlot[lastPid] = slot;
-                }
-                this.pidToSlot[pid] = -1;
-                this.slotToPid[lastSlot] = -1;
-                _class_private_field_update(this, _size).value--;
-                _class_private_method_get(this, _invalidate, invalidate).call(this, pid);
-                _class_private_method_get(this, _emit, emit).call(this, {
-                    op: "del",
-                    pid: pid,
-                    prev: prev,
-                    has: false
-                });
-                return true;
-            }
-        },
-        {
-            key: "c",
-            value: function c() {
-                _class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "clear");
-                for(var i = _class_private_field_get(this, _size) - 1; i >= 0; i--){
-                    var pid = this.slotToPid[i];
-                    var prev = _class_private_method_get(this, _readSlot, readSlot).call(this, i);
-                    this.pidToSlot[pid] = -1;
-                    this.slotToPid[i] = -1;
-                    _class_private_method_get(this, _invalidate, invalidate).call(this, pid);
-                    _class_private_method_get(this, _emit, emit).call(this, {
-                        op: "del",
-                        pid: pid,
-                        prev: prev,
-                        has: false
-                    });
-                }
-                _class_private_field_set(this, _size, 0);
-            }
-        },
-        {
-            key: "dv",
-            value: function dv(pid, deps, fn) {
-                var _$_class_private_field_get;
-                _class_private_field_set(this, _derived, (_$_class_private_field_get = _class_private_field_get(this, _derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Map()).set(pid, {
-                    deps: deps,
-                    fn: fn,
-                    dirty: true,
-                    has: false
-                });
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var dep = _step.value;
-                        var _$_class_private_field_get1;
-                        var set = _class_private_field_set(this, _dependents, (_$_class_private_field_get1 = _class_private_field_get(this, _dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new Map());
-                        if (!set.has(dep)) set.set(dep, new Set());
-                        set.get(dep).add(pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "dirty",
-            value: function dirty() {
-                for(var _len = arguments.length, pids = new Array(_len), _key = 0; _key < _len; _key++){
-                    pids[_key] = arguments[_key];
-                }
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var pid = _step.value;
-                        var _$_class_private_field_get;
-                        var d = (_$_class_private_field_get = _class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
-                        if (d && !d.dirty) {
-                            d.dirty = true;
-                            _class_private_method_get(this, _emit, emit).call(this, {
-                                op: "dirty",
-                                pid: pid,
-                                has: d.has
-                            });
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "g",
-            value: function g(pid) {
-                var _$_class_private_field_get;
-                var d = (_$_class_private_field_get = _class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
-                if (d) return d.dirty || !d.has ? _class_private_method_get(this, _computeDerived, computeDerived).call(this, pid, d) : d.value;
-                var slot = this.pidToSlot[pid];
-                return slot === -1 ? undefined : _class_private_method_get(this, _readSlot, readSlot).call(this, slot);
-            }
-        },
-        {
-            key: "h",
-            value: function h(pid) {
-                var _$_class_private_field_get;
-                var d = (_$_class_private_field_get = _class_private_field_get(this, _derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
-                if (d) {
-                    if (d.dirty || !d.has) _class_private_method_get(this, _computeDerived, computeDerived).call(this, pid, d);
-                    return true;
-                }
-                return this.pidToSlot[pid] !== -1;
-            }
-        },
-        {
-            key: "$debug",
-            value: function $debug() {
-                var limit = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
-                var _$_class_private_field_get;
-                _class_private_field_set(this, _hist, (_$_class_private_field_get = _class_private_field_get(this, _hist)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : []);
-                _class_private_field_set(this, _histLimit, limit);
-                return this;
-            } //  [$DEBUG]
-        },
-        {
-            key: "$strict",
-            value: function $strict() {
-                _class_private_field_set(this, _strict, true);
-                return this;
-            } //                                     [$STRICT]
-        },
-        {
-            key: "$history",
-            value: function $history() {
-                return _class_private_field_get(this, _hist) ? map_byte_to_consumable_array(_class_private_field_get(this, _hist)) : [];
-            } //                    [$HISTORY]
-        },
-        {
-            key: "$why",
-            value: function $why(pid) {
-                if (!_class_private_field_get(this, _hist)) return undefined;
-                for(var i = _class_private_field_get(this, _hist).length - 1; i >= 0; i--)if (_class_private_field_get(this, _hist)[i].pid === pid) return _class_private_field_get(this, _hist)[i];
-                return undefined;
-            }
-        },
-        {
-            key: "$diff",
-            value: function $diff(other) {
-                var add = [];
-                var del = [];
-                var chg = [];
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (!other.has(pid)) add.push([
-                            pid,
-                            v
-                        ]);
-                        else if (!map_byte_sameValue128(other.get(pid), v)) chg.push([
-                            pid,
-                            v,
-                            other.get(pid)
-                        ]);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
-                try {
-                    for(var _iterator1 = other.keys()[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
-                        var pid1 = _step1.value;
-                        if (!this.has(pid1)) del.push(pid1);
-                    }
-                } catch (err) {
-                    _didIteratorError1 = true;
-                    _iteratorError1 = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
-                            _iterator1.return();
-                        }
-                    } finally{
-                        if (_didIteratorError1) {
-                            throw _iteratorError1;
-                        }
-                    }
-                }
-                return {
-                    add: add,
-                    del: del,
-                    chg: chg
-                };
-            }
-        },
-        {
-            key: "entries",
-            value: function entries() {
-                var i;
-                return _ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            _class_private_field_update(this, _iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                6,
-                                7
-                            ]);
-                            i = 0;
-                            _state.label = 2;
-                        case 2:
-                            if (!(i < _class_private_field_get(this, _size))) return [
-                                3,
-                                5
-                            ];
-                            return [
-                                4,
-                                [
-                                    this.slotToPid[i],
-                                    _class_private_method_get(this, _readSlot, readSlot).call(this, i)
-                                ]
-                            ];
-                        case 3:
-                            _state.sent();
-                            _state.label = 4;
-                        case 4:
-                            i++;
-                            return [
-                                3,
-                                2
-                            ];
-                        case 5:
-                            return [
-                                3,
-                                7
-                            ];
-                        case 6:
-                            _class_private_field_update(this, _iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 7:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: "keys",
-            value: function keys() {
-                var i;
-                return _ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            _class_private_field_update(this, _iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                6,
-                                7
-                            ]);
-                            i = 0;
-                            _state.label = 2;
-                        case 2:
-                            if (!(i < _class_private_field_get(this, _size))) return [
-                                3,
-                                5
-                            ];
-                            return [
-                                4,
-                                this.slotToPid[i]
-                            ];
-                        case 3:
-                            _state.sent();
-                            _state.label = 4;
-                        case 4:
-                            i++;
-                            return [
-                                3,
-                                2
-                            ];
-                        case 5:
-                            return [
-                                3,
-                                7
-                            ];
-                        case 6:
-                            _class_private_field_update(this, _iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 7:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: "values",
-            value: function values() {
-                var i;
-                return _ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            _class_private_field_update(this, _iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                6,
-                                7
-                            ]);
-                            i = 0;
-                            _state.label = 2;
-                        case 2:
-                            if (!(i < _class_private_field_get(this, _size))) return [
-                                3,
-                                5
-                            ];
-                            return [
-                                4,
-                                _class_private_method_get(this, _readSlot, readSlot).call(this, i)
-                            ];
-                        case 3:
-                            _state.sent();
-                            _state.label = 4;
-                        case 4:
-                            i++;
-                            return [
-                                3,
-                                2
-                            ];
-                        case 5:
-                            return [
-                                3,
-                                7
-                            ];
-                        case 6:
-                            _class_private_field_update(this, _iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 7:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: Symbol.iterator,
-            value: function value() {
-                return this.entries();
-            }
-        },
-        {
-            key: "forEach",
-            value: function forEach(fn) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        fn(v, pid, this);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            }
-        },
-        {
-            key: "swap",
-            value: function swap(value, pid) {
-                var previous = this.has(pid) ? this.get(pid) : value;
-                this.s(value, pid);
-                return previous;
-            }
-        },
-        {
-            key: "take",
-            value: function take(pid) {
-                var value = this.g(pid);
-                this.d(pid);
-                return value;
-            } //             [TAKE]
-        },
-        {
-            key: "peek",
-            value: function peek(pid) {
-                return this.h(pid) ? this.g(pid) : false;
-            } //            [PEEK]
-        },
-        {
-            key: "getOrI",
-            value: function getOrI(value, pid) {
-                if (this.h(pid)) return this.g(pid);
-                this.s(value, pid);
-                return value;
-            }
-        },
-        {
-            key: "getOrM",
-            value: function getOrM(make, pid) {
-                if (this.h(pid)) return this.g(pid);
-                var value = make();
-                this.s(value, pid);
-                return value;
-            }
-        },
-        {
-            key: "update",
-            value: function update(pid, fn, initial) {
-                var has = this.h(pid);
-                var old = has ? this.g(pid) : initial === undefined ? 0 : initial;
-                var next = fn(old, has);
-                this.s(next, pid);
-                return next;
-            }
-        },
-        {
-            key: "setIfAbsent",
-            value: function setIfAbsent(value, pid) {
-                if (this.h(pid)) return false;
-                this.s(value, pid);
-                return true;
-            }
-        },
-        {
-            key: "setIfPresent",
-            value: function setIfPresent(value, pid) {
-                if (!this.h(pid)) return false;
-                this.s(value, pid);
-                return true;
-            }
-        },
-        {
-            key: "replace",
-            value: function replace(value, pid) {
-                return this.setIfPresent(value, pid);
-            } //                 [REPLACE]
-        },
-        {
-            key: "inc",
-            value: function inc(pid) {
-                var by = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
-                return this.update(pid, function(old) {
-                    return (old !== null && old !== void 0 ? old : 0) + by;
-                }, 0);
-            }
-        },
-        {
-            key: "touch",
-            value: function touch(pid) {
-                return this.setIfAbsent(0, pid);
-            } //                            [SWTOUCHAP]
-        },
-        {
-            key: "mapValues",
-            value: function mapValues(fn) {
-                var out = _class_private_method_get(this, _fresh, fresh).call(this);
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        out.s(fn(v, pid), pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "mapKeys",
-            value: function mapKeys(fn) {
-                var out = _class_private_method_get(this, _fresh, fresh).call(this); // target pids must still fit within cap
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        out.s(v, fn(v, pid));
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "filterKV",
-            value: function filterKV(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = map_byte_to_consumable_array(this.keys())[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var pid = _step.value;
-                        if (!pred(this.g(pid), pid)) this.d(pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "filterKeys",
-            value: function filterKeys(pred) {
-                return this.filterKV(pred);
-            } //          [FILTERKEYS]
-        },
-        {
-            key: "partition",
-            value: function partition(pred) {
-                var yes = _class_private_method_get(this, _fresh, fresh).call(this), no = _class_private_method_get(this, _fresh, fresh).call(this);
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        (pred(v, pid) ? yes : no).s(v, pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return [
-                    yes,
-                    no
-                ];
-            }
-        },
-        {
-            key: "find",
-            value: function find(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (pred(v, pid)) return [
-                            pid,
-                            v
-                        ];
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "findKey",
-            value: function findKey(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (pred(v, pid)) return pid;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "findValue",
-            value: function findValue(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (pred(v, pid)) return v;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "some",
-            value: function some(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (pred(v, pid)) return true;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return false;
-            }
-        },
-        {
-            key: "every",
-            value: function every(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (!pred(v, pid)) return false;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return true;
-            }
-        },
-        {
-            key: "reduce",
-            value: function reduce(fn, initial) {
-                var acc = initial;
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        acc = fn(acc, v, pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return acc;
-            }
-        },
-        {
-            key: "forEachKV",
-            value: function forEachKV(fn) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        fn(v, pid, this);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            } // [FOREACH]
-        },
-        {
-            key: "invert",
-            value: function invert() {
-                var out = new Map(); // values aren't valid pids/Int32 slots in general -> plain Map, not M2BI
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        out.set(this.stride === 1 ? String(v) : Array.from(v).join(","), pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "unique",
-            value: function unique(fn) {
-                var out = _class_private_method_get(this, _fresh, fresh).call(this);
-                var seen = new Set();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        var keyFor = fn ? fn(v, pid) : pid;
-                        var dedupeKey = this.stride === 1 ? String(v) : Array.from(v).join(",");
-                        if (!seen.has(dedupeKey)) {
-                            seen.add(dedupeKey);
-                            out.s(v, keyFor);
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "pick",
-            value: function pick(pids) {
-                var out = _class_private_method_get(this, _fresh, fresh).call(this);
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var pid = _step.value;
-                        if (this.h(pid)) out.s(this.g(pid), pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "omit",
-            value: function omit(pids) {
-                var omitted = new Set(pids);
-                var out = _class_private_method_get(this, _fresh, fresh).call(this);
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (!omitted.has(pid)) out.s(v, pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "merge",
-            value: function merge(other) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        this.s(v, pid);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "clearAndSet",
-            value: function clearAndSet(entries) {
-                var _this = this;
-                return this.batch(function() {
-                    _this.clear();
-                    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                    try {
-                        for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                            var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                            _this.s(v, pid);
-                        }
-                    } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
-                    } finally{
-                        try {
-                            if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                _iterator.return();
-                            }
-                        } finally{
-                            if (_didIteratorError) {
-                                throw _iteratorError;
-                            }
-                        }
-                    }
-                });
-            }
-        },
-        {
-            key: "toObject",
-            value: function toObject() {
-                var out = {};
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        out[pid] = v;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "toValues",
-            value: function toValues() {
-                return map_byte_to_consumable_array(this.values());
-            } //                                       [TOVALUES]
-        },
-        {
-            key: "toKeys",
-            value: function toKeys() {
-                return map_byte_to_consumable_array(this.keys());
-            } //                                                [TOKEYS]
-        },
-        {
-            key: "toArray",
-            value: function toArray() {
-                return map_byte_to_consumable_array(this.entries());
-            } //                                   [TOARRAY]
-        },
-        {
-            key: "group",
-            value: function group(fn) {
-                var out = new Map();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        var k = fn(v, pid);
-                        if (!out.has(k)) out.set(k, []);
-                        out.get(k).push(v);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "clone",
-            value: function clone() {
-                return new M2BI(this.cap, this.stride, this.entries());
-            }
-        },
-        {
-            key: "equals",
-            value: function equals(other) {
-                if (other === this) return true;
-                if (this.size !== other.size) return false;
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_byte_sliced_to_array(_step.value, 2), pid = _step_value[0], v = _step_value[1];
-                        if (!other.has(pid) || !map_byte_sameValue128(other.get(pid), v)) return false;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return true;
-            }
-        }
-    ], [
-        {
-            key: "fromObject",
-            value: function fromObject(obj, maxParticles) {
-                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
-                return new M2BI(maxParticles, stride, Object.entries(obj).map(function(param) {
-                    var _param = map_byte_sliced_to_array(param, 2), k = _param[0], v = _param[1];
-                    return [
-                        Number(k),
-                        v
-                    ];
-                }));
-            }
-        },
-        {
-            key: "fromEntries",
-            value: function fromEntries(entries, maxParticles) {
-                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
-                return new M2BI(maxParticles, stride, entries);
-            }
-        },
-        {
-            key: "from",
-            value: function from(map, maxParticles) {
-                var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
-                return new M2BI(maxParticles, stride, map);
-            }
-        }
-    ]);
-    return M2BI;
-}();
-function emit(e) {
-    var _$_class_private_field_get;
-    if (_class_private_field_get(this, _batching) > 0) {
-        var _$_class_private_field_get1;
-        _class_private_field_set(this, _pending, (_$_class_private_field_get1 = _class_private_field_get(this, _pending)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new Map());
-        var pending = _class_private_field_get(this, _pending).get(e.pid);
-        _class_private_field_get(this, _pending).set(e.pid, pending ? _object_spread_props(_object_spread({}, e), {
-            prev: pending.prev,
-            batch: true
-        }) : _object_spread_props(_object_spread({}, e), {
-            batch: true
-        }));
-        return;
-    }
-    _class_private_method_get(this, _record, record).call(this, e);
-    (_$_class_private_field_get = _class_private_field_get(this, _subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
-        try {
-            sub(e);
-        } catch (err) {
-            process.emitWarning(err);
-        }
-    });
-}
-function record(e) {
-    if (!_class_private_field_get(this, _hist)) return;
-    _class_private_field_get(this, _hist).push(e);
-    if (_class_private_field_get(this, _hist).length > _class_private_field_get(this, _histLimit)) _class_private_field_get(this, _hist).splice(0, _class_private_field_get(this, _hist).length - _class_private_field_get(this, _histLimit));
-}
-function invalidate(pid) {
-    var _$_class_private_field_get;
-    var deps = (_$_class_private_field_get = _class_private_field_get(this, _dependents)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(pid);
-    if (!deps) return;
-    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-    try {
-        for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-            var dk = _step.value;
-            var _$_class_private_field_get1;
-            var d = (_$_class_private_field_get1 = _class_private_field_get(this, _derived)) === null || _$_class_private_field_get1 === void 0 ? void 0 : _$_class_private_field_get1.get(dk);
-            if (!d || d.dirty) continue;
-            d.dirty = true;
-            _class_private_method_get(this, _emit, emit).call(this, {
-                op: "dirty",
-                pid: dk,
-                has: d.has
-            });
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally{
-        try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
-            }
-        } finally{
-            if (_didIteratorError) {
-                throw _iteratorError;
-            }
-        }
-    }
-}
-function computeDerived(pid, d) {
-    var _this = this;
-    var _d;
-    var vals = d.deps.map(function(dep) {
-        return _this.g(dep);
-    });
-    var next = (_d = d).fn.apply(_d, map_byte_to_consumable_array(vals));
-    var had = d.has;
-    var prev = d.value;
-    d.value = next;
-    d.has = true;
-    d.dirty = false;
-    if (!had || !map_byte_sameValue128(prev, next)) {
-        _class_private_method_get(this, _emit, emit).call(this, {
-            op: had ? "upd" : "set",
-            pid: pid,
-            v: next,
-            prev: prev,
-            has: true
-        });
-    }
-    return next;
-}
-function assertNotIterating(op) {
-    if (_class_private_field_get(this, _strict) && _class_private_field_get(this, _iterating) > 0) {
-        throw new Error("M2BI.".concat(op, "() during iteration. Snapshot keys first, or disable $strict()."));
-    }
-}
-function readSlot(slot) {
-    return this.stride === 1 ? this.vals[slot] : this.vals.subarray(slot * this.stride, slot * this.stride + this.stride);
-}
-function writeSlot(slot, v) {
-    if (this.stride === 1) this.vals[slot] = v;
-    else this.vals.set(v, slot * this.stride);
-}
-function fresh() {
-    return new map_byte_M2BI(this.cap, this.stride);
-}
-globalThis.M2B = map_byte_M2BI;
-
-function map_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
-function map_array_like_to_array(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
-    return arr2;
-}
-function map_array_with_holes(arr) {
-    if (Array.isArray(arr)) return arr;
-}
-function map_array_without_holes(arr) {
-    if (Array.isArray(arr)) return map_array_like_to_array(arr);
-}
-function map_assert_this_initialized(self) {
-    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    return self;
-}
-function map_call_super(_this, derived, args) {
-    derived = map_get_prototype_of(derived);
-    return map_possible_constructor_return(_this, map_is_native_reflect_construct() ? Reflect.construct(derived, args || [], map_get_prototype_of(_this).constructor) : derived.apply(_this, args));
-}
-function map_check_private_redeclaration(obj, privateCollection) {
-    if (privateCollection.has(obj)) {
-        throw new TypeError("Cannot initialize the same private elements twice on an object");
-    }
-}
-function map_class_apply_descriptor_get(receiver, descriptor) {
-    if (descriptor.get) return descriptor.get.call(receiver);
-    return descriptor.value;
-}
-function map_class_apply_descriptor_set(receiver, descriptor, value) {
-    if (descriptor.set) descriptor.set.call(receiver, value);
-    else {
-        if (!descriptor.writable) {
-            throw new TypeError("attempted to set read only private field");
-        }
-        descriptor.value = value;
-    }
-}
-function map_class_apply_descriptor_update(receiver, descriptor) {
-    if (descriptor.set) {
-        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
-        if (!("__destrWrapper" in descriptor)) {
-            descriptor.__destrWrapper = {
-                set value (v){
-                    descriptor.set.call(receiver, v);
-                },
-                get value () {
-                    return descriptor.get.call(receiver);
-                }
-            };
-        }
-        return descriptor.__destrWrapper;
-    } else {
-        if (!descriptor.writable) {
-            throw new TypeError("attempted to set read only private field");
-        }
-        return descriptor;
-    }
-}
-function map_class_call_check(instance, Constructor) {
-    if (!map_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
-}
-function map_class_extract_field_descriptor(receiver, privateMap, action) {
-    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
-    return privateMap.get(receiver);
-}
-function map_class_private_field_get(receiver, privateMap) {
-    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "get");
-    return map_class_apply_descriptor_get(receiver, descriptor);
-}
-function map_class_private_field_init(obj, privateMap, value) {
-    map_check_private_redeclaration(obj, privateMap);
-    privateMap.set(obj, value);
-}
-function map_class_private_field_set(receiver, privateMap, value) {
-    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "set");
-    map_class_apply_descriptor_set(receiver, descriptor, value);
-    return value;
-}
-function map_class_private_field_update(receiver, privateMap) {
-    var descriptor = map_class_extract_field_descriptor(receiver, privateMap, "update");
-    return map_class_apply_descriptor_update(receiver, descriptor);
-}
-function map_class_private_method_get(receiver, privateSet, fn) {
-    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
-    return fn;
-}
-function map_class_private_method_init(obj, privateSet) {
-    map_check_private_redeclaration(obj, privateSet);
-    privateSet.add(obj);
-}
-function map_construct(Parent, args, Class) {
-    if (map_is_native_reflect_construct()) map_construct = Reflect.construct;
-    else {
-        map_construct = function construct(Parent, args, Class) {
-            var a = [
-                null
-            ];
-            a.push.apply(a, args);
-            var Constructor = Function.bind.apply(Parent, a);
-            var instance = new Constructor();
-            if (Class) map_set_prototype_of(instance, Class.prototype);
-            return instance;
-        };
-    }
-    return map_construct.apply(null, arguments);
-}
-function map_defineProperties(target, props) {
-    for(var i = 0; i < props.length; i++){
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-    }
-}
-function map_create_class(Constructor, protoProps, staticProps) {
-    if (protoProps) map_defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) map_defineProperties(Constructor, staticProps);
-    return Constructor;
-}
-function map_define_property(obj, key, value) {
-    if (key in obj) {
-        Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else obj[key] = value;
-    return obj;
-}
-function map_get(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) map_get = Reflect.get;
-    else {
-        map_get = function get(target, property, receiver) {
-            var base = map_super_prop_base(target, property);
-            if (!base) return;
-            var desc = Object.getOwnPropertyDescriptor(base, property);
-            if (desc.get) return desc.get.call(receiver || target);
-            return desc.value;
-        };
-    }
-    return map_get(target, property, receiver || target);
-}
-function map_get_prototype_of(o) {
-    map_get_prototype_of = Object.setPrototypeOf ? Object.getPrototypeOf : function getPrototypeOf(o) {
-        return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return map_get_prototype_of(o);
-}
-function map_inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-        throw new TypeError("Super expression must either be null or a function");
-    }
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-        constructor: {
-            value: subClass,
-            writable: true,
-            configurable: true
-        }
-    });
-    if (superClass) map_set_prototype_of(subClass, superClass);
-}
-function map_instanceof1(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
-function map_is_native_function(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
-}
-function map_is_native_reflect_construct() {
-    try {
-        var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
-    } catch (_) {}
-    return (map_is_native_reflect_construct = function _is_native_reflect_construct() {
-        return !!result;
-    })();
-}
-function map_iterable_to_array(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
-        return Array.from(iter);
-    }
-}
-function map_iterable_to_array_limit(arr, i) {
-    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i == null) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _s, _e;
-    try {
-        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
-            _arr.push(_s.value);
-            if (i && _arr.length === i) break;
-        }
-    } catch (err) {
-        _d = true;
-        _e = err;
-    } finally{
-        try {
-            if (!_n && _i["return"] != null) _i["return"]();
-        } finally{
-            if (_d) throw _e;
-        }
-    }
-    return _arr;
-}
-function map_non_iterable_rest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function map_non_iterable_spread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function map_object_spread(target) {
-    for(var i = 1; i < arguments.length; i++){
-        var source = arguments[i] != null ? arguments[i] : {};
-        var ownKeys = Object.keys(source);
-        if (typeof Object.getOwnPropertySymbols === "function") {
-            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-            }));
-        }
-        ownKeys.forEach(function(key) {
-            map_define_property(target, key, source[key]);
-        });
-    }
-    return target;
-}
-function map_ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-        var symbols = Object.getOwnPropertySymbols(object);
-        if (enumerableOnly) {
-            symbols = symbols.filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-            });
-        }
-        keys.push.apply(keys, symbols);
-    }
-    return keys;
-}
-function map_object_spread_props(target, source) {
-    source = source != null ? source : {};
-    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    else {
-        map_ownKeys(Object(source)).forEach(function(key) {
-            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-    }
-    return target;
-}
-function map_possible_constructor_return(self, call) {
-    if (call && (map_type_of(call) === "object" || typeof call === "function")) return call;
-    return map_assert_this_initialized(self);
-}
-function map_set_prototype_of(o, p) {
-    map_set_prototype_of = Object.setPrototypeOf || function setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-    };
-    return map_set_prototype_of(o, p);
-}
-function map_sliced_to_array(arr, i) {
-    return map_array_with_holes(arr) || map_iterable_to_array_limit(arr, i) || map_unsupported_iterable_to_array(arr, i) || map_non_iterable_rest();
-}
-function map_super_prop_base(object, property) {
-    while(!Object.prototype.hasOwnProperty.call(object, property)){
-        object = map_get_prototype_of(object);
-        if (object === null) break;
-    }
-    return object;
-}
-function map_to_consumable_array(arr) {
-    return map_array_without_holes(arr) || map_iterable_to_array(arr) || map_unsupported_iterable_to_array(arr) || map_non_iterable_spread();
-}
-function map_ts_generator(thisArg, body) {
-    var f, y, t, _ = {
-        label: 0,
-        sent: function sent() {
-            if (t[0] & 1) throw t[1];
-            return t[1];
-        },
-        trys: [],
-        ops: []
-    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
-    return d(g, "next", {
-        value: verb(0)
-    }), d(g, "throw", {
-        value: verb(1)
-    }), d(g, "return", {
-        value: verb(2)
-    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
-            return this;
-        }
-    }), g;
-    function verb(n) {
-        return function(v) {
-            return step([
-                n,
-                v
-            ]);
-        };
-    }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while(g && (g = 0, op[0] && (_ = 0)), _)try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [
-                op[0] & 2,
-                t.value
-            ];
-            switch(op[0]){
-                case 0:
-                case 1:
-                    t = op;
-                    break;
-                case 4:
-                    _.label++;
-                    return {
-                        value: op[1],
-                        done: false
-                    };
-                case 5:
-                    _.label++;
-                    y = op[1];
-                    op = [
-                        0
-                    ];
-                    continue;
-                case 7:
-                    op = _.ops.pop();
-                    _.trys.pop();
-                    continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                        _ = 0;
-                        continue;
-                    }
-                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                        _.label = op[1];
-                        break;
-                    }
-                    if (op[0] === 6 && _.label < t[1]) {
-                        _.label = t[1];
-                        t = op;
-                        break;
-                    }
-                    if (t && _.label < t[2]) {
-                        _.label = t[2];
-                        _.ops.push(op);
-                        break;
-                    }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop();
-                    continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) {
-            op = [
-                6,
-                e
-            ];
-            y = 0;
-        } finally{
-            f = t = 0;
-        }
-        if (op[0] & 5) throw op[1];
-        return {
-            value: op[0] ? op[1] : void 0,
-            done: true
-        };
-    }
-}
-function map_type_of(obj) {
-    "@swc/helpers - typeof";
-    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
-}
-function map_unsupported_iterable_to_array(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return map_array_like_to_array(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_array_like_to_array(o, minLen);
-}
-function map_wrap_native_super(Class) {
-    var _cache = typeof Map === "function" ? new Map() : undefined;
-    map_wrap_native_super = function _wrap_native_super(Class) {
-        if (Class === null || !map_is_native_function(Class)) return Class;
-        if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
-        if (typeof _cache !== "undefined") {
-            if (_cache.has(Class)) return _cache.get(Class);
-            _cache.set(Class, Wrapper);
-        }
-        function Wrapper() {
-            return map_construct(Class, arguments, map_get_prototype_of(this).constructor);
-        }
-        Wrapper.prototype = Object.create(Class.prototype, {
-            constructor: {
-                value: Wrapper,
-                enumerable: false,
-                writable: true,
-                configurable: true
-            }
-        });
-        return map_set_prototype_of(Wrapper, Class);
-    };
-    return map_wrap_native_super(Class);
-}
-var map_rv = function rv(v) {
-    return typeof v === "function" ? v() : v;
-};
-var map_sameValue = function sameValue(a, b) {
-    return Object.is(a, b) || map_instanceof1(a, Date) && map_instanceof1(b, Date) && +a === +b;
-};
-var map_subs = /*#__PURE__*/ new WeakMap(), map_hist = /*#__PURE__*/ new WeakMap(), map_histLimit = /*#__PURE__*/ new WeakMap(), map_strict = /*#__PURE__*/ new WeakMap(), map_iterating = /*#__PURE__*/ new WeakMap(), map_batching = /*#__PURE__*/ new WeakMap(), map_pending = /*#__PURE__*/ new WeakMap(), map_derived = /*#__PURE__*/ new WeakMap(), map_dependents = /*#__PURE__*/ new WeakMap(), map_emit = /*#__PURE__*/ new WeakSet(), map_record = /*#__PURE__*/ new WeakSet(), map_invalidate = /*#__PURE__*/ new WeakSet(), map_computeDerived = /*#__PURE__*/ new WeakSet(), map_assertNotIterating = /*#__PURE__*/ new WeakSet();
-var map_M2I = /*#__PURE__*/ function(Map1) {
-    "use strict";
-    map_inherits(M2I, Map1);
-    function M2I() {
-        map_class_call_check(this, M2I);
-        var _this;
-        _this = map_call_super(this, M2I, arguments), map_class_private_method_init(_this, map_emit), map_class_private_method_init(_this, map_record), map_class_private_method_init(_this, map_invalidate), map_class_private_method_init(_this, map_computeDerived), map_class_private_method_init(_this, map_assertNotIterating), // public h = this.has;
-        // public d = this.delete;
-        // public c = this.clear
-        map_define_property(_this, "f", _this.forEach) //                                                     [FOR EACH]
-        , map_class_private_field_init(_this, map_subs, {
-            writable: true,
-            value: void 0
-        }), map_class_private_field_init(_this, map_hist, {
-            writable: true,
-            value: void 0
-        }), map_class_private_field_init(_this, map_histLimit, {
-            writable: true,
-            value: 0
-        }), map_class_private_field_init(_this, map_strict, {
-            writable: true,
-            value: false
-        }), map_class_private_field_init(_this, map_iterating, {
-            writable: true,
-            value: 0
-        }), map_class_private_field_init(_this, map_batching, {
-            writable: true,
-            value: 0
-        }), map_class_private_field_init(_this, map_pending, {
-            writable: true,
-            value: void 0
-        }), map_class_private_field_init(_this, map_derived, {
-            writable: true,
-            value: void 0
-        }), map_class_private_field_init(_this, map_dependents, {
-            writable: true,
-            value: void 0
-        });
-        return _this;
-    }
-    map_create_class(M2I, [
-        {
-            key: Symbol.iterator,
-            value: function value() {
-                return this.entries();
-            }
-        },
-        {
-            key: "on",
-            value: function on(fn) {
-                var _this = this;
-                var _$_class_private_field_get;
-                map_class_private_field_set(this, map_subs, (_$_class_private_field_get = map_class_private_field_get(this, map_subs)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new Set()).add(fn);
-                return function() {
-                    return _this.off(fn);
-                };
-            }
-        },
-        {
-            key: "off",
-            value: function off(fn) {
-                var _$_class_private_field_get;
-                (_$_class_private_field_get = map_class_private_field_get(this, map_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.delete(fn);
-            }
-        },
-        {
-            key: "batch",
-            value: function batch(fn) {
-                var _$_class_private_field_get;
-                map_class_private_field_update(this, map_batching).value++;
-                map_class_private_field_set(this, map_pending, (_$_class_private_field_get = map_class_private_field_get(this, map_pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I());
-                try {
-                    fn();
-                } finally{
-                    map_class_private_field_update(this, map_batching).value--;
-                    if (map_class_private_field_get(this, map_batching) === 0) {
-                        var events = map_to_consumable_array(map_class_private_field_get(this, map_pending).values());
-                        map_class_private_field_set(this, map_pending, undefined);
-                        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                        try {
-                            var _this, _loop = function _loop() {
-                                var e = _step.value;
-                                var _$_class_private_field_get;
-                                map_class_private_method_get(_this, map_record, src_map_record).call(_this, e);
-                                (_$_class_private_field_get = map_class_private_field_get(_this, map_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
-                                    return sub(e);
-                                });
-                            };
-                            for(var _iterator = events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true)_this = this, _loop();
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally{
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                    _iterator.return();
-                                }
-                            } finally{
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "s",
-            value: function s(v, k) {
-                map_class_private_method_get(this, map_assertNotIterating, src_map_assertNotIterating).call(this, "s");
-                var next = map_rv(v);
-                var has = this.h(k);
-                var prev = has ? this.g(k) : undefined;
-                map_get(map_get_prototype_of(M2I.prototype), "set", this).call(this, k, next);
-                map_class_private_method_get(this, map_invalidate, src_map_invalidate).call(this, k);
-                map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-                    op: "set",
-                    k: k,
-                    v: next,
-                    prev: prev,
-                    has: has
-                });
-                return this;
-            }
-        },
-        {
-            key: "mutate",
-            value: function mutate(k, fn) {
-                map_class_private_method_get(this, map_assertNotIterating, src_map_assertNotIterating).call(this, "mutate");
-                if (!this.h(k)) return undefined;
-                var old = this.g(k);
-                var next = fn(old, true);
-                this.s(next, k);
-                return next;
-            }
-        },
-        {
-            key: "d",
-            value: function d(k) {
-                map_class_private_method_get(this, map_assertNotIterating, src_map_assertNotIterating).call(this, "delete");
-                if (!this.h(k)) return false;
-                var prev = this.g(k);
-                var out = map_get(map_get_prototype_of(M2I.prototype), "delete", this).call(this, k);
-                map_class_private_method_get(this, map_invalidate, src_map_invalidate).call(this, k);
-                map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-                    op: "del",
-                    k: k,
-                    prev: prev,
-                    has: false
-                });
-                return out;
-            }
-        },
-        {
-            key: "c",
-            value: function c() {
-                map_class_private_method_get(this, map_assertNotIterating, src_map_assertNotIterating).call(this, "clear");
-                var entries = map_to_consumable_array(this.entries());
-                map_get(map_get_prototype_of(M2I.prototype), "clear", this).call(this);
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], prev = _step_value[1];
-                        map_class_private_method_get(this, map_invalidate, src_map_invalidate).call(this, k);
-                        map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-                            op: "del",
-                            k: k,
-                            prev: prev,
-                            has: false
-                        });
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            }
-        },
-        {
-            key: "dv",
-            value: function dv(k, deps, fn) {
-                var _$_class_private_field_get;
-                map_class_private_field_set(this, map_derived, (_$_class_private_field_get = map_class_private_field_get(this, map_derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I()).set(k, {
-                    deps: deps,
-                    fn: fn,
-                    dirty: true,
-                    has: false
-                });
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var dep = _step.value;
-                        var _$_class_private_field_get1;
-                        map_class_private_field_set(this, map_dependents, (_$_class_private_field_get1 = map_class_private_field_get(this, map_dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new M2I()).getOrM(function() {
-                            return new Set();
-                        }, dep).add(k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "dirty",
-            value: function dirty() {
-                for(var _len = arguments.length, keys = new Array(_len), _key = 0; _key < _len; _key++){
-                    keys[_key] = arguments[_key];
-                }
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var k = _step.value;
-                        var _$_class_private_field_get;
-                        var d = (_$_class_private_field_get = map_class_private_field_get(this, map_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
-                        if (d && !d.dirty) {
-                            d.dirty = true;
-                            map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-                                op: "dirty",
-                                k: k,
-                                has: d.has
-                            });
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "g",
-            value: function g(k) {
-                var _$_class_private_field_get;
-                var d = (_$_class_private_field_get = map_class_private_field_get(this, map_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
-                if (d) {
-                    if (d.dirty || !d.has) return map_class_private_method_get(this, map_computeDerived, src_map_computeDerived).call(this, k, d);
-                    return d.value;
-                }
-                return map_get(map_get_prototype_of(M2I.prototype), "get", this).call(this, k);
-            }
-        },
-        {
-            key: "h",
-            value: function h(k) {
-                var _$_class_private_field_get;
-                var d = (_$_class_private_field_get = map_class_private_field_get(this, map_derived)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
-                if (d) {
-                    if (d.dirty || !d.has) map_class_private_method_get(this, map_computeDerived, src_map_computeDerived).call(this, k, d);
-                    return true;
-                }
-                return map_get(map_get_prototype_of(M2I.prototype), "has", this).call(this, k);
-            }
-        },
-        {
-            key: "$debug",
-            value: function $debug() {
-                var limit = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
-                var _$_class_private_field_get;
-                map_class_private_field_set(this, map_hist, (_$_class_private_field_get = map_class_private_field_get(this, map_hist)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : []);
-                map_class_private_field_set(this, map_histLimit, limit);
-                return this;
-            }
-        },
-        {
-            key: "$strict",
-            value: function $strict() {
-                map_class_private_field_set(this, map_strict, true);
-                return this;
-            }
-        },
-        {
-            key: "$history",
-            value: function $history() {
-                return map_class_private_field_get(this, map_hist) ? map_to_consumable_array(map_class_private_field_get(this, map_hist)) : [];
-            }
-        },
-        {
-            key: "$why",
-            value: function $why(k) {
-                if (!map_class_private_field_get(this, map_hist)) return undefined;
-                for(var i = map_class_private_field_get(this, map_hist).length - 1; i >= 0; i--){
-                    if (Object.is(map_class_private_field_get(this, map_hist)[i].k, k)) return map_class_private_field_get(this, map_hist)[i];
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "$diff",
-            value: function $diff(other) {
-                var add = [];
-                var del = [];
-                var chg = [];
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (!other.has(k)) {
-                            add.push([
-                                k,
-                                v
-                            ]);
-                        } else if (!Object.is(other.get(k), v)) {
-                            chg.push([
-                                k,
-                                v,
-                                other.get(k)
-                            ]);
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
-                try {
-                    for(var _iterator1 = other.keys()[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
-                        var k1 = _step1.value;
-                        if (!this.has(k1)) del.push(k1);
-                    }
-                } catch (err) {
-                    _didIteratorError1 = true;
-                    _iteratorError1 = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
-                            _iterator1.return();
-                        }
-                    } finally{
-                        if (_didIteratorError1) {
-                            throw _iteratorError1;
-                        }
-                    }
-                }
-                return {
-                    add: add,
-                    del: del,
-                    chg: chg
-                };
-            }
-        },
-        {
-            key: "entries",
-            value: function entries() {
-                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, entry, err;
-                return map_ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            map_class_private_field_update(this, map_iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                10,
-                                11
-                            ]);
-                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                            _state.label = 2;
-                        case 2:
-                            _state.trys.push([
-                                2,
-                                7,
-                                8,
-                                9
-                            ]);
-                            _iterator = map_get(map_get_prototype_of(M2I.prototype), "entries", this).call(this)[Symbol.iterator]();
-                            _state.label = 3;
-                        case 3:
-                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
-                                3,
-                                6
-                            ];
-                            entry = _step.value;
-                            return [
-                                4,
-                                entry
-                            ];
-                        case 4:
-                            _state.sent();
-                            _state.label = 5;
-                        case 5:
-                            _iteratorNormalCompletion = true;
-                            return [
-                                3,
-                                3
-                            ];
-                        case 6:
-                            return [
-                                3,
-                                9
-                            ];
-                        case 7:
-                            err = _state.sent();
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                            return [
-                                3,
-                                9
-                            ];
-                        case 8:
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                    _iterator.return();
-                                }
-                            } finally{
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                            return [
-                                7
-                            ];
-                        case 9:
-                            return [
-                                3,
-                                11
-                            ];
-                        case 10:
-                            map_class_private_field_update(this, map_iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 11:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: "keys",
-            value: function keys() {
-                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, k, err;
-                return map_ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            map_class_private_field_update(this, map_iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                10,
-                                11
-                            ]);
-                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                            _state.label = 2;
-                        case 2:
-                            _state.trys.push([
-                                2,
-                                7,
-                                8,
-                                9
-                            ]);
-                            _iterator = map_get(map_get_prototype_of(M2I.prototype), "keys", this).call(this)[Symbol.iterator]();
-                            _state.label = 3;
-                        case 3:
-                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
-                                3,
-                                6
-                            ];
-                            k = _step.value;
-                            return [
-                                4,
-                                k
-                            ];
-                        case 4:
-                            _state.sent();
-                            _state.label = 5;
-                        case 5:
-                            _iteratorNormalCompletion = true;
-                            return [
-                                3,
-                                3
-                            ];
-                        case 6:
-                            return [
-                                3,
-                                9
-                            ];
-                        case 7:
-                            err = _state.sent();
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                            return [
-                                3,
-                                9
-                            ];
-                        case 8:
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                    _iterator.return();
-                                }
-                            } finally{
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                            return [
-                                7
-                            ];
-                        case 9:
-                            return [
-                                3,
-                                11
-                            ];
-                        case 10:
-                            map_class_private_field_update(this, map_iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 11:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: "values",
-            value: function values() {
-                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, v, err;
-                return map_ts_generator(this, function(_state) {
-                    switch(_state.label){
-                        case 0:
-                            map_class_private_field_update(this, map_iterating).value++;
-                            _state.label = 1;
-                        case 1:
-                            _state.trys.push([
-                                1,
-                                ,
-                                10,
-                                11
-                            ]);
-                            _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                            _state.label = 2;
-                        case 2:
-                            _state.trys.push([
-                                2,
-                                7,
-                                8,
-                                9
-                            ]);
-                            _iterator = map_get(map_get_prototype_of(M2I.prototype), "values", this).call(this)[Symbol.iterator]();
-                            _state.label = 3;
-                        case 3:
-                            if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
-                                3,
-                                6
-                            ];
-                            v = _step.value;
-                            return [
-                                4,
-                                v
-                            ];
-                        case 4:
-                            _state.sent();
-                            _state.label = 5;
-                        case 5:
-                            _iteratorNormalCompletion = true;
-                            return [
-                                3,
-                                3
-                            ];
-                        case 6:
-                            return [
-                                3,
-                                9
-                            ];
-                        case 7:
-                            err = _state.sent();
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                            return [
-                                3,
-                                9
-                            ];
-                        case 8:
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                    _iterator.return();
-                                }
-                            } finally{
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                            return [
-                                7
-                            ];
-                        case 9:
-                            return [
-                                3,
-                                11
-                            ];
-                        case 10:
-                            map_class_private_field_update(this, map_iterating).value--;
-                            return [
-                                7
-                            ];
-                        case 11:
-                            return [
-                                2
-                            ];
-                    }
-                });
-            }
-        },
-        {
-            key: "swap",
-            value: function swap(value, key) {
-                var next = map_rv(value);
-                var previous = this.has(key) ? this.get(key) : next;
-                this.s(next, key);
-                return previous;
-            }
-        },
-        {
-            key: "take",
-            value: function take(k) {
-                var value = this.g(k);
-                this.d(k);
-                return value;
-            }
-        },
-        {
-            key: "peek",
-            value: function peek(k) {
-                return this.h(k) ? this.g(k) : false;
-            }
-        },
-        {
-            key: "getOrI",
-            value: function getOrI(value, k) {
-                if (this.h(k)) return this.g(k);
-                var next = map_rv(value);
-                this.s(next, k);
-                return next;
-            }
-        },
-        {
-            key: "getOrM",
-            value: function getOrM(make, k) {
-                if (this.h(k)) return this.g(k);
-                var value = make();
-                this.s(value, k);
-                return value;
-            }
-        },
-        {
-            key: "update",
-            value: function update(k, fn, initial) {
-                var has = this.h(k);
-                var old = has ? this.g(k) : initial === undefined ? undefined : map_rv(initial);
-                var next = map_rv(fn(old, has));
-                this.s(next, k);
-                return next;
-            }
-        },
-        {
-            key: "setIfAbsent",
-            value: function setIfAbsent(value, k) {
-                if (this.h(k)) return false;
-                var next = map_rv(value);
-                this.s(next, k);
-                return true;
-            }
-        },
-        {
-            key: "setIfPresent",
-            value: function setIfPresent(value, k) {
-                if (!this.h(k)) return false;
-                var next = map_rv(value);
-                this.s(next, k);
-                return true;
-            }
-        },
-        {
-            key: "replace",
-            value: function replace(value, k) {
-                var next = map_rv(value);
-                return this.setIfPresent(next, k);
-            }
-        },
-        {
-            key: "inc",
-            value: function inc(key) {
-                var by = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1;
-                return this.update(key, function(old) {
-                    return (old !== null && old !== void 0 ? old : 0) + by;
-                }, 0);
-            }
-        },
-        {
-            key: "touch",
-            value: function touch(k) {
-                return this.setIfAbsent(undefined, k);
-            }
-        },
-        {
-            key: "mapValues",
-            value: function mapValues(fn) {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        out.s(fn(v, k), k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "mapKeys",
-            value: function mapKeys(fn) {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        out.s(v, fn(v, k));
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "filterKV",
-            value: function filterKV(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (!pred(v, k)) this.d(k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "filterKeys",
-            value: function filterKeys(pred) {
-                return this.filterKV(pred);
-            }
-        },
-        {
-            key: "partition",
-            value: function partition(pred) {
-                var yes = new M2I();
-                var no = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        (pred(v, k) ? yes : no).s(v, k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return [
-                    yes,
-                    no
-                ];
-            }
-        },
-        {
-            key: "find",
-            value: function find(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (pred(v, k)) return [
-                            k,
-                            v
-                        ];
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "findKey",
-            value: function findKey(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (pred(v, k)) return k;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "findValue",
-            value: function findValue(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (pred(v, k)) return v;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return undefined;
-            }
-        },
-        {
-            key: "some",
-            value: function some(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (pred(v, k)) return true;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return false;
-            }
-        },
-        {
-            key: "every",
-            value: function every(pred) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (!pred(v, k)) return false;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return true;
-            }
-        },
-        {
-            key: "reduce",
-            value: function reduce(fn, initial) {
-                var acc = initial;
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        acc = fn(acc, v, k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return acc;
-            }
-        },
-        {
-            key: "forEachKV",
-            value: function forEachKV(fn) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        fn(v, k, this);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            }
-        },
-        {
-            key: "invert",
-            value: function invert() {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        out.s(k, v);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "unique",
-            value: function unique(fn) {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        var key = fn ? fn(v, k) : v;
-                        if (!out.h(key)) out.s(v, key);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "pick",
-            value: function pick(keys) {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var k = _step.value;
-                        if (this.h(k)) out.s(this.g(k), k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "omit",
-            value: function omit(keys) {
-                var omitted = new Set(keys);
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (!omitted.has(k)) out.s(v, k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "merge",
-            value: function merge(other) {
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        var n = map_rv(v);
-                        this.s(n, k);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return this;
-            }
-        },
-        {
-            key: "clearAndSet",
-            value: function clearAndSet(entries) {
-                var _this = this;
-                return this.batch(function() {
-                    _this.clear();
-                    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                    try {
-                        for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                            var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                            var n = map_rv(v);
-                            _this.s(n, k);
-                        }
-                    } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
-                    } finally{
-                        try {
-                            if (!_iteratorNormalCompletion && _iterator.return != null) {
-                                _iterator.return();
-                            }
-                        } finally{
-                            if (_didIteratorError) {
-                                throw _iteratorError;
-                            }
-                        }
-                    }
-                });
-            }
-        },
-        {
-            key: "toObject",
-            value: function toObject() {
-                var out = {};
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        out[k] = v;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "toValues",
-            value: function toValues() {
-                return A2.from(this.values());
-            } //                 [TOVALUES]
-        },
-        {
-            key: "toKeys",
-            value: function toKeys() {
-                return A2.from(this.keys());
-            } //                       [TOKEYS]
-        },
-        {
-            key: "toArray",
-            value: function toArray() {
-                return A2.from(this.entries());
-            } //             [TOARRAY]
-        },
-        {
-            key: "group",
-            value: function group(fn) {
-                var out = new M2I();
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        out.getOrM(function() {
-                            return new A2();
-                        }, fn(v, k)).push(v);
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return out;
-            }
-        },
-        {
-            key: "clone",
-            value: function clone() {
-                return new M2I(this);
-            }
-        },
-        {
-            key: "equals",
-            value: function equals(other) {
-                if (other === this) return true;
-                if (this.size !== other.size) return false;
-                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-                try {
-                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-                        var _step_value = map_sliced_to_array(_step.value, 2), k = _step_value[0], v = _step_value[1];
-                        if (!other.has(k) || !map_sameValue(other.get(k), v)) return false;
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally{
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
-                        }
-                    } finally{
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-                return true;
-            }
-        }
-    ], [
-        {
-            key: "fromObject",
-            value: function fromObject(obj) {
-                return new M2I(Object.entries(obj));
-            }
-        },
-        {
-            key: "fromEntries",
-            value: function fromEntries(entries) {
-                return new M2I(entries);
-            }
-        },
-        {
-            key: "from",
-            value: function from(map) {
-                return new M2I(map);
-            }
-        }
-    ]);
-    return M2I;
-}(map_wrap_native_super(Map));
-function src_map_emit(e) {
-    var _$_class_private_field_get;
-    if (map_class_private_field_get(this, map_batching) > 0) {
-        // coalesce: last write per key wins, keep prev from first event
-        var pending = map_class_private_field_get(this, map_pending).get(e.k);
-        map_class_private_field_get(this, map_pending).set(e.k, pending ? map_object_spread_props(map_object_spread({}, e), {
-            prev: pending.prev,
-            batch: true
-        }) : map_object_spread_props(map_object_spread({}, e), {
-            batch: true
-        }));
-        return;
-    }
-    map_class_private_method_get(this, map_record, src_map_record).call(this, e);
-    (_$_class_private_field_get = map_class_private_field_get(this, map_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.forEach(function(sub) {
-        try {
-            sub(e);
-        } catch (err) {
-            process.emitWarning(err);
-        }
-    });
-}
-function src_map_record(e) {
-    if (!map_class_private_field_get(this, map_hist)) return;
-    map_class_private_field_get(this, map_hist).push(e);
-    if (map_class_private_field_get(this, map_hist).length > map_class_private_field_get(this, map_histLimit)) {
-        map_class_private_field_get(this, map_hist).splice(0, map_class_private_field_get(this, map_hist).length - map_class_private_field_get(this, map_histLimit));
-    }
-}
-function src_map_invalidate(k) {
-    var _$_class_private_field_get;
-    var deps = (_$_class_private_field_get = map_class_private_field_get(this, map_dependents)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.get(k);
-    if (!deps) return;
-    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
-    try {
-        for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
-            var dk = _step.value;
-            var _$_class_private_field_get1;
-            var d = (_$_class_private_field_get1 = map_class_private_field_get(this, map_derived)) === null || _$_class_private_field_get1 === void 0 ? void 0 : _$_class_private_field_get1.get(dk);
-            if (!d || d.dirty) continue;
-            d.dirty = true;
-            map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-                op: "dirty",
-                k: dk,
-                has: d.has
-            });
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally{
-        try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
-            }
-        } finally{
-            if (_didIteratorError) {
-                throw _iteratorError;
-            }
-        }
-    }
-}
-function src_map_computeDerived(k, d) {
-    var _this = this;
-    var _d;
-    var vals = d.deps.map(function(dep) {
-        return _this.g(dep);
-    });
-    var next = (_d = d).fn.apply(_d, map_to_consumable_array(vals));
-    var had = d.has;
-    var prev = d.value;
-    d.value = next;
-    d.has = true;
-    d.dirty = false;
-    if (!had || !map_sameValue(prev, next)) {
-        map_class_private_method_get(this, map_emit, src_map_emit).call(this, {
-            op: had ? "upd" : "set",
-            k: k,
-            v: next,
-            prev: prev,
-            has: true
-        });
-    }
-    return next;
-}
-function src_map_assertNotIterating(op) {
-    if (map_class_private_field_get(this, map_strict) && map_class_private_field_get(this, map_iterating) > 0) {
-        throw new Error("M2.".concat(op, "() during iteration. Use filterKV(), collect keys first, or disable $strict()."));
-    }
-}
-globalThis.M2 = map_M2I; /*  ====================================================================================================
-    
-    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ 
 
 function number_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -9480,8 +11260,8 @@ var RECC2 = Object.assign(function(input, flags) {
     htmlTag: new reg_ex_REC2("<\\/?[a-zA-Z][^>]*>"),
     whitespaceOnly: new reg_ex_REC2("^\\s*$")
 });
-globalThis.REC2 = reg_ex_REC2;
-globalThis.RE2 = RECC2; /*  ====================================================================================================
+globalThis.RE2 = reg_ex_REC2;
+globalThis.RES2 = RECC2; /*  ====================================================================================================
     
     ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [REGEX] */ 
 
@@ -11712,7 +13492,7 @@ function soa_codec_define_property(obj, key, value) {
 var soa_codec_SOA_CODEC = /*#__PURE__*/ function() {
     "use strict";
     function SOA_CODEC() {
-        var maxPids = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192;
+        var maxPids = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192 * 2;
         soa_codec_class_call_check(this, SOA_CODEC);
         soa_codec_define_property(this, "maxPids", void 0);
         // SoA Memory Layout (Typed Arrays for Cache Locality)
@@ -11745,6 +13525,8 @@ var soa_codec_SOA_CODEC = /*#__PURE__*/ function() {
     ]);
     return SOA_CODEC;
 }();
+var soa_codeci = new soa_codec_SOA_CODEC();
+globalThis.soa_codec = soa_codeci;
 
 function string_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -14167,4 +15949,11 @@ globalThis.WS2 = weak_set_WS2I;
 
 
 
-export { RECC2 as RECC, array_A2I as A2, boolean_byte_B2BI as B2B, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_byte_M2BI as M2B, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as REC, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };
+
+function MaybePromisei(v) {
+    return v !== undefined ? v : Promise.resolve(v);
+}
+globalThis.MaybePromise = MaybePromisei;
+
+
+export { MaybePromisei, RECC2 as RES2, array_A2I as A2, boolean_byte_B2BI as B2B, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_rows_M2RI as M2R, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };

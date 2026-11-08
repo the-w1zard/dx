@@ -4,10 +4,12 @@
 	"sideEffects": false,
 	"type": "module",
 	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js",
-			"types": "./src/dx.d.ts"
+			"import": "./dist/index.js"
 		}
 	},
 	"files": [
@@ -21,7 +23,7 @@
 		"4": "npm version patch",
 		"5": "git push --tags",
 		"6": "npm publish --access public",
-		"build": "rspack build",
+		"build": "tsc --emitDeclarationOnly && rspack build",
 		"dev": "rspack serve",
 		"check": "tsc --noEmit",
 		"*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run *"
@@ -30,15 +32,15 @@
 		"@rspack/cli": "^2.3.1",
 		"@rspack/core": "^2.3.1",
 		"@rspack/dev-server": "^2.2.2",
+		"@the-w1zard/alias_types": "^1.0.3",
 		"@tsconfig/node-lts": "^24.0.0",
 		"@types/node": "^24.0.0",
-		"typescript": "^6.0.0",
-		"jsrepo": "^3.8.3"
+		"jsrepo": "^3.8.3",
+		"typescript": "^6.0.0"
 	},
 	"dependencies": {
 		"@babel/parser": "^8.1.0",
 		"@babel/traverse": "^8.1.0",
-		"@babel/types": "^8.1.0",
-		"@the-w1zard/alias_types": "^1.0.2"
+		"@babel/types": "^8.1.0"
 	}
 }

@@ -95,7 +95,7 @@ export class M2BINI<K = N, V = N> {
         return this.entries();
     }
 
-    forEach(fn: (v: V, k: K, m: Map<K, V>) => void, thisArg?: unknown): void {
+    forEach(fn: (v: V, k: K, m: M2BINI<K, V>) => V, thisArg?: unknown): void {
         for (let i = 0; i < this.#size; i++) fn.call(thisArg, this.#vals[i] as V, this.#slotToPid[i] as K, this);
         this.#odd?.forEach((v, k) => fn.call(thisArg, v, k as K, this));
     }

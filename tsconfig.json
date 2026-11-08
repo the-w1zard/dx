@@ -11,8 +11,6 @@
 	"strict": true,
 	"isolatedModules": false,
 	"skipLibCheck": true,
-	"noEmit": true,
-	"verbatimModuleSyntax": true,
     "types":[
 		"./src/dx.d.ts",
 		"@the-w1zard/alias_types",
@@ -25,5 +23,5 @@
 	}
   },
   "include": ["**/*.ts", "**/*.tsx" ],
-  "exclude": ["node_modules", "dist", "./RKIVE/**/*"],
+  "exclude": ["node_modules", "dist", "./RKIVE/**/*",  "rspack.config.ts",  "sauron-rspack.ts"],
 }

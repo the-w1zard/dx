@@ -48,7 +48,7 @@ export class M2DI<Key=A, V = number> {
             this.#vals[k] = v;
             return this;
         }
-        (this.#odd ??= new Map()).set(k as Key, v);
+        (this.#odd ??= new M2<Key, V>()).set(k as Key, v);
         return this;
     }
     delete(k: number): B {
@@ -61,7 +61,7 @@ export class M2DI<Key=A, V = number> {
         }
         return this.#odd !== null && this.#odd.delete(k as Key);
     }
-    clear(): V {
+    clear() {
         this.#live.fill(0);
         this.#size = 0;
         this.#odd?.clear();
@@ -101,7 +101,7 @@ export class M2DI<Key=A, V = number> {
     [Symbol.iterator](): MapIterator<[N, V]> {
         return this.entries();
     }
-    forEach(fn: (v: V, k: N, m: M<N, V>) => V, thisArg?: U): V {
+    forEach(fn: (v: V, k: N, m: M<N, V>) => V, thisArg?: U) {
         const l = this.#live;
         for (let k = 0; k < l.length; k++) if (l[k] === 1) fn.call(thisArg, this.#vals[k] as V, k, this as U as Map<N, V>);
         this.#odd?.forEach((v, k) => fn.call(thisArg, v, k as N, this as U as Map<N, V>));
@@ -138,7 +138,7 @@ export class M2DI<Key=A, V = number> {
         return this.#live[pid] === 1;
     }
     /** walk live pids without allocating an iterator */
-    forEachRaw(fn: (pid: N, value: N) => V): V {
+    forEachRaw(fn: (pid: N, value: N) => V) {
         const l = this.#live;
         for (let k = 0; k < l.length; k++) if (l[k] === 1) fn(k, this.#vals[k]);
     }
@@ -150,7 +150,7 @@ export class M2DI<Key=A, V = number> {
         }
         return out;
     }
-    #grow(need: N): V {
+    #grow(need: N) {
         let cap = this.#live.length;
         while (cap <= need) cap *= 2;
         const v = new Float64Array(cap);
