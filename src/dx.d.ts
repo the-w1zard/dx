@@ -19,7 +19,7 @@ import { SOA_CODEC, soa_codeci } from './soa_codec'
 import { S2I } from "./string";
 import { U82I } from "./unit8array";
 import { USP2I } from "./url_search_params";
-
+import { nestedi } from './nested'
 import { WM2I } from "./weak_map";
 import { WS2I } from "./weak_set";
 import { MaybePromisei, type MaybePromise } from './index'
@@ -46,6 +46,7 @@ declare global {
 
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
+	var nested: typeof nestedi; // nested
 
 	var RES2: typeof RECC2; // reg ex static
 	var RE2: typeof REC2; // reg ex
@@ -172,6 +173,28 @@ declare global {
 		clear(): void 
 	}
 	interface B2BI extends B2B {}
+
+	interface M2BIN<K, V> extends M2BINI {}
+	interface M2D<K, V> extends M2DI<K, V> {}
+	interface M2R<K> extends M2RI {}
+
+	 interface nested<K = A, V = A> {
+		r: A;
+		m: A;
+		s: A;
+		CACHE: ALL_MAPS;
+		FALLBACK: M2<A, M2<A, M2<K, V>>>;
+	
+		map<K, V>(s?: A, m?: A, r?: A): Map<A, A>;
+		m2<K, V>(s?: A, m?: A, r?: A): M2<A, A>;
+		m2b<K, V>(s?: A, m?: A, r?: A): M2B<A, A>;
+		m2bin<K, V>(s?: A, m?: A, r?: A): M2BIN<A, A>;
+		m2d<K, V>(s?: A, m?: A, r?: A): M2D<A, A>;
+		m2r<K>(s?: A, m?: A, r?: A): M2R<A>;
+		cache<K, V>(s?: A, m?: A, r?: A): M2<A, A>;
+	}
+	
+	interface nestedi<K = A, V = A> extends nested<K, V> {}
 	// #endregion 
 	//                                                                              [R2 — REGEX, THE M2 WAY]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 

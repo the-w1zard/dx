@@ -50,7 +50,7 @@
 
 > [!IMPORTANT] BENCH RESULTS
 >
-> Currently in the middle of creating and setting evreything up for the final boss. Since I have already created them, I'm going to be placing them within the solution due to the fact that I don't just throw everything away. Especially when they work like this.
+> Currently in the middle of throwing together another implementation and since I have already created them, I'm going to be placing them within the solution due to the fact that I don't just throw everything away. Especially when they work like this.
 >
 > To give some context on the numbers, starting with the basic map. V8 has optimized maps path, really optimized when its only used with int's. Essentially, simply put, its a disruptor. Which is why the number is so high. The very next one, is 
 >
@@ -96,76 +96,66 @@ The package extends native classes and exposes their implementations through `gl
   <li><a href="#er2--error">ER2 — Error</a></li>
   <li><a href="#i2--iterator">I2 — Iterator</a></li>
   <li><a href="#m2--map">M2 — Map</a></li>
-  <li><a href="#m2b--map-binary">M2B — Map Binary</a></li>
+  <li><a href="#m2b--map-byte">M2B — Map Byte</a></li>
+  <li><a href="#m2bin--map-binary">M2BIN — Map Binary</a></li>
+  <li><a href="#m2d--map-dense">M2D — Map Dense</a></li>
+  <li><a href="#m2r--map-rows">M2R — Map Rows</a></li>
   <li><a href="#n2--number">N2 — Number</a></li>
+  <li><a href="#nested--maps">nested — maps</a></li>
   <li><a href="#o2--object">O2 — Object</a></li>
   <li><a href="#p2--promise">P2 — Promise</a></li>
-  <li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
-  <li><a href="#u82--array">U82 — Uint8Array</a></li>
+  <li><a href="#re2--regular-expression">RE2 — Regular Expression</a></li>
+  <li><a href="#res2--regular-expression-static">RES2 — Regular Expression Builder &amp; Presets</a></li>
   <li><a href="#s2--string">S2 — String</a></li>
-  <li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
-  <li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
-  <li><a href="#o2--object">O2 — Object</a></li>
   <li><a href="#set2--set">SET2 — Set</a></li>
   <li><a href="#set2b--set-binary">SET2B — Set Binary</a></li>
+  <li><a href="#u82--array">U82 — Uint8Array</a></li>
+  <li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
+  <li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
+  <li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
 </ul>
 
-> [!IMPORTANT] UPDATE!!@!
+> [!IMPORTANT] To improve your ux/dx to an even greater degree...
 >
-> Where appropriate, there will be some additional functions that will surface as a complete byteop variant where each of the currently defined functions within this solution, will be getting a complete brother... or sister to stand beside it.
+> I would suggest checking out <a href="https://www.npmjs.com/package/@the-w1zard/alias_types">Alias Types</a>, as it aims to do the same thing as dx but from a different angle.
 >
-> This is not a priority for the solution, merely some extra goodies.
+> ```tsx 
+> npm i -D @the-w1zard/alias_types
+> ```
 >
-> With the performance difference between the two, I have found the use case for myself to create binary versions of each. Items like map and set are already in play and can be used. Items like array, will not be getting conversions.
-> Conversions completed so far:
-> 
-> - map
->   - fn: M2B
->   - interface: M2BI
-> - set
->   - fn: SET2B
->   - interface: SET2BI
-> - boolean
->   - fn: B2B 
->   - interface: B2BI
->
-> Each fn available globally, so your free to call without actually importing the implementation itself. The byteop variants will be mirror versions.
->
-> For the ones that aren't familiar, don't worry I got you...
->
-> There will be some accompanying utilities that will help with the use of the new fns as they either need to be converted to binary, or have values converted to use a pid in its place.
->
-> The pid converter will come with a 1-1 conversion as well as the ability to convert using the 3/4 scoped channel format.
->
-> Due to wanting to create the absolute dx possible, despite making a much more complex system available... each of the fns with have the same named fn, taking in the same props where applicable. For exmaple, getNestedMap... already has a stand in... getNestedMap, but inside the byte orientated class, taking in the same 3 props.
->
-> There will be 2 encoders available, cbor and avro.
->
-> Cbor being a bit more... lenient of the two, I guess is the right word. As you simply call upon encode or decode... and away you go. Where as with avro, you do need to set up a defined shapped schema in order to use it. Both of their use cases, but avro compresses to a much smaller figure and is 6x faster than cbor, if I remember correctly. It doesn't sound like much... but at these speed it adds up to a lot.
->
-> For example, while acheiving the 900+ mill ops/sec with benching, obviously that is not a realistic goal when it comes to the users usage path, but we need to get as close as we can and having a 6x mulitplier when your doing 900 mill ops/sec... is fucking huge.
-
+> ```tsx 
+> pnpm i -D @the-w1zard/alias_types
+> ```
 
 ## Global APIs
 
-| Global | Extends | Implementation | Purpose |
+| Global | Extends | Interface | Purpose |
 |---|---|---|---|
-| `N2` | `Number` | `N2I` | Numeric operations, range mapping, formatting, and validation |
-| `M2` | `Map` | `M2I` | Map access helpers, transformations, grouping, and comparison |
-| `I2` | Iterator | `I2I` | Lazy iterator pipelines and collection operations |
-| `ER2` | `Error` | `ER2I` | Error normalization, cloning, serialization, and wrapping |
-| `D2` | `Date` | `D2I` | Date arithmetic, boundaries, comparisons, and formatting |
 | `A2` | `Array` | `A2I` | Array manipulation, selection, grouping, and aggregation |
-| `SET2` | `Set` | `SET2I` | Extended set operations |
+| `B2` | — | `B2I` | Byte-based boolean operations |
+| `D2` | `Date` | `D2I` | Date arithmetic, boundaries, comparisons, and formatting |
+| `ER2` | `Error` | `ER2I` | Error normalization, cloning, serialization, and wrapping |
+| `I2` | Iterator | `I2I` | Lazy iterator pipelines and collection operations |
+| `M2` | `Map` | `M2I` | Map access helpers, transformations, grouping, and comparison |
+| `M2B` | `Map` | `M2BI` | Byte-backed map storage and operations |
+| `M2BIN` | `Map` | `M2BINI` | Binary map storage using packed PID-to-slot indexing |
+| `M2D` | `Map` | `M2DI` | Dense map storage using direct numeric indexing |
+| `M2R` | `Map` | `M2RI` | Packed fixed-width numeric row storage |
+| `N2` | `Number` | `N2I` | Numeric operations, range mapping, formatting, and validation |
+| `nested` | `class` | `nestedi` | Class exposing several nested maps fns |
 | `O2` | `Object` | `O2I` | Extended object operations |
-| `WM2` | `WeakMap` | `WM2I` | Extended weak-map operations |
-| `WS2` | `WeakSet` | `WS2I` | Extended weak-set operations |
 | `P2` | `Promise` | `P2I` | Extended promise operations |
+| `RE2` | `RegExp` | `RE2_IF` | Regex matching, collection, replacement, composition, and debugging |
+| `RES2` | — | `RE2Static` | Regex factory, builders, character classes, and presets |
 | `S2` | `String` | `S2I` | Extended string operations |
+| `SET2` | `Set` | `SET2I` | Extended set operations |
+| `SET2B` | `Set` | `SET2BI` | Binary set storage and operations |
 | `U82` | `Uint8Array` | `U82I` | Extended byte-array operations |
 | `USP2` | `URLSearchParams` | `USP2I` | Extended URL parameter operations |
+| `WM2` | `WeakMap` | `WM2I` | Extended weak-map operations |
+| `WS2` | `WeakSet` | `WS2I` | Extended weak-set operations |
 
-The global declarations provide TypeScript access to these APIs. `MaybePromise` is also declared globally as a type alias.
+The global declarations provide TypeScript access to these APIs. `MaybePromise` is also declared globally as a type alias and fn.
 
 ## Quick Reference
 
@@ -206,7 +196,7 @@ The global declarations provide TypeScript access to these APIs. `MaybePromise` 
 Static helpers include `A2I.from()` and `A2I.of()`.
 
 
-## `B2` — Byte Bool
+## `B2` — Bool Byte 
 
 `B2I` replaces boolean properties and boolean maps with a zero-allocation, PID-indexed `Uint8Array` lane. One byte per PID, no boxing, no `Map`, no per-entry allocation — `set`, `get`, and `toggle` are O(1) array stores, and `clear` is a single `fill(0)`.
 
@@ -418,7 +408,7 @@ Registered as a codec (`DATE_TAG = 0x4432`, `"D2"`): `enc` writes the epoch-ms a
 | `from(map)` | Create a map from another map |
 
 
-## `M2B` — Map binary
+## `M2B` — Map byte
 
 `M2B` is the dense, PID-indexed backing store for `M2`. Where `M2` accepts arbitrary keys and stores values in a `Map`, `M2B` stores fixed-width values in a flat `Float64Array`, indexed by integer PID. `pidToSlot` / `slotToPid` give O(1) lookup in both directions, and iteration walks the dense slot range — no hashing, no per-entry allocation.
 
@@ -475,6 +465,284 @@ Registered as a codec (`DATE_TAG = 0x4432`, `"D2"`): `enc` writes the epoch-ms a
 
 `cap`, `stride`, and `size` are exposed as readonly properties. `pidToSlot`, `slotToPid`, and `vals` are the backing arrays.
 
+## `M2BIN` — Binary Map
+
+`M2BIN` is a binary-backed map implementation optimized for numeric keys and numeric values. It uses typed arrays and direct PID-to-slot indexing for its fast path, while retaining a native `Map` as a fallback for other key/value combinations.
+
+Numeric keys are treated as PIDs. Values are stored in a `Float64Array`, with `Int32Array` indexes mapping PIDs to dense storage slots and slots back to PIDs. Deletion uses swap-with-last compaction, keeping the dense storage packed without leaving gaps.
+
+| Method / Property | Description |
+|---|---|
+| `size` | Total number of entries across binary storage and fallback storage |
+| `capacity` | Current capacity of the binary backing buffer |
+| `buffer` | Live `Float64Array` backing buffer |
+| `get(key)` | Retrieve a value by key |
+| `has(key)` | Check whether a key exists |
+| `set(key, value)` | Insert or update an entry; numeric PID/value pairs use binary storage |
+| `delete(key)` | Remove an entry; binary entries are removed using swap-with-last compaction |
+| `clear()` | Clear binary and fallback storage |
+| `keys()` | Iterate over stored keys |
+| `values()` | Iterate over stored values |
+| `entries()` | Iterate over key/value pairs |
+| `[Symbol.iterator]()` | Iterate over entries |
+| `forEach(fn, thisArg?)` | Iterate over values, keys, and the map instance |
+| `g(pid)` | Direct binary read by PID |
+| `s(value, pid)` | Direct binary write by PID |
+| `getOr(pid, default?)` | Read a PID value or return a numeric fallback |
+| `add(pid, delta)` | Add a numeric delta to a PID and return the resulting value |
+| `in(pid)` | Check whether a PID exists in binary storage |
+| `d(pid)` | Delete a PID |
+| `forEachRaw(fn)` | Iterate over PID/slot pairs without allocating an iterator |
+| `gather(pids, out?)` | Gather values for a list of PIDs into a `Float64Array`; absent PIDs produce `NaN` |
+
+### Storage layout
+
+| Buffer | Type | Purpose |
+|---|---|---|
+| `#vals` | `Float64Array` | Dense numeric value storage |
+| `#pidToSlot` | `Int32Array` | Maps a PID to its storage slot |
+| `#slotToPid` | `Int32Array` | Maps a storage slot back to its PID |
+| `#odd` | `Map<Key, V>` | Fallback storage for non-binary entries |
+
+The binary storage uses dense slots rather than storing values directly at their PID indexes. This allows sparse PIDs without requiring the value buffer to contain unused gaps.
+
+### Binary operations
+
+The short-form methods operate directly on the binary storage:
+
+| Method | Description |
+|---|---|
+| `g(pid)` | Read a value by PID |
+| `s(value, pid)` | Write a value by PID |
+| `getOr(pid, default?)` | Read with a numeric fallback |
+| `add(pid, delta)` | Increment a PID value |
+| `in(pid)` | Check binary PID existence |
+| `d(pid)` | Delete a PID |
+| `forEachRaw(fn)` | Walk PID/slot pairs |
+| `gather(pids, out?)` | Bulk-read values into a typed array |
+
+`forEachRaw` exposes the underlying PID/slot relationship directly, avoiding the allocation and callback overhead of standard entry iteration.
+
+`gather` supports bulk reads into a reusable output buffer, making it suitable for repeated numeric operations.
+
+### Capacity and growth
+
+The constructor accepts an initial capacity:
+
+```ts
+new M2BIN<K, V>(1024)
+```
+
+The backing arrays grow automatically when a PID or dense slot exceeds the current capacity. Growth doubles the capacity and copies the existing typed-array contents into the expanded buffers.
+
+### Intended use
+
+`M2BIN` is intended for workloads where:
+
+- Keys are numeric PIDs.
+- Values are numeric.
+- Fast direct reads and writes are important.
+- Dense iteration is preferable to sparse PID-indexed storage.
+- Bulk numeric reads benefit from typed-array operations.
+- Non-binary entries still need a fallback storage path.
+
+
+
+## `M2D` — Dense Map
+
+`M2D` is a dense, PID-indexed map implementation backed by typed arrays. Numeric keys are used directly as array indexes, eliminating the PID-to-slot indirection used by `M2BIN`.
+
+Values are stored at their corresponding PID positions in a `Float64Array`. A parallel `Uint8Array` tracks whether each position is occupied. This provides constant-time direct access while allowing sparse PID ranges without treating uninitialized positions as existing entries.
+
+A secondary `M2` instance provides fallback storage for entries that do not qualify for the numeric binary path.
+
+| Method / Property | Description |
+|---|---|
+| `size` | Total number of entries across dense and fallback storage |
+| `capacity` | Current capacity of the backing arrays |
+| `buffer` | Live `Float64Array` containing values at their PID indexes |
+| `live` | Live `Uint8Array` indicating occupied PID positions |
+| `get(key)` | Retrieve a value by numeric key or fallback key |
+| `has(key)` | Check whether a key exists |
+| `set(key, value)` | Insert or update an entry; numeric keys with numeric values use dense storage |
+| `delete(key)` | Remove an entry and clear its live flag |
+| `clear()` | Clear dense and fallback storage |
+| `keys()` | Iterate over occupied numeric PIDs and fallback keys |
+| `values()` | Iterate over stored values |
+| `entries()` | Iterate over key/value pairs |
+| `[Symbol.iterator]()` | Iterate over entries |
+| `forEach(fn, thisArg?)` | Iterate over values, keys, and the map instance |
+| `g(pid)` | Direct read by PID |
+| `s(value, pid)` | Direct write by PID |
+| `getOr(pid, default?)` | Read a PID value or return a numeric fallback |
+| `add(pid, delta)` | Add a numeric delta to a PID and return the resulting value |
+| `in(pid)` | Check whether a PID is occupied |
+| `forEachRaw(fn)` | Walk occupied PIDs and their values without allocating an iterator |
+| `gather(pids, out?)` | Bulk-read values into a `Float64Array`; absent PIDs produce `NaN` |
+
+### Storage layout
+
+| Buffer | Type | Purpose |
+|---|---|---|
+| `#vals` | `Float64Array` | Stores values directly at their PID indexes |
+| `#live` | `Uint8Array` | Tracks whether each PID position is occupied |
+| `#odd` | `M2<Key, V>` | Fallback storage for entries outside the numeric binary path |
+
+Unlike `M2BIN`, `M2D` does not maintain a separate PID-to-slot mapping. PID `p` always corresponds to `buffer[p]`.
+
+The live bitmap distinguishes an occupied position from an unused position, including positions whose stored numeric value is zero.
+
+### Binary operations
+
+The short-form methods operate directly on the dense storage:
+
+| Method | Description |
+|---|---|
+| `g(pid)` | Read the value at a PID |
+| `s(value, pid)` | Write a value at a PID |
+| `getOr(pid, default?)` | Read with a numeric fallback |
+| `add(pid, delta)` | Increment a PID value |
+| `in(pid)` | Check PID occupancy |
+| `forEachRaw(fn)` | Walk occupied PIDs and their values |
+| `gather(pids, out?)` | Bulk-read values into a typed array |
+
+### Capacity and growth
+
+The constructor accepts an initial capacity:
+
+```ts
+new M2D<Key, V>(1024)
+```
+
+When a numeric PID exceeds the current capacity, the backing arrays grow automatically. Capacity doubles until the requested PID fits.
+
+Existing values and occupancy flags are copied into the expanded arrays, preserving their PID positions.
+
+### Dense iteration
+
+`forEachRaw` walks the live bitmap and invokes its callback with the PID and corresponding numeric value.
+
+`gather` reads a supplied list of PIDs into an output buffer. Missing PIDs are represented by `NaN`, and callers can reuse an existing output buffer to avoid repeated allocations.
+
+### Intended use
+
+`M2D` is intended for workloads where:
+
+- Numeric PIDs are the primary keys.
+- Values are numeric.
+- Direct PID-to-array-index access is desirable.
+- Dense iteration over occupied positions is important.
+- Typed-array operations and bulk reads are useful.
+- A fallback map is still needed for non-binary entries.
+
+
+
+## `M2R` — Row Map
+
+`M2R` is a binary-backed map designed for storing fixed-width numeric rows under numeric PIDs. It combines dense slot storage with direct PID-to-slot indexing, allowing rows to be stored contiguously while supporting sparse PID values.
+
+Each entry occupies a fixed-width row in a `Float64Array`. The configured stride determines the number of numeric components per row. A pair of `Int32Array` indexes maps PIDs to dense slots and slots back to PIDs.
+
+Unlike `M2D`, which stores one numeric value directly at each PID index, `M2R` stores complete rows in packed storage. Deletion uses swap-with-last compaction, keeping the active rows contiguous.
+
+| Method / Property | Description |
+|---|---|
+| `size` | Number of stored rows |
+| `capacity` | Current PID/slot capacity |
+| `stride` | Number of numeric components per row |
+| `buffer` | Live backing `Float64Array` |
+| `get(pid)` | Return a zero-copy `Float64Array` view of a row, or `undefined` |
+| `has(pid)` | Check whether a PID exists |
+| `set(pid, value)` | Write a complete row and return the map |
+| `delete(pid)` | Remove a row using swap-with-last compaction |
+| `clear()` | Clear all PID mappings and stored rows |
+| `write(pid, value)` | Copy a complete row into storage |
+| `put(pid, component, value)` | Write an individual component |
+| `at(pid, component)` | Read an individual component |
+| `slotOf(pid)` | Resolve a PID to its dense slot, or return `-1` |
+| `row(pid)` | Return a zero-copy writable row view |
+| `live()` | Return a view over the contiguous active portion of the backing buffer |
+| `keys()` | Iterate over stored PIDs |
+| `values()` | Iterate over row views |
+| `entries()` | Iterate over PID/row pairs |
+| `[Symbol.iterator]()` | Iterate over entries |
+| `forEach(fn, thisArg?)` | Iterate over row views, PIDs, and the map instance |
+| `forEachRaw(fn)` | Iterate over PID/slot pairs without allocating an iterator |
+
+### Storage layout
+
+| Buffer | Type | Purpose |
+|---|---|---|
+| `#vals` | `Float64Array` | Contiguous fixed-width row storage |
+| `#pidToSlot` | `Int32Array` | Maps each PID to its dense slot |
+| `#slotToPid` | `Int32Array` | Maps each dense slot back to its PID |
+
+For a given PID, its row begins at:
+
+```ts
+const offset = slot * stride;
+```
+
+The row occupies `stride` consecutive elements in the backing buffer.
+
+### Row operations
+
+The row API provides both whole-row and individual-component access:
+
+| Method | Description |
+|---|---|
+| `get(pid)` | Obtain a row view |
+| `write(pid, values)` | Copy values into a row |
+| `put(pid, component, value)` | Update one component |
+| `at(pid, component)` | Read one component |
+| `row(pid)` | Obtain a writable row view |
+
+`get()` and `row()` return `subarray()` views rather than copied arrays. Changes made through those views directly modify the underlying storage.
+
+### Raw access and iteration
+
+`buffer` exposes the complete backing array.
+
+`live()` exposes only the active prefix:
+
+```ts
+buffer.subarray(0, size * stride)
+```
+
+This provides a contiguous representation of all active rows, suitable for direct consumption by workers, shaders, and other numeric processing systems.
+
+`forEachRaw` exposes PID/slot pairs without constructing row views or entry tuples.
+
+### Capacity and growth
+
+The constructor accepts an initial PID capacity and row stride:
+
+```ts
+new M2R<K>(1024, 3)
+```
+
+The default stride is `3`.
+
+When a PID or dense slot exceeds the current capacity, the index arrays and value buffer grow automatically. Existing mappings and row data are preserved.
+
+### Deletion and compaction
+
+Deleting a row moves the final active row into the deleted row's slot when necessary. The PID mappings are updated accordingly, keeping active storage contiguous.
+
+Consequently, dense slot positions are not stable across deletions. Use `slotOf(pid)` whenever the current slot is needed.
+
+### Intended use
+
+`M2R` is intended for workloads where:
+
+- Numeric PIDs identify records.
+- Each record contains a fixed number of numeric components.
+- Contiguous row storage is preferable to individually allocated objects.
+- Direct component access is important.
+- Dense iteration and bulk buffer access are useful.
+- Zero-copy row views are desirable.
+
+
 ## `N2` — Number
 
 Numeric helpers return `N2I` for chaining unless otherwise indicated.
@@ -519,6 +787,87 @@ Numeric helpers return `N2I` for chaining unless otherwise indicated.
 | `upTo(end, step?)` | Generate an ascending numeric array |
 | `downTo(end, step?)` | Generate a descending numeric array |
 
+
+## `nested` — Nested Map Storage
+
+`nested` provides a unified interface for creating and retrieving nested maps across multiple storage implementations. It uses a three-level addressing structure — `root`, `master`, and `slave` — to organize independently addressable map instances.
+
+The class supports native `Map`, `M2`, `M2B`, `M2BIN`, `M2D`, and `M2R`, with an optional externally supplied cache and an internal `M2` fallback.
+
+### Storage Methods
+
+| Method | Storage Type | Description |
+|---|---|---|
+| `map(s?, m?, r?)` | `Map` | Retrieves or creates a native JavaScript Map |
+| `m2(s?, m?, r?)` | `M2` | Retrieves or creates an extended Map |
+| `m2b(s?, m?, r?)` | `M2B` | Retrieves or creates a byte-backed Map |
+| `m2bin(s?, m?, r?)` | `M2BIN` | Retrieves or creates a binary Map |
+| `m2d(s?, m?, r?)` | `M2D` | Retrieves or creates a dense Map |
+| `m2r(s?, m?, r?)` | `M2R` | Retrieves or creates a row-based Map |
+| `cache(s?, m?, r?)` | `M2` | Retrieves or creates a Map through the supplied cache or internal fallback |
+
+### Addressing
+
+Each storage method accepts three address parameters:
+
+| Parameter | Default | Purpose |
+|---|---|---|
+| `s` | Storage method name | Identifies the slave map |
+| `m` | `'MASTER'` | Identifies the master namespace |
+| `r` | `'ROOT'` | Identifies the root namespace |
+
+The global storage methods use `globalThis[r]` as their root, allowing independently instantiated `nested` instances and application modules to access the same addressed storage hierarchy.
+
+The resulting structure is:
+
+```text
+globalThis[r]
+    └── master[m]
+          └── slave[s]
+                └── Map instance
+```
+
+### Cache and Fallback
+
+The constructor accepts an optional `CACHE` implementing one of the supported map types.
+
+- `CACHE` — uses the supplied map for root-level storage.
+- `FALLBACK` — uses an internal nested `M2` hierarchy when no external cache is supplied.
+
+The `cache()` method maintains its own nested addressing structure through the selected cache.
+
+### Usage
+
+```ts
+const nested = new nestedi();
+
+const users = nested.map('users');
+const sessions = nested.m2('sessions');
+const records = nested.m2bin('records');
+
+const shared = nested.cache('shared', 'APP', 'ROOT');
+```
+
+### Global Access
+
+A shared instance is exported as `nested` and assigned to `nested`, making the helper accessible across application modules without requiring each module to construct its own instance.
+
+### Types
+
+`ALL_MAPS` represents the supported storage implementations:
+
+```ts
+type ALL_MAPS =
+    | M2<K, V>
+    | Map<K, V>
+    | M2B
+    | M2BIN<K, V>
+    | M2D<K, V>
+    | M2R<K>
+    | NU;
+```
+
+`nested<K = A, V = A>` provides generic typing for its fallback storage and map operations.
 
 ## `O2` — Object
 
@@ -592,6 +941,109 @@ Static helpers:
 Chained operations return `P2` instances.
 
 
+
+## `RE2` — Regular Expression
+
+`REC2` wraps the native `RegExp` API and extends it with match collection, positional access, replacement callbacks, pattern composition, quantifier builders, flag manipulation, debugging, and utility methods. It accepts a regex source string and optional flags, or can be created from an existing `RegExp` using `fromRegExp`.
+
+| Method | Description |
+|---|---|
+| `source` / `flags` | Read the regular expression source and flags |
+| `global` / `ignoreCase` / `multiline` | Read the `g`, `i`, and `m` flag states |
+| `sticky` / `unicode` / `dotAll` / `hasIndices` | Read the `y`, `u`, `s`, and `d` flag states |
+| `toRegExp()` | Return a native `RegExp` copy |
+| `test(str)` / `h(str)` | Test whether the pattern matches; `h` is an alias for `test` |
+| `exec(str)` | Return the first native `RegExpExecArray` match or `null` |
+| `g(str)` | Return the first matched string or `undefined` |
+| `at(str, n)` | Return the matched string at an index; supports negative indexes |
+| `groups(str)` | Return the named capture groups from the first match |
+| `group(str, name)` | Return a capture by numeric index or named group |
+| `index(str)` | Return the first match's starting index, or `-1` |
+| `lastIndexOf(str)` | Return the final match's starting index, or `-1` |
+| `span(str)` | Return the first match's `[start, end]` positions |
+| `all(str)` | Return all matched strings |
+| `matches(str)` | Return detailed match records containing `match`, `index`, `lastIndex`, `groups`, and `raw` |
+| `allGroups(str)` | Return the named capture groups from every match |
+| `allSpans(str)` | Return the `[start, end]` positions of every match |
+| `count(str)` | Count all matches |
+| `positions(str)` | Return the starting indexes of all matches |
+| `replace(str, fn)` | Replace matches using a replacement string or callback |
+| `replaceFirst(str, fn)` | Replace only the first match |
+| `replaceAt(str, n, fn)` | Replace a specific match by index; supports negative indexes |
+| `remove(str)` / `removeFirst(str)` | Remove all matches or only the first match |
+| `split(str, limit?)` | Split a string using the pattern |
+| `splitKeep(str)` | Split while retaining matched separators |
+| `withFlags(flags)` | Create a new instance with the supplied flags |
+| `addFlag(flag)` | Add a flag if it is not already present |
+| `removeFlag(flag)` | Remove a flag |
+| `toggleFlag(flag)` | Add or remove a flag depending on its current state |
+| `withSource(src)` | Create a new instance using a different source |
+| `and(...parts)` | Concatenate patterns into a combined expression |
+| `or(...parts)` | Combine patterns as alternatives |
+| `cap(expr?)` | Wrap an expression in a capturing group |
+| `namedGroup(name, expr)` | Create a named capturing group |
+| `nonCap(expr)` | Create a non-capturing group |
+| `lookahead(expr)` / `notLookahead(expr)` | Create positive or negative lookahead assertions |
+| `lookbehind(expr)` / `notLookbehind(expr)` | Create positive or negative lookbehind assertions |
+| `optional(expr?)` | Apply the `?` quantifier |
+| `many(expr?)` | Apply the `+` quantifier |
+| `maybeMany(expr?)` | Apply the `*` quantifier |
+| `repeat(n, max?, expr?)` | Apply an exact or ranged repetition quantifier |
+| `lazy()` | Best-effort conversion of a trailing quantifier to lazy matching |
+| `$trace(str)` | Return detailed match records |
+| `$explain()` | Return flag descriptions and a formatted pattern explanation |
+| `$risky()` | Check for a potentially risky nested-quantifier pattern |
+| `$bench(str, iterations?)` | Benchmark repeated native regex tests |
+| `toString()` | Return the native regular expression string representation |
+| `equals(other)` | Compare source and flags against another regex input |
+| `clone()` | Create an independent copy |
+| `fromRegExp(re)` | Create a `REC2` instance from a native `RegExp` |
+
+
+
+## `RES2` — Regular Expression Static
+
+`RECC2` is a callable regex factory with static builders, character-class helpers, composition methods, and ready-made pattern presets. It accepts strings, native `RegExp` instances, or existing `RE2_IF` instances and returns a `RE2_IF` implementation. It also exposes `escapeRegex` and `explainSource` helpers through its associated utilities.
+
+| Method / Property | Description |
+|---|---|
+| `RECC2(input, flags?)` | Create a regex from a string, native `RegExp`, or existing `RE2_IF` |
+| `of(input, flags?)` | Normalize an input into a `RE2_IF`; optionally override flags |
+| `escape(str)` | Escape regex-special characters in a string |
+| `literal(str)` | Create a regex that matches the supplied string literally |
+| `seq(...parts)` | Combine patterns sequentially into one expression |
+| `alt(...parts)` | Combine patterns as alternatives |
+| `digit` | Match a digit (`\d`) |
+| `word` | Match a word character (`\w`) |
+| `space` | Match whitespace (`\s`) |
+| `any` | Match any character (`.`) |
+| `notDigit` | Match a non-digit (`\D`) |
+| `notWord` | Match a non-word character (`\W`) |
+| `notSpace` | Match non-whitespace (`\S`) |
+| `range(from, to)` | Match one character within a character range |
+| `oneOf(chars)` | Match one character from the supplied character set |
+| `noneOf(chars)` | Match one character not in the supplied character set |
+| `email` | Email-address pattern |
+| `url` | HTTP or HTTPS URL pattern; case-insensitive |
+| `uuid` | UUID pattern; case-insensitive |
+| `ipv4` | IPv4 address pattern |
+| `ipv6` | Full eight-group IPv6 address pattern |
+| `hex` | One or more hexadecimal characters |
+| `hexColor` | Three- or six-digit hexadecimal color pattern |
+| `slug` | Lowercase alphanumeric slug with optional hyphen-separated segments |
+| `alphaNumeric` | One or more alphanumeric characters |
+| `integer` | Optional leading minus sign followed by digits |
+| `float` | Optional leading minus sign, digits, and optional decimal portion |
+| `phoneLoose` | Loose phone-number pattern |
+| `isoDate` | `YYYY-MM-DD` date pattern |
+| `base64` | Base64 pattern with optional padding |
+| `jwt` | Three dot-separated JWT-style segments |
+| `semver` | Semantic-version-style pattern with optional prerelease and build metadata |
+| `creditCard` | Digit groups separated by optional spaces or hyphens |
+| `htmlTag` | Opening or closing HTML tag pattern |
+| `whitespaceOnly` | Match strings containing only whitespace, including empty strings |
+
+`seq()` wraps multi-character patterns when needed for concatenation and merges flags from its inputs. `alt()` creates a non-capturing alternation group and also merges input flags.
 
 ## `S2` — String
 

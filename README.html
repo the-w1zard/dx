@@ -184,6 +184,32 @@
 <div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>TLDR</p><p></p>
 <p>Take what is currently... lacking in the ux dept. and give it the updates they desperatly need.</p>
 </div>
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>BENCH RESULTS</p><p></p>
+<p>Currently in the middle of throwing together another implementation and since I have already created them, I'm going to be placing them within the solution due to the fact that I don't just throw everything away. Especially when they work like this.</p>
+<p>To give some context on the numbers, starting with the basic map. V8 has optimized maps path, really optimized when its only used with int's. Essentially, simply put, its a disruptor. Which is why the number is so high. The very next one, is</p>
+<pre><code class="language-txt">=== Starting 10-Second Nested Router Benchmarks ===
+[1. ORIGINAL RECIPE] 50,081,792 ops -&gt; 5,008,122 ops/sec
+[2. INTERNED] 90,097,664 ops -&gt; 9,009,692 ops/sec
+[3. HOT PATH IDX] 91,598,848 ops -&gt; 9,159,753 ops/sec
+[4. NOT NESTED, CHS CONVERTED TO BIG INT] 30,720 ops -&gt; 2,515 ops/sec
+[5. 3D FLAT (M2BNestedClass)] 2,272,765,952 ops -&gt; 227,274,854 ops/sec
+[6. True Binary + Single-Slot Memo] 1,037,336,576 ops -&gt; 103,733,619 ops/sec
+=== Benchmarks Complete ===
+
+
+--- Starting 10-Second Binary Store Benchmarks (Set &amp; Get) ---
+[Map] 478,537,728 ops in 10.00s -&gt; 47,853,532 ops/sec
+[getNestedMap6 vs)] 24,862,720 ops in 10.00s -&gt; 2,486,192 ops/sec
+[BYTEOP_MAP LG vs)] 286,138,368 ops in 10.00s -&gt; 28,613,545 ops/sec
+[M2B] 896,022,528 ops in 10.00s -&gt; 89,601,992 ops/sec
+[M2] 366,237,696 ops in 10.00s -&gt; 36,623,606 ops/sec
+[BYTE_MAP small vs)] 41,459,712 ops in 10.00s -&gt; 4,145,936 ops/sec
+[M2Bin (Hybrid Map + Int32/F64)] 35,465,216 ops in 10.00s -&gt; 3,546,358 ops/sec
+[M2Dense (Dense Array + Live Byte Lane)] 23,777,280 ops in 10.00s -&gt; 2,377,641 ops/sec
+[M2Rows (Strided Row Buffer, stride=1)] 31,150,080 ops in 10.00s -&gt; 3,114,899 ops/sec
+--- Benchmarks Complete ---
+</code></pre>
+</div>
 </span>
 <h1 id="built-in-api-extensions">Built-in API Extensions</h1>
 <p>Extensions to native JavaScript objects that improve developer experience by adding commonly needed operations while preserving the original APIs.</p>
@@ -196,52 +222,30 @@
   <li><a href="#er2--error">ER2 — Error</a></li>
   <li><a href="#i2--iterator">I2 — Iterator</a></li>
   <li><a href="#m2--map">M2 — Map</a></li>
-  <li><a href="#m2b--map-binary">M2B — Map Binary</a></li>
+  <li><a href="#m2b--map-byte">M2B — Map Byte</a></li>
+  <li><a href="#m2bin--map-binary">M2BIN — Map Binary</a></li>
+  <li><a href="#m2d--map-dense">M2D — Map Dense</a></li>
+  <li><a href="#m2r--map-rows">M2R — Map Rows</a></li>
   <li><a href="#n2--number">N2 — Number</a></li>
+  <li><a href="#nested--maps">nested — maps</a></li>
   <li><a href="#o2--object">O2 — Object</a></li>
   <li><a href="#p2--promise">P2 — Promise</a></li>
-  <li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
-  <li><a href="#u82--array">U82 — Uint8Array</a></li>
+  <li><a href="#re2--regular-expression">RE2 — Regular Expression</a></li>
+  <li><a href="#res2--regular-expression-static">RES2 — Regular Expression Builder &amp; Presets</a></li>
   <li><a href="#s2--string">S2 — String</a></li>
-  <li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
-  <li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
-  <li><a href="#o2--object">O2 — Object</a></li>
   <li><a href="#set2--set">SET2 — Set</a></li>
   <li><a href="#set2b--set-binary">SET2B — Set Binary</a></li>
+  <li><a href="#u82--array">U82 — Uint8Array</a></li>
+  <li><a href="#usp2--urlsearchparams">USP2 — URLSearchParams</a></li>
+  <li><a href="#wm2--weakmap">WM2 — WeakMap</a></li>
+  <li><a href="#ws2--weakset">WS2 — WeakSet</a></li>
 </ul>
-<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>UPDATE!!@!</p><p></p>
-<p>Where appropriate, there will be some additional functions that will surface as a complete byteop variant where each of the currently defined functions within this solution, will be getting a complete brother... or sister to stand beside it.</p>
-<p>This is not a priority for the solution, merely some extra goodies.</p>
-<p>With the performance difference between the two, I have found the use case for myself to create binary versions of each. Items like map and set are already in play and can be used. Items like array, will not be getting conversions.
-Conversions completed so far:</p>
-<ul>
-<li>map
-<ul>
-<li>fn: M2B</li>
-<li>interface: M2BI</li>
-</ul>
-</li>
-<li>set
-<ul>
-<li>fn: SET2B</li>
-<li>interface: SET2BI</li>
-</ul>
-</li>
-<li>boolean
-<ul>
-<li>fn: B2B</li>
-<li>interface: B2BI</li>
-</ul>
-</li>
-</ul>
-<p>Each fn available globally, so your free to call without actually importing the implementation itself. The byteop variants will be mirror versions.</p>
-<p>For the ones that aren't familiar, don't worry I got you...</p>
-<p>There will be some accompanying utilities that will help with the use of the new fns as they either need to be converted to binary, or have values converted to use a pid in its place.</p>
-<p>The pid converter will come with a 1-1 conversion as well as the ability to convert using the 3/4 scoped channel format.</p>
-<p>Due to wanting to create the absolute dx possible, despite making a much more complex system available... each of the fns with have the same named fn, taking in the same props where applicable. For exmaple, getNestedMap... already has a stand in... getNestedMap, but inside the byte orientated class, taking in the same 3 props.</p>
-<p>There will be 2 encoders available, cbor and avro.</p>
-<p>Cbor being a bit more... lenient of the two, I guess is the right word. As you simply call upon encode or decode... and away you go. Where as with avro, you do need to set up a defined shapped schema in order to use it. Both of their use cases, but avro compresses to a much smaller figure and is 6x faster than cbor, if I remember correctly. It doesn't sound like much... but at these speed it adds up to a lot.</p>
-<p>For example, while acheiving the 900+ mill ops/sec with benching, obviously that is not a realistic goal when it comes to the users usage path, but we need to get as close as we can and having a 6x mulitplier when your doing 900 mill ops/sec... is fucking huge.</p>
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>To improve your ux/dx to an even greater degree...</p><p></p>
+<p>I would suggest checking out <a href="https://www.npmjs.com/package/@the-w1zard/alias_types">Alias Types</a>, as it aims to do the same thing as dx but from a different angle.</p>
+<pre><code class="language-tsx">npm i -D @the-w1zard/alias_types
+</code></pre>
+<pre><code class="language-tsx">pnpm i -D @the-w1zard/alias_types
+</code></pre>
 </div>
 <h2 id="global-apis">Global APIs</h2>
 <table>
@@ -249,34 +253,22 @@ Conversions completed so far:</p>
 <tr>
 <th>Global</th>
 <th>Extends</th>
-<th>Implementation</th>
+<th>Interface</th>
 <th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>N2</code></td>
-<td><code>Number</code></td>
-<td><code>N2I</code></td>
-<td>Numeric operations, range mapping, formatting, and validation</td>
+<td><code>A2</code></td>
+<td><code>Array</code></td>
+<td><code>A2I</code></td>
+<td>Array manipulation, selection, grouping, and aggregation</td>
 </tr>
 <tr>
-<td><code>M2</code></td>
-<td><code>Map</code></td>
-<td><code>M2I</code></td>
-<td>Map access helpers, transformations, grouping, and comparison</td>
-</tr>
-<tr>
-<td><code>I2</code></td>
-<td>Iterator</td>
-<td><code>I2I</code></td>
-<td>Lazy iterator pipelines and collection operations</td>
-</tr>
-<tr>
-<td><code>ER2</code></td>
-<td><code>Error</code></td>
-<td><code>ER2I</code></td>
-<td>Error normalization, cloning, serialization, and wrapping</td>
+<td><code>B2</code></td>
+<td>—</td>
+<td><code>B2I</code></td>
+<td>Byte-based boolean operations</td>
 </tr>
 <tr>
 <td><code>D2</code></td>
@@ -285,16 +277,58 @@ Conversions completed so far:</p>
 <td>Date arithmetic, boundaries, comparisons, and formatting</td>
 </tr>
 <tr>
-<td><code>A2</code></td>
-<td><code>Array</code></td>
-<td><code>A2I</code></td>
-<td>Array manipulation, selection, grouping, and aggregation</td>
+<td><code>ER2</code></td>
+<td><code>Error</code></td>
+<td><code>ER2I</code></td>
+<td>Error normalization, cloning, serialization, and wrapping</td>
 </tr>
 <tr>
-<td><code>SET2</code></td>
-<td><code>Set</code></td>
-<td><code>SET2I</code></td>
-<td>Extended set operations</td>
+<td><code>I2</code></td>
+<td>Iterator</td>
+<td><code>I2I</code></td>
+<td>Lazy iterator pipelines and collection operations</td>
+</tr>
+<tr>
+<td><code>M2</code></td>
+<td><code>Map</code></td>
+<td><code>M2I</code></td>
+<td>Map access helpers, transformations, grouping, and comparison</td>
+</tr>
+<tr>
+<td><code>M2B</code></td>
+<td><code>Map</code></td>
+<td><code>M2BI</code></td>
+<td>Byte-backed map storage and operations</td>
+</tr>
+<tr>
+<td><code>M2BIN</code></td>
+<td><code>Map</code></td>
+<td><code>M2BINI</code></td>
+<td>Binary map storage using packed PID-to-slot indexing</td>
+</tr>
+<tr>
+<td><code>M2D</code></td>
+<td><code>Map</code></td>
+<td><code>M2DI</code></td>
+<td>Dense map storage using direct numeric indexing</td>
+</tr>
+<tr>
+<td><code>M2R</code></td>
+<td><code>Map</code></td>
+<td><code>M2RI</code></td>
+<td>Packed fixed-width numeric row storage</td>
+</tr>
+<tr>
+<td><code>N2</code></td>
+<td><code>Number</code></td>
+<td><code>N2I</code></td>
+<td>Numeric operations, range mapping, formatting, and validation</td>
+</tr>
+<tr>
+<td><code>nested</code></td>
+<td><code>class</code></td>
+<td><code>nestedi</code></td>
+<td>Class exposing several nested maps fns</td>
 </tr>
 <tr>
 <td><code>O2</code></td>
@@ -303,28 +337,40 @@ Conversions completed so far:</p>
 <td>Extended object operations</td>
 </tr>
 <tr>
-<td><code>WM2</code></td>
-<td><code>WeakMap</code></td>
-<td><code>WM2I</code></td>
-<td>Extended weak-map operations</td>
-</tr>
-<tr>
-<td><code>WS2</code></td>
-<td><code>WeakSet</code></td>
-<td><code>WS2I</code></td>
-<td>Extended weak-set operations</td>
-</tr>
-<tr>
 <td><code>P2</code></td>
 <td><code>Promise</code></td>
 <td><code>P2I</code></td>
 <td>Extended promise operations</td>
 </tr>
 <tr>
+<td><code>RE2</code></td>
+<td><code>RegExp</code></td>
+<td><code>RE2_IF</code></td>
+<td>Regex matching, collection, replacement, composition, and debugging</td>
+</tr>
+<tr>
+<td><code>RES2</code></td>
+<td>—</td>
+<td><code>RE2Static</code></td>
+<td>Regex factory, builders, character classes, and presets</td>
+</tr>
+<tr>
 <td><code>S2</code></td>
 <td><code>String</code></td>
 <td><code>S2I</code></td>
 <td>Extended string operations</td>
+</tr>
+<tr>
+<td><code>SET2</code></td>
+<td><code>Set</code></td>
+<td><code>SET2I</code></td>
+<td>Extended set operations</td>
+</tr>
+<tr>
+<td><code>SET2B</code></td>
+<td><code>Set</code></td>
+<td><code>SET2BI</code></td>
+<td>Binary set storage and operations</td>
 </tr>
 <tr>
 <td><code>U82</code></td>
@@ -338,9 +384,21 @@ Conversions completed so far:</p>
 <td><code>USP2I</code></td>
 <td>Extended URL parameter operations</td>
 </tr>
+<tr>
+<td><code>WM2</code></td>
+<td><code>WeakMap</code></td>
+<td><code>WM2I</code></td>
+<td>Extended weak-map operations</td>
+</tr>
+<tr>
+<td><code>WS2</code></td>
+<td><code>WeakSet</code></td>
+<td><code>WS2I</code></td>
+<td>Extended weak-set operations</td>
+</tr>
 </tbody>
 </table>
-<p>The global declarations provide TypeScript access to these APIs. <code>MaybePromise</code> is also declared globally as a type alias.</p>
+<p>The global declarations provide TypeScript access to these APIs. <code>MaybePromise</code> is also declared globally as a type alias and fn.</p>
 <h2 id="quick-reference">Quick Reference</h2>
 <h2 id="a2--array"><code>A2</code> — Array</h2>
 <p><code>A2I</code> extends <code>Array</code> and adds collection helpers. Methods returning arrays generally return <code>A2I</code> instances.</p>
@@ -459,7 +517,7 @@ Conversions completed so far:</p>
 </tbody>
 </table>
 <p>Static helpers include <code>A2I.from()</code> and <code>A2I.of()</code>.</p>
-<h2 id="b2--byte-bool"><code>B2</code> — Byte Bool</h2>
+<h2 id="b2--bool-byte"><code>B2</code> — Bool Byte</h2>
 <p><code>B2I</code> replaces boolean properties and boolean maps with a zero-allocation, PID-indexed <code>Uint8Array</code> lane. One byte per PID, no boxing, no <code>Map</code>, no per-entry allocation — <code>set</code>, <code>get</code>, and <code>toggle</code> are O(1) array stores, and <code>clear</code> is a single <code>fill(0)</code>.</p>
 <table>
 <thead>
@@ -1134,7 +1192,7 @@ Conversions completed so far:</p>
 </tr>
 </tbody>
 </table>
-<h2 id="m2b--map-binary"><code>M2B</code> — Map binary</h2>
+<h2 id="m2b--map-byte"><code>M2B</code> — Map byte</h2>
 <p><code>M2B</code> is the dense, PID-indexed backing store for <code>M2</code>. Where <code>M2</code> accepts arbitrary keys and stores values in a <code>Map</code>, <code>M2B</code> stores fixed-width values in a flat <code>Float64Array</code>, indexed by integer PID. <code>pidToSlot</code> / <code>slotToPid</code> give O(1) lookup in both directions, and iteration walks the dense slot range — no hashing, no per-entry allocation.</p>
 <p><code>stride</code> controls how many doubles each PID holds: <code>stride = 1</code> stores scalars (<code>number</code>), <code>stride &gt; 1</code> stores fixed-length <code>Float64Array</code> views. <code>cap</code> is the maximum PID; values outside <code>[0, cap)</code> read as absent.</p>
 <table>
@@ -1332,6 +1390,571 @@ Conversions completed so far:</p>
 </tbody>
 </table>
 <p><code>cap</code>, <code>stride</code>, and <code>size</code> are exposed as readonly properties. <code>pidToSlot</code>, <code>slotToPid</code>, and <code>vals</code> are the backing arrays.</p>
+<h2 id="m2bin--binary-map"><code>M2BIN</code> — Binary Map</h2>
+<p><code>M2BIN</code> is a binary-backed map implementation optimized for numeric keys and numeric values. It uses typed arrays and direct PID-to-slot indexing for its fast path, while retaining a native <code>Map</code> as a fallback for other key/value combinations.</p>
+<p>Numeric keys are treated as PIDs. Values are stored in a <code>Float64Array</code>, with <code>Int32Array</code> indexes mapping PIDs to dense storage slots and slots back to PIDs. Deletion uses swap-with-last compaction, keeping the dense storage packed without leaving gaps.</p>
+<table>
+<thead>
+<tr>
+<th>Method / Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>size</code></td>
+<td>Total number of entries across binary storage and fallback storage</td>
+</tr>
+<tr>
+<td><code>capacity</code></td>
+<td>Current capacity of the binary backing buffer</td>
+</tr>
+<tr>
+<td><code>buffer</code></td>
+<td>Live <code>Float64Array</code> backing buffer</td>
+</tr>
+<tr>
+<td><code>get(key)</code></td>
+<td>Retrieve a value by key</td>
+</tr>
+<tr>
+<td><code>has(key)</code></td>
+<td>Check whether a key exists</td>
+</tr>
+<tr>
+<td><code>set(key, value)</code></td>
+<td>Insert or update an entry; numeric PID/value pairs use binary storage</td>
+</tr>
+<tr>
+<td><code>delete(key)</code></td>
+<td>Remove an entry; binary entries are removed using swap-with-last compaction</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Clear binary and fallback storage</td>
+</tr>
+<tr>
+<td><code>keys()</code></td>
+<td>Iterate over stored keys</td>
+</tr>
+<tr>
+<td><code>values()</code></td>
+<td>Iterate over stored values</td>
+</tr>
+<tr>
+<td><code>entries()</code></td>
+<td>Iterate over key/value pairs</td>
+</tr>
+<tr>
+<td><code>[Symbol.iterator]()</code></td>
+<td>Iterate over entries</td>
+</tr>
+<tr>
+<td><code>forEach(fn, thisArg?)</code></td>
+<td>Iterate over values, keys, and the map instance</td>
+</tr>
+<tr>
+<td><code>g(pid)</code></td>
+<td>Direct binary read by PID</td>
+</tr>
+<tr>
+<td><code>s(value, pid)</code></td>
+<td>Direct binary write by PID</td>
+</tr>
+<tr>
+<td><code>getOr(pid, default?)</code></td>
+<td>Read a PID value or return a numeric fallback</td>
+</tr>
+<tr>
+<td><code>add(pid, delta)</code></td>
+<td>Add a numeric delta to a PID and return the resulting value</td>
+</tr>
+<tr>
+<td><code>in(pid)</code></td>
+<td>Check whether a PID exists in binary storage</td>
+</tr>
+<tr>
+<td><code>d(pid)</code></td>
+<td>Delete a PID</td>
+</tr>
+<tr>
+<td><code>forEachRaw(fn)</code></td>
+<td>Iterate over PID/slot pairs without allocating an iterator</td>
+</tr>
+<tr>
+<td><code>gather(pids, out?)</code></td>
+<td>Gather values for a list of PIDs into a <code>Float64Array</code>; absent PIDs produce <code>NaN</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="storage-layout">Storage layout</h3>
+<table>
+<thead>
+<tr>
+<th>Buffer</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#vals</code></td>
+<td><code>Float64Array</code></td>
+<td>Dense numeric value storage</td>
+</tr>
+<tr>
+<td><code>#pidToSlot</code></td>
+<td><code>Int32Array</code></td>
+<td>Maps a PID to its storage slot</td>
+</tr>
+<tr>
+<td><code>#slotToPid</code></td>
+<td><code>Int32Array</code></td>
+<td>Maps a storage slot back to its PID</td>
+</tr>
+<tr>
+<td><code>#odd</code></td>
+<td><code>Map&lt;Key, V&gt;</code></td>
+<td>Fallback storage for non-binary entries</td>
+</tr>
+</tbody>
+</table>
+<p>The binary storage uses dense slots rather than storing values directly at their PID indexes. This allows sparse PIDs without requiring the value buffer to contain unused gaps.</p>
+<h3 id="binary-operations">Binary operations</h3>
+<p>The short-form methods operate directly on the binary storage:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g(pid)</code></td>
+<td>Read a value by PID</td>
+</tr>
+<tr>
+<td><code>s(value, pid)</code></td>
+<td>Write a value by PID</td>
+</tr>
+<tr>
+<td><code>getOr(pid, default?)</code></td>
+<td>Read with a numeric fallback</td>
+</tr>
+<tr>
+<td><code>add(pid, delta)</code></td>
+<td>Increment a PID value</td>
+</tr>
+<tr>
+<td><code>in(pid)</code></td>
+<td>Check binary PID existence</td>
+</tr>
+<tr>
+<td><code>d(pid)</code></td>
+<td>Delete a PID</td>
+</tr>
+<tr>
+<td><code>forEachRaw(fn)</code></td>
+<td>Walk PID/slot pairs</td>
+</tr>
+<tr>
+<td><code>gather(pids, out?)</code></td>
+<td>Bulk-read values into a typed array</td>
+</tr>
+</tbody>
+</table>
+<p><code>forEachRaw</code> exposes the underlying PID/slot relationship directly, avoiding the allocation and callback overhead of standard entry iteration.</p>
+<p><code>gather</code> supports bulk reads into a reusable output buffer, making it suitable for repeated numeric operations.</p>
+<h3 id="capacity-and-growth">Capacity and growth</h3>
+<p>The constructor accepts an initial capacity:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2BIN</span>&lt;K, V&gt;(<span class="hljs-number">1024</span>)
+</code></pre>
+<p>The backing arrays grow automatically when a PID or dense slot exceeds the current capacity. Growth doubles the capacity and copies the existing typed-array contents into the expanded buffers.</p>
+<h3 id="intended-use">Intended use</h3>
+<p><code>M2BIN</code> is intended for workloads where:</p>
+<ul>
+<li>Keys are numeric PIDs.</li>
+<li>Values are numeric.</li>
+<li>Fast direct reads and writes are important.</li>
+<li>Dense iteration is preferable to sparse PID-indexed storage.</li>
+<li>Bulk numeric reads benefit from typed-array operations.</li>
+<li>Non-binary entries still need a fallback storage path.</li>
+</ul>
+<h2 id="m2d--dense-map"><code>M2D</code> — Dense Map</h2>
+<p><code>M2D</code> is a dense, PID-indexed map implementation backed by typed arrays. Numeric keys are used directly as array indexes, eliminating the PID-to-slot indirection used by <code>M2BIN</code>.</p>
+<p>Values are stored at their corresponding PID positions in a <code>Float64Array</code>. A parallel <code>Uint8Array</code> tracks whether each position is occupied. This provides constant-time direct access while allowing sparse PID ranges without treating uninitialized positions as existing entries.</p>
+<p>A secondary <code>M2</code> instance provides fallback storage for entries that do not qualify for the numeric binary path.</p>
+<table>
+<thead>
+<tr>
+<th>Method / Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>size</code></td>
+<td>Total number of entries across dense and fallback storage</td>
+</tr>
+<tr>
+<td><code>capacity</code></td>
+<td>Current capacity of the backing arrays</td>
+</tr>
+<tr>
+<td><code>buffer</code></td>
+<td>Live <code>Float64Array</code> containing values at their PID indexes</td>
+</tr>
+<tr>
+<td><code>live</code></td>
+<td>Live <code>Uint8Array</code> indicating occupied PID positions</td>
+</tr>
+<tr>
+<td><code>get(key)</code></td>
+<td>Retrieve a value by numeric key or fallback key</td>
+</tr>
+<tr>
+<td><code>has(key)</code></td>
+<td>Check whether a key exists</td>
+</tr>
+<tr>
+<td><code>set(key, value)</code></td>
+<td>Insert or update an entry; numeric keys with numeric values use dense storage</td>
+</tr>
+<tr>
+<td><code>delete(key)</code></td>
+<td>Remove an entry and clear its live flag</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Clear dense and fallback storage</td>
+</tr>
+<tr>
+<td><code>keys()</code></td>
+<td>Iterate over occupied numeric PIDs and fallback keys</td>
+</tr>
+<tr>
+<td><code>values()</code></td>
+<td>Iterate over stored values</td>
+</tr>
+<tr>
+<td><code>entries()</code></td>
+<td>Iterate over key/value pairs</td>
+</tr>
+<tr>
+<td><code>[Symbol.iterator]()</code></td>
+<td>Iterate over entries</td>
+</tr>
+<tr>
+<td><code>forEach(fn, thisArg?)</code></td>
+<td>Iterate over values, keys, and the map instance</td>
+</tr>
+<tr>
+<td><code>g(pid)</code></td>
+<td>Direct read by PID</td>
+</tr>
+<tr>
+<td><code>s(value, pid)</code></td>
+<td>Direct write by PID</td>
+</tr>
+<tr>
+<td><code>getOr(pid, default?)</code></td>
+<td>Read a PID value or return a numeric fallback</td>
+</tr>
+<tr>
+<td><code>add(pid, delta)</code></td>
+<td>Add a numeric delta to a PID and return the resulting value</td>
+</tr>
+<tr>
+<td><code>in(pid)</code></td>
+<td>Check whether a PID is occupied</td>
+</tr>
+<tr>
+<td><code>forEachRaw(fn)</code></td>
+<td>Walk occupied PIDs and their values without allocating an iterator</td>
+</tr>
+<tr>
+<td><code>gather(pids, out?)</code></td>
+<td>Bulk-read values into a <code>Float64Array</code>; absent PIDs produce <code>NaN</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="storage-layout-1">Storage layout</h3>
+<table>
+<thead>
+<tr>
+<th>Buffer</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#vals</code></td>
+<td><code>Float64Array</code></td>
+<td>Stores values directly at their PID indexes</td>
+</tr>
+<tr>
+<td><code>#live</code></td>
+<td><code>Uint8Array</code></td>
+<td>Tracks whether each PID position is occupied</td>
+</tr>
+<tr>
+<td><code>#odd</code></td>
+<td><code>M2&lt;Key, V&gt;</code></td>
+<td>Fallback storage for entries outside the numeric binary path</td>
+</tr>
+</tbody>
+</table>
+<p>Unlike <code>M2BIN</code>, <code>M2D</code> does not maintain a separate PID-to-slot mapping. PID <code>p</code> always corresponds to <code>buffer[p]</code>.</p>
+<p>The live bitmap distinguishes an occupied position from an unused position, including positions whose stored numeric value is zero.</p>
+<h3 id="binary-operations-1">Binary operations</h3>
+<p>The short-form methods operate directly on the dense storage:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g(pid)</code></td>
+<td>Read the value at a PID</td>
+</tr>
+<tr>
+<td><code>s(value, pid)</code></td>
+<td>Write a value at a PID</td>
+</tr>
+<tr>
+<td><code>getOr(pid, default?)</code></td>
+<td>Read with a numeric fallback</td>
+</tr>
+<tr>
+<td><code>add(pid, delta)</code></td>
+<td>Increment a PID value</td>
+</tr>
+<tr>
+<td><code>in(pid)</code></td>
+<td>Check PID occupancy</td>
+</tr>
+<tr>
+<td><code>forEachRaw(fn)</code></td>
+<td>Walk occupied PIDs and their values</td>
+</tr>
+<tr>
+<td><code>gather(pids, out?)</code></td>
+<td>Bulk-read values into a typed array</td>
+</tr>
+</tbody>
+</table>
+<h3 id="capacity-and-growth-1">Capacity and growth</h3>
+<p>The constructor accepts an initial capacity:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2D</span>&lt;<span class="hljs-title class_">Key</span>, V&gt;(<span class="hljs-number">1024</span>)
+</code></pre>
+<p>When a numeric PID exceeds the current capacity, the backing arrays grow automatically. Capacity doubles until the requested PID fits.</p>
+<p>Existing values and occupancy flags are copied into the expanded arrays, preserving their PID positions.</p>
+<h3 id="dense-iteration">Dense iteration</h3>
+<p><code>forEachRaw</code> walks the live bitmap and invokes its callback with the PID and corresponding numeric value.</p>
+<p><code>gather</code> reads a supplied list of PIDs into an output buffer. Missing PIDs are represented by <code>NaN</code>, and callers can reuse an existing output buffer to avoid repeated allocations.</p>
+<h3 id="intended-use-1">Intended use</h3>
+<p><code>M2D</code> is intended for workloads where:</p>
+<ul>
+<li>Numeric PIDs are the primary keys.</li>
+<li>Values are numeric.</li>
+<li>Direct PID-to-array-index access is desirable.</li>
+<li>Dense iteration over occupied positions is important.</li>
+<li>Typed-array operations and bulk reads are useful.</li>
+<li>A fallback map is still needed for non-binary entries.</li>
+</ul>
+<h2 id="m2r--row-map"><code>M2R</code> — Row Map</h2>
+<p><code>M2R</code> is a binary-backed map designed for storing fixed-width numeric rows under numeric PIDs. It combines dense slot storage with direct PID-to-slot indexing, allowing rows to be stored contiguously while supporting sparse PID values.</p>
+<p>Each entry occupies a fixed-width row in a <code>Float64Array</code>. The configured stride determines the number of numeric components per row. A pair of <code>Int32Array</code> indexes maps PIDs to dense slots and slots back to PIDs.</p>
+<p>Unlike <code>M2D</code>, which stores one numeric value directly at each PID index, <code>M2R</code> stores complete rows in packed storage. Deletion uses swap-with-last compaction, keeping the active rows contiguous.</p>
+<table>
+<thead>
+<tr>
+<th>Method / Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>size</code></td>
+<td>Number of stored rows</td>
+</tr>
+<tr>
+<td><code>capacity</code></td>
+<td>Current PID/slot capacity</td>
+</tr>
+<tr>
+<td><code>stride</code></td>
+<td>Number of numeric components per row</td>
+</tr>
+<tr>
+<td><code>buffer</code></td>
+<td>Live backing <code>Float64Array</code></td>
+</tr>
+<tr>
+<td><code>get(pid)</code></td>
+<td>Return a zero-copy <code>Float64Array</code> view of a row, or <code>undefined</code></td>
+</tr>
+<tr>
+<td><code>has(pid)</code></td>
+<td>Check whether a PID exists</td>
+</tr>
+<tr>
+<td><code>set(pid, value)</code></td>
+<td>Write a complete row and return the map</td>
+</tr>
+<tr>
+<td><code>delete(pid)</code></td>
+<td>Remove a row using swap-with-last compaction</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>Clear all PID mappings and stored rows</td>
+</tr>
+<tr>
+<td><code>write(pid, value)</code></td>
+<td>Copy a complete row into storage</td>
+</tr>
+<tr>
+<td><code>put(pid, component, value)</code></td>
+<td>Write an individual component</td>
+</tr>
+<tr>
+<td><code>at(pid, component)</code></td>
+<td>Read an individual component</td>
+</tr>
+<tr>
+<td><code>slotOf(pid)</code></td>
+<td>Resolve a PID to its dense slot, or return <code>-1</code></td>
+</tr>
+<tr>
+<td><code>row(pid)</code></td>
+<td>Return a zero-copy writable row view</td>
+</tr>
+<tr>
+<td><code>live()</code></td>
+<td>Return a view over the contiguous active portion of the backing buffer</td>
+</tr>
+<tr>
+<td><code>keys()</code></td>
+<td>Iterate over stored PIDs</td>
+</tr>
+<tr>
+<td><code>values()</code></td>
+<td>Iterate over row views</td>
+</tr>
+<tr>
+<td><code>entries()</code></td>
+<td>Iterate over PID/row pairs</td>
+</tr>
+<tr>
+<td><code>[Symbol.iterator]()</code></td>
+<td>Iterate over entries</td>
+</tr>
+<tr>
+<td><code>forEach(fn, thisArg?)</code></td>
+<td>Iterate over row views, PIDs, and the map instance</td>
+</tr>
+<tr>
+<td><code>forEachRaw(fn)</code></td>
+<td>Iterate over PID/slot pairs without allocating an iterator</td>
+</tr>
+</tbody>
+</table>
+<h3 id="storage-layout-2">Storage layout</h3>
+<table>
+<thead>
+<tr>
+<th>Buffer</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#vals</code></td>
+<td><code>Float64Array</code></td>
+<td>Contiguous fixed-width row storage</td>
+</tr>
+<tr>
+<td><code>#pidToSlot</code></td>
+<td><code>Int32Array</code></td>
+<td>Maps each PID to its dense slot</td>
+</tr>
+<tr>
+<td><code>#slotToPid</code></td>
+<td><code>Int32Array</code></td>
+<td>Maps each dense slot back to its PID</td>
+</tr>
+</tbody>
+</table>
+<p>For a given PID, its row begins at:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> offset = slot * stride;
+</code></pre>
+<p>The row occupies <code>stride</code> consecutive elements in the backing buffer.</p>
+<h3 id="row-operations">Row operations</h3>
+<p>The row API provides both whole-row and individual-component access:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get(pid)</code></td>
+<td>Obtain a row view</td>
+</tr>
+<tr>
+<td><code>write(pid, values)</code></td>
+<td>Copy values into a row</td>
+</tr>
+<tr>
+<td><code>put(pid, component, value)</code></td>
+<td>Update one component</td>
+</tr>
+<tr>
+<td><code>at(pid, component)</code></td>
+<td>Read one component</td>
+</tr>
+<tr>
+<td><code>row(pid)</code></td>
+<td>Obtain a writable row view</td>
+</tr>
+</tbody>
+</table>
+<p><code>get()</code> and <code>row()</code> return <code>subarray()</code> views rather than copied arrays. Changes made through those views directly modify the underlying storage.</p>
+<h3 id="raw-access-and-iteration">Raw access and iteration</h3>
+<p><code>buffer</code> exposes the complete backing array.</p>
+<p><code>live()</code> exposes only the active prefix:</p>
+<pre><code class="language-ts">buffer.<span class="hljs-title function_">subarray</span>(<span class="hljs-number">0</span>, size * stride)
+</code></pre>
+<p>This provides a contiguous representation of all active rows, suitable for direct consumption by workers, shaders, and other numeric processing systems.</p>
+<p><code>forEachRaw</code> exposes PID/slot pairs without constructing row views or entry tuples.</p>
+<h3 id="capacity-and-growth-2">Capacity and growth</h3>
+<p>The constructor accepts an initial PID capacity and row stride:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2R</span>&lt;K&gt;(<span class="hljs-number">1024</span>, <span class="hljs-number">3</span>)
+</code></pre>
+<p>The default stride is <code>3</code>.</p>
+<p>When a PID or dense slot exceeds the current capacity, the index arrays and value buffer grow automatically. Existing mappings and row data are preserved.</p>
+<h3 id="deletion-and-compaction">Deletion and compaction</h3>
+<p>Deleting a row moves the final active row into the deleted row's slot when necessary. The PID mappings are updated accordingly, keeping active storage contiguous.</p>
+<p>Consequently, dense slot positions are not stable across deletions. Use <code>slotOf(pid)</code> whenever the current slot is needed.</p>
+<h3 id="intended-use-2">Intended use</h3>
+<p><code>M2R</code> is intended for workloads where:</p>
+<ul>
+<li>Numeric PIDs identify records.</li>
+<li>Each record contains a fixed number of numeric components.</li>
+<li>Contiguous row storage is preferable to individually allocated objects.</li>
+<li>Direct component access is important.</li>
+<li>Dense iteration and bulk buffer access are useful.</li>
+<li>Zero-copy row views are desirable.</li>
+</ul>
 <h2 id="n2--number"><code>N2</code> — Number</h2>
 <p>Numeric helpers return <code>N2I</code> for chaining unless otherwise indicated.</p>
 <table>
@@ -1492,6 +2115,121 @@ Conversions completed so far:</p>
 </tr>
 </tbody>
 </table>
+<h2 id="nested--nested-map-storage"><code>nested</code> — Nested Map Storage</h2>
+<p><code>nested</code> provides a unified interface for creating and retrieving nested maps across multiple storage implementations. It uses a three-level addressing structure — <code>root</code>, <code>master</code>, and <code>slave</code> — to organize independently addressable map instances.</p>
+<p>The class supports native <code>Map</code>, <code>M2</code>, <code>M2B</code>, <code>M2BIN</code>, <code>M2D</code>, and <code>M2R</code>, with an optional externally supplied cache and an internal <code>M2</code> fallback.</p>
+<h3 id="storage-methods">Storage Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Storage Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map(s?, m?, r?)</code></td>
+<td><code>Map</code></td>
+<td>Retrieves or creates a native JavaScript Map</td>
+</tr>
+<tr>
+<td><code>m2(s?, m?, r?)</code></td>
+<td><code>M2</code></td>
+<td>Retrieves or creates an extended Map</td>
+</tr>
+<tr>
+<td><code>m2b(s?, m?, r?)</code></td>
+<td><code>M2B</code></td>
+<td>Retrieves or creates a byte-backed Map</td>
+</tr>
+<tr>
+<td><code>m2bin(s?, m?, r?)</code></td>
+<td><code>M2BIN</code></td>
+<td>Retrieves or creates a binary Map</td>
+</tr>
+<tr>
+<td><code>m2d(s?, m?, r?)</code></td>
+<td><code>M2D</code></td>
+<td>Retrieves or creates a dense Map</td>
+</tr>
+<tr>
+<td><code>m2r(s?, m?, r?)</code></td>
+<td><code>M2R</code></td>
+<td>Retrieves or creates a row-based Map</td>
+</tr>
+<tr>
+<td><code>cache(s?, m?, r?)</code></td>
+<td><code>M2</code></td>
+<td>Retrieves or creates a Map through the supplied cache or internal fallback</td>
+</tr>
+</tbody>
+</table>
+<h3 id="addressing">Addressing</h3>
+<p>Each storage method accepts three address parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s</code></td>
+<td>Storage method name</td>
+<td>Identifies the slave map</td>
+</tr>
+<tr>
+<td><code>m</code></td>
+<td><code>'MASTER'</code></td>
+<td>Identifies the master namespace</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td><code>'ROOT'</code></td>
+<td>Identifies the root namespace</td>
+</tr>
+</tbody>
+</table>
+<p>The global storage methods use <code>globalThis[r]</code> as their root, allowing independently instantiated <code>nested</code> instances and application modules to access the same addressed storage hierarchy.</p>
+<p>The resulting structure is:</p>
+<pre><code class="language-text">globalThis[r]
+    └── master[m]
+          └── slave[s]
+                └── Map instance
+</code></pre>
+<h3 id="cache-and-fallback">Cache and Fallback</h3>
+<p>The constructor accepts an optional <code>CACHE</code> implementing one of the supported map types.</p>
+<ul>
+<li><code>CACHE</code> — uses the supplied map for root-level storage.</li>
+<li><code>FALLBACK</code> — uses an internal nested <code>M2</code> hierarchy when no external cache is supplied.</li>
+</ul>
+<p>The <code>cache()</code> method maintains its own nested addressing structure through the selected cache.</p>
+<h3 id="usage">Usage</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> nested = <span class="hljs-keyword">new</span> <span class="hljs-title function_">nestedi</span>();
+
+<span class="hljs-keyword">const</span> users = nested.<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;users&#x27;</span>);
+<span class="hljs-keyword">const</span> sessions = nested.<span class="hljs-title function_">m2</span>(<span class="hljs-string">&#x27;sessions&#x27;</span>);
+<span class="hljs-keyword">const</span> records = nested.<span class="hljs-title function_">m2bin</span>(<span class="hljs-string">&#x27;records&#x27;</span>);
+
+<span class="hljs-keyword">const</span> shared = nested.<span class="hljs-title function_">cache</span>(<span class="hljs-string">&#x27;shared&#x27;</span>, <span class="hljs-string">&#x27;APP&#x27;</span>, <span class="hljs-string">&#x27;ROOT&#x27;</span>);
+</code></pre>
+<h3 id="global-access">Global Access</h3>
+<p>A shared instance is exported as <code>nested</code> and assigned to <code>nested</code>, making the helper accessible across application modules without requiring each module to construct its own instance.</p>
+<h3 id="types">Types</h3>
+<p><code>ALL_MAPS</code> represents the supported storage implementations:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">type</span> <span class="hljs-variable constant_">ALL_MAPS</span> =
+    | <span class="hljs-variable constant_">M2</span>&lt;K, V&gt;
+    | <span class="hljs-title class_">Map</span>&lt;K, V&gt;
+    | <span class="hljs-variable constant_">M2B</span>
+    | <span class="hljs-variable constant_">M2BIN</span>&lt;K, V&gt;
+    | <span class="hljs-variable constant_">M2D</span>&lt;K, V&gt;
+    | <span class="hljs-variable constant_">M2R</span>&lt;K&gt;
+    | <span class="hljs-variable constant_">NU</span>;
+</code></pre>
+<p><code>nested&lt;K = A, V = A&gt;</code> provides generic typing for its fallback storage and map operations.</p>
 <h2 id="o2--object"><code>O2</code> — Object</h2>
 <p>Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.</p>
 <table>
@@ -1721,6 +2459,371 @@ Conversions completed so far:</p>
 </tbody>
 </table>
 <p>Chained operations return <code>P2</code> instances.</p>
+<h2 id="re2--regular-expression"><code>RE2</code> — Regular Expression</h2>
+<p><code>REC2</code> wraps the native <code>RegExp</code> API and extends it with match collection, positional access, replacement callbacks, pattern composition, quantifier builders, flag manipulation, debugging, and utility methods. It accepts a regex source string and optional flags, or can be created from an existing <code>RegExp</code> using <code>fromRegExp</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source</code> / <code>flags</code></td>
+<td>Read the regular expression source and flags</td>
+</tr>
+<tr>
+<td><code>global</code> / <code>ignoreCase</code> / <code>multiline</code></td>
+<td>Read the <code>g</code>, <code>i</code>, and <code>m</code> flag states</td>
+</tr>
+<tr>
+<td><code>sticky</code> / <code>unicode</code> / <code>dotAll</code> / <code>hasIndices</code></td>
+<td>Read the <code>y</code>, <code>u</code>, <code>s</code>, and <code>d</code> flag states</td>
+</tr>
+<tr>
+<td><code>toRegExp()</code></td>
+<td>Return a native <code>RegExp</code> copy</td>
+</tr>
+<tr>
+<td><code>test(str)</code> / <code>h(str)</code></td>
+<td>Test whether the pattern matches; <code>h</code> is an alias for <code>test</code></td>
+</tr>
+<tr>
+<td><code>exec(str)</code></td>
+<td>Return the first native <code>RegExpExecArray</code> match or <code>null</code></td>
+</tr>
+<tr>
+<td><code>g(str)</code></td>
+<td>Return the first matched string or <code>undefined</code></td>
+</tr>
+<tr>
+<td><code>at(str, n)</code></td>
+<td>Return the matched string at an index; supports negative indexes</td>
+</tr>
+<tr>
+<td><code>groups(str)</code></td>
+<td>Return the named capture groups from the first match</td>
+</tr>
+<tr>
+<td><code>group(str, name)</code></td>
+<td>Return a capture by numeric index or named group</td>
+</tr>
+<tr>
+<td><code>index(str)</code></td>
+<td>Return the first match's starting index, or <code>-1</code></td>
+</tr>
+<tr>
+<td><code>lastIndexOf(str)</code></td>
+<td>Return the final match's starting index, or <code>-1</code></td>
+</tr>
+<tr>
+<td><code>span(str)</code></td>
+<td>Return the first match's <code>[start, end]</code> positions</td>
+</tr>
+<tr>
+<td><code>all(str)</code></td>
+<td>Return all matched strings</td>
+</tr>
+<tr>
+<td><code>matches(str)</code></td>
+<td>Return detailed match records containing <code>match</code>, <code>index</code>, <code>lastIndex</code>, <code>groups</code>, and <code>raw</code></td>
+</tr>
+<tr>
+<td><code>allGroups(str)</code></td>
+<td>Return the named capture groups from every match</td>
+</tr>
+<tr>
+<td><code>allSpans(str)</code></td>
+<td>Return the <code>[start, end]</code> positions of every match</td>
+</tr>
+<tr>
+<td><code>count(str)</code></td>
+<td>Count all matches</td>
+</tr>
+<tr>
+<td><code>positions(str)</code></td>
+<td>Return the starting indexes of all matches</td>
+</tr>
+<tr>
+<td><code>replace(str, fn)</code></td>
+<td>Replace matches using a replacement string or callback</td>
+</tr>
+<tr>
+<td><code>replaceFirst(str, fn)</code></td>
+<td>Replace only the first match</td>
+</tr>
+<tr>
+<td><code>replaceAt(str, n, fn)</code></td>
+<td>Replace a specific match by index; supports negative indexes</td>
+</tr>
+<tr>
+<td><code>remove(str)</code> / <code>removeFirst(str)</code></td>
+<td>Remove all matches or only the first match</td>
+</tr>
+<tr>
+<td><code>split(str, limit?)</code></td>
+<td>Split a string using the pattern</td>
+</tr>
+<tr>
+<td><code>splitKeep(str)</code></td>
+<td>Split while retaining matched separators</td>
+</tr>
+<tr>
+<td><code>withFlags(flags)</code></td>
+<td>Create a new instance with the supplied flags</td>
+</tr>
+<tr>
+<td><code>addFlag(flag)</code></td>
+<td>Add a flag if it is not already present</td>
+</tr>
+<tr>
+<td><code>removeFlag(flag)</code></td>
+<td>Remove a flag</td>
+</tr>
+<tr>
+<td><code>toggleFlag(flag)</code></td>
+<td>Add or remove a flag depending on its current state</td>
+</tr>
+<tr>
+<td><code>withSource(src)</code></td>
+<td>Create a new instance using a different source</td>
+</tr>
+<tr>
+<td><code>and(...parts)</code></td>
+<td>Concatenate patterns into a combined expression</td>
+</tr>
+<tr>
+<td><code>or(...parts)</code></td>
+<td>Combine patterns as alternatives</td>
+</tr>
+<tr>
+<td><code>cap(expr?)</code></td>
+<td>Wrap an expression in a capturing group</td>
+</tr>
+<tr>
+<td><code>namedGroup(name, expr)</code></td>
+<td>Create a named capturing group</td>
+</tr>
+<tr>
+<td><code>nonCap(expr)</code></td>
+<td>Create a non-capturing group</td>
+</tr>
+<tr>
+<td><code>lookahead(expr)</code> / <code>notLookahead(expr)</code></td>
+<td>Create positive or negative lookahead assertions</td>
+</tr>
+<tr>
+<td><code>lookbehind(expr)</code> / <code>notLookbehind(expr)</code></td>
+<td>Create positive or negative lookbehind assertions</td>
+</tr>
+<tr>
+<td><code>optional(expr?)</code></td>
+<td>Apply the <code>?</code> quantifier</td>
+</tr>
+<tr>
+<td><code>many(expr?)</code></td>
+<td>Apply the <code>+</code> quantifier</td>
+</tr>
+<tr>
+<td><code>maybeMany(expr?)</code></td>
+<td>Apply the <code>*</code> quantifier</td>
+</tr>
+<tr>
+<td><code>repeat(n, max?, expr?)</code></td>
+<td>Apply an exact or ranged repetition quantifier</td>
+</tr>
+<tr>
+<td><code>lazy()</code></td>
+<td>Best-effort conversion of a trailing quantifier to lazy matching</td>
+</tr>
+<tr>
+<td><code>$trace(str)</code></td>
+<td>Return detailed match records</td>
+</tr>
+<tr>
+<td><code>$explain()</code></td>
+<td>Return flag descriptions and a formatted pattern explanation</td>
+</tr>
+<tr>
+<td><code>$risky()</code></td>
+<td>Check for a potentially risky nested-quantifier pattern</td>
+</tr>
+<tr>
+<td><code>$bench(str, iterations?)</code></td>
+<td>Benchmark repeated native regex tests</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>Return the native regular expression string representation</td>
+</tr>
+<tr>
+<td><code>equals(other)</code></td>
+<td>Compare source and flags against another regex input</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Create an independent copy</td>
+</tr>
+<tr>
+<td><code>fromRegExp(re)</code></td>
+<td>Create a <code>REC2</code> instance from a native <code>RegExp</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="res2--regular-expression-static"><code>RES2</code> — Regular Expression Static</h2>
+<p><code>RECC2</code> is a callable regex factory with static builders, character-class helpers, composition methods, and ready-made pattern presets. It accepts strings, native <code>RegExp</code> instances, or existing <code>RE2_IF</code> instances and returns a <code>RE2_IF</code> implementation. It also exposes <code>escapeRegex</code> and <code>explainSource</code> helpers through its associated utilities.</p>
+<table>
+<thead>
+<tr>
+<th>Method / Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RECC2(input, flags?)</code></td>
+<td>Create a regex from a string, native <code>RegExp</code>, or existing <code>RE2_IF</code></td>
+</tr>
+<tr>
+<td><code>of(input, flags?)</code></td>
+<td>Normalize an input into a <code>RE2_IF</code>; optionally override flags</td>
+</tr>
+<tr>
+<td><code>escape(str)</code></td>
+<td>Escape regex-special characters in a string</td>
+</tr>
+<tr>
+<td><code>literal(str)</code></td>
+<td>Create a regex that matches the supplied string literally</td>
+</tr>
+<tr>
+<td><code>seq(...parts)</code></td>
+<td>Combine patterns sequentially into one expression</td>
+</tr>
+<tr>
+<td><code>alt(...parts)</code></td>
+<td>Combine patterns as alternatives</td>
+</tr>
+<tr>
+<td><code>digit</code></td>
+<td>Match a digit (<code>\d</code>)</td>
+</tr>
+<tr>
+<td><code>word</code></td>
+<td>Match a word character (<code>\w</code>)</td>
+</tr>
+<tr>
+<td><code>space</code></td>
+<td>Match whitespace (<code>\s</code>)</td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>Match any character (<code>.</code>)</td>
+</tr>
+<tr>
+<td><code>notDigit</code></td>
+<td>Match a non-digit (<code>\D</code>)</td>
+</tr>
+<tr>
+<td><code>notWord</code></td>
+<td>Match a non-word character (<code>\W</code>)</td>
+</tr>
+<tr>
+<td><code>notSpace</code></td>
+<td>Match non-whitespace (<code>\S</code>)</td>
+</tr>
+<tr>
+<td><code>range(from, to)</code></td>
+<td>Match one character within a character range</td>
+</tr>
+<tr>
+<td><code>oneOf(chars)</code></td>
+<td>Match one character from the supplied character set</td>
+</tr>
+<tr>
+<td><code>noneOf(chars)</code></td>
+<td>Match one character not in the supplied character set</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>Email-address pattern</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td>HTTP or HTTPS URL pattern; case-insensitive</td>
+</tr>
+<tr>
+<td><code>uuid</code></td>
+<td>UUID pattern; case-insensitive</td>
+</tr>
+<tr>
+<td><code>ipv4</code></td>
+<td>IPv4 address pattern</td>
+</tr>
+<tr>
+<td><code>ipv6</code></td>
+<td>Full eight-group IPv6 address pattern</td>
+</tr>
+<tr>
+<td><code>hex</code></td>
+<td>One or more hexadecimal characters</td>
+</tr>
+<tr>
+<td><code>hexColor</code></td>
+<td>Three- or six-digit hexadecimal color pattern</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>Lowercase alphanumeric slug with optional hyphen-separated segments</td>
+</tr>
+<tr>
+<td><code>alphaNumeric</code></td>
+<td>One or more alphanumeric characters</td>
+</tr>
+<tr>
+<td><code>integer</code></td>
+<td>Optional leading minus sign followed by digits</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>Optional leading minus sign, digits, and optional decimal portion</td>
+</tr>
+<tr>
+<td><code>phoneLoose</code></td>
+<td>Loose phone-number pattern</td>
+</tr>
+<tr>
+<td><code>isoDate</code></td>
+<td><code>YYYY-MM-DD</code> date pattern</td>
+</tr>
+<tr>
+<td><code>base64</code></td>
+<td>Base64 pattern with optional padding</td>
+</tr>
+<tr>
+<td><code>jwt</code></td>
+<td>Three dot-separated JWT-style segments</td>
+</tr>
+<tr>
+<td><code>semver</code></td>
+<td>Semantic-version-style pattern with optional prerelease and build metadata</td>
+</tr>
+<tr>
+<td><code>creditCard</code></td>
+<td>Digit groups separated by optional spaces or hyphens</td>
+</tr>
+<tr>
+<td><code>htmlTag</code></td>
+<td>Opening or closing HTML tag pattern</td>
+</tr>
+<tr>
+<td><code>whitespaceOnly</code></td>
+<td>Match strings containing only whitespace, including empty strings</td>
+</tr>
+</tbody>
+</table>
+<p><code>seq()</code> wraps multi-character patterns when needed for concatenation and merges flags from its inputs. <code>alt()</code> creates a non-capturing alternation group and also merges input flags.</p>
 <h2 id="s2--string"><code>S2</code> — String</h2>
 <p>Extends <code>String</code> with common string checks, transformations, parsing, and conversion helpers.</p>
 <table>
@@ -2582,7 +3685,7 @@ Conversions completed so far:</p>
 </tbody>
 </table>
 <p><strong>Tracking note:</strong> Native <code>WeakSet</code> values are not enumerable. These helpers maintain a separate strong-reference <code>Set</code> for tracked values; tracked objects can therefore remain reachable until untracked or cleared.</p>
-<h2 id="usage">Usage</h2>
+<h2 id="usage-1">Usage</h2>
 <p>After the package's initialization module has executed, the registered globals can be used directly:</p>
 <pre><code class="language-ts"><span class="hljs-keyword">const</span> values = <span class="hljs-keyword">new</span> <span class="hljs-title function_">A2</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);
 
