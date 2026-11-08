@@ -36,7 +36,7 @@ declare global {
 
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
-	
+
 	var D2: typeof D2I; // Date
 	var A2: typeof A2I; // Array
 	var O2: typeof O2I; // Object
@@ -56,6 +56,7 @@ declare global {
 	type M2Op = "set" | "del" | "upd" | "dirty";
 	interface M2Event<H = A, T = A> {
 		op: M2Op;
+		pid: H;
 		k: H;
 		v?: T;
 		prev?: T;

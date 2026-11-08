@@ -3495,8 +3495,8 @@ var map_byte_sameValue128 = function sameValue128(a, b) {
 var _size = /*#__PURE__*/ new WeakMap(), _subs = /*#__PURE__*/ new WeakMap(), _hist = /*#__PURE__*/ new WeakMap(), _histLimit = /*#__PURE__*/ new WeakMap(), _strict = /*#__PURE__*/ new WeakMap(), _iterating = /*#__PURE__*/ new WeakMap(), _batching = /*#__PURE__*/ new WeakMap(), _pending = /*#__PURE__*/ new WeakMap(), _derived = /*#__PURE__*/ new WeakMap(), _dependents = /*#__PURE__*/ new WeakMap(), _emit = /*#__PURE__*/ new WeakSet(), _record = /*#__PURE__*/ new WeakSet(), _invalidate = /*#__PURE__*/ new WeakSet(), _computeDerived = /*#__PURE__*/ new WeakSet(), _assertNotIterating = /*#__PURE__*/ new WeakSet(), _readSlot = /*#__PURE__*/ new WeakSet(), _writeSlot = /*#__PURE__*/ new WeakSet(), _fresh = /*#__PURE__*/ new WeakSet();
 var map_byte_M2BI = /*#__PURE__*/ function() {
     "use strict";
-    function M2BI(maxParticles) {
-        var stride = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1, seed = arguments.length > 2 ? arguments[2] : void 0;
+    function M2BI() {
+        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 65536, stride = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 1, seed = arguments.length > 2 ? arguments[2] : void 0;
         map_byte_class_call_check(this, M2BI);
         _class_private_method_init(this, _emit);
         _class_private_method_init(this, _record);
@@ -10474,6 +10474,1207 @@ var set_SET2I = /*#__PURE__*/ function(Set1) {
 }(set_wrap_native_super(Set));
 globalThis.SET2 = set_SET2I;
 
+function set_byte_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function set_byte_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function set_byte_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function set_byte_array_without_holes(arr) {
+    if (Array.isArray(arr)) return set_byte_array_like_to_array(arr);
+}
+function set_byte_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function set_byte_class_apply_descriptor_get(receiver, descriptor) {
+    if (descriptor.get) return descriptor.get.call(receiver);
+    return descriptor.value;
+}
+function set_byte_class_apply_descriptor_set(receiver, descriptor, value) {
+    if (descriptor.set) descriptor.set.call(receiver, value);
+    else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        descriptor.value = value;
+    }
+}
+function set_byte_class_apply_descriptor_update(receiver, descriptor) {
+    if (descriptor.set) {
+        if (!descriptor.get) throw new TypeError("attempted to read set only private field");
+        if (!("__destrWrapper" in descriptor)) {
+            descriptor.__destrWrapper = {
+                set value (v){
+                    descriptor.set.call(receiver, v);
+                },
+                get value () {
+                    return descriptor.get.call(receiver);
+                }
+            };
+        }
+        return descriptor.__destrWrapper;
+    } else {
+        if (!descriptor.writable) {
+            throw new TypeError("attempted to set read only private field");
+        }
+        return descriptor;
+    }
+}
+function set_byte_class_call_check(instance, Constructor) {
+    if (!set_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function set_byte_class_extract_field_descriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
+    return privateMap.get(receiver);
+}
+function set_byte_class_private_field_get(receiver, privateMap) {
+    var descriptor = set_byte_class_extract_field_descriptor(receiver, privateMap, "get");
+    return set_byte_class_apply_descriptor_get(receiver, descriptor);
+}
+function set_byte_class_private_field_init(obj, privateMap, value) {
+    set_byte_check_private_redeclaration(obj, privateMap);
+    privateMap.set(obj, value);
+}
+function set_byte_class_private_field_set(receiver, privateMap, value) {
+    var descriptor = set_byte_class_extract_field_descriptor(receiver, privateMap, "set");
+    set_byte_class_apply_descriptor_set(receiver, descriptor, value);
+    return value;
+}
+function set_byte_class_private_field_update(receiver, privateMap) {
+    var descriptor = set_byte_class_extract_field_descriptor(receiver, privateMap, "update");
+    return set_byte_class_apply_descriptor_update(receiver, descriptor);
+}
+function set_byte_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function set_byte_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) set_byte_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) set_byte_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function set_byte_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function set_byte_iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function set_byte_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function set_byte_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function set_byte_non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function set_byte_sliced_to_array(arr, i) {
+    return set_byte_array_with_holes(arr) || set_byte_iterable_to_array_limit(arr, i) || set_byte_unsupported_iterable_to_array(arr, i) || set_byte_non_iterable_rest();
+}
+function set_byte_to_consumable_array(arr) {
+    return set_byte_array_without_holes(arr) || set_byte_iterable_to_array(arr) || set_byte_unsupported_iterable_to_array(arr) || set_byte_non_iterable_spread();
+}
+function set_byte_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function set_byte_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return set_byte_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return set_byte_array_like_to_array(o, minLen);
+}
+var set_byte_size = /*#__PURE__*/ new WeakMap();
+var set_byte_SET2BI = /*#__PURE__*/ function() {
+    "use strict";
+    function SET2BI() {
+        var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192, seed = arguments.length > 1 ? arguments[1] : void 0;
+        set_byte_class_call_check(this, SET2BI);
+        set_byte_define_property(this, "cap", void 0);
+        set_byte_define_property(this, "flags", void 0); // [pid] -> 0/1, O(1) has()
+        set_byte_define_property(this, "slots", void 0); // [idx] -> pid, dense, for iteration
+        set_byte_define_property(this, "pidToIdx", void 0); // [pid] -> idx into slots, -1 = absent
+        set_byte_class_private_field_init(this, set_byte_size, {
+            writable: true,
+            value: 0
+        });
+        // ---------------------------------------------------------------- core
+        set_byte_define_property(this, "s", this.add.bind(this)); //                                                                    [s alias]
+        this.cap = maxParticles;
+        this.flags = new Uint8Array(maxParticles);
+        this.slots = new Int32Array(maxParticles).fill(-1);
+        this.pidToIdx = new Int32Array(maxParticles).fill(-1);
+        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+        if (seed) try {
+            for(var _iterator = seed[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                var pid = _step.value;
+                this.add(pid);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally{
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                    _iterator.return();
+                }
+            } finally{
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    }
+    set_byte_create_class(SET2BI, [
+        {
+            key: "size",
+            get: function get() {
+                return set_byte_class_private_field_get(this, set_byte_size);
+            }
+        },
+        {
+            key: "add",
+            value: function add(pid) {
+                if (this.flags[pid] === 0) {
+                    this.flags[pid] = 1;
+                    var idx = set_byte_class_private_field_get(this, set_byte_size);
+                    this.slots[idx] = pid;
+                    this.pidToIdx[pid] = idx;
+                    set_byte_class_private_field_update(this, set_byte_size).value++;
+                }
+                return this;
+            }
+        },
+        {
+            key: "has",
+            value: function has(pid) {
+                return this.flags[pid] === 1;
+            } //                                              [HAS]
+        },
+        {
+            key: "delete",
+            value: function _delete(pid) {
+                if (this.flags[pid] !== 1) return false;
+                this.flags[pid] = 0;
+                var idx = this.pidToIdx[pid];
+                var lastIdx = set_byte_class_private_field_get(this, set_byte_size) - 1;
+                var lastPid = this.slots[lastIdx];
+                if (idx !== lastIdx) {
+                    this.slots[idx] = lastPid;
+                    this.pidToIdx[lastPid] = idx;
+                }
+                this.slots[lastIdx] = -1;
+                this.pidToIdx[pid] = -1;
+                set_byte_class_private_field_update(this, set_byte_size).value--;
+                return true;
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                for(var i = 0; i < set_byte_class_private_field_get(this, set_byte_size); i++)this.flags[this.slots[i]] = 0;
+                this.slots.fill(-1, 0, set_byte_class_private_field_get(this, set_byte_size));
+                this.pidToIdx.fill(-1); // cheap enough; or loop same range if cap is huge
+                set_byte_class_private_field_set(this, set_byte_size, 0);
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                var i;
+                return set_byte_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < set_byte_class_private_field_get(this, set_byte_size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                this.slots[i]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "values",
+            value: function values() {
+                return this[Symbol.iterator]();
+            }
+        },
+        {
+            key: "keys",
+            value: function keys() {
+                return this[Symbol.iterator]();
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var i;
+                return set_byte_ts_generator(this, function(_state) {
+                    switch(_state.label){
+                        case 0:
+                            i = 0;
+                            _state.label = 1;
+                        case 1:
+                            if (!(i < set_byte_class_private_field_get(this, set_byte_size))) return [
+                                3,
+                                4
+                            ];
+                            return [
+                                4,
+                                [
+                                    this.slots[i],
+                                    this.slots[i]
+                                ]
+                            ];
+                        case 2:
+                            _state.sent();
+                            _state.label = 3;
+                        case 3:
+                            i++;
+                            return [
+                                3,
+                                1
+                            ];
+                        case 4:
+                            return [
+                                2
+                            ];
+                    }
+                });
+            }
+        },
+        {
+            key: "take",
+            value: function take(pid) {
+                return this.delete(pid) ? pid : undefined;
+            } //                          [TAKE]
+        },
+        {
+            key: "peek",
+            value: function peek(pid) {
+                return this.has(pid) ? pid : false;
+            } //                              [PEEK]
+        },
+        {
+            key: "toggle",
+            value: function toggle(pid) {
+                if (this.has(pid)) {
+                    this.delete(pid);
+                    return false;
+                }
+                this.add(pid);
+                return true;
+            }
+        },
+        {
+            key: "first",
+            value: function first() {
+                return set_byte_class_private_field_get(this, set_byte_size) === 0 ? undefined : this.slots[0];
+            } //                    [FIRST]
+        },
+        {
+            key: "last",
+            value: function last() {
+                return set_byte_class_private_field_get(this, set_byte_size) === 0 ? undefined : this.slots[set_byte_class_private_field_get(this, set_byte_size) - 1];
+            } //         [LAST]
+        },
+        {
+            key: "union",
+            value: function union(other) {
+                var out = new SET2BI(this.cap, this);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "intersection",
+            value: function intersection(other) {
+                var probe = new SET2BI(this.cap, other);
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (probe.has(pid)) out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "difference",
+            value: function difference(other) {
+                var probe = new SET2BI(this.cap, other);
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!probe.has(pid)) out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "symmetricDifference",
+            value: function symmetricDifference(other) {
+                var probe = new SET2BI(this.cap, other);
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!probe.has(pid)) out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                try {
+                    for(var _iterator1 = probe[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                        var pid1 = _step1.value;
+                        if (!this.has(pid1)) out.add(pid1);
+                    }
+                } catch (err) {
+                    _didIteratorError1 = true;
+                    _iteratorError1 = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                            _iterator1.return();
+                        }
+                    } finally{
+                        if (_didIteratorError1) {
+                            throw _iteratorError1;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "isSubsetOf",
+            value: function isSubsetOf(other) {
+                var probe = new SET2BI(this.cap, other);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!probe.has(pid)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "isSupersetOf",
+            value: function isSupersetOf(other) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!this.has(pid)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "isDisjointFrom",
+            value: function isDisjointFrom(other) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (this.has(pid)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "equals",
+            value: function equals(other) {
+                var probe = new SET2BI(this.cap, other);
+                return set_byte_class_private_field_get(this, set_byte_size) === probe.size && this.isSubsetOf(probe);
+            }
+        },
+        {
+            key: "filter",
+            value: function filter(fn) {
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (fn(pid, this)) out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "map",
+            value: function map(fn) {
+                var out = new SET2BI(this.cap); // fn must still yield in-range pids
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        out.add(fn(pid, this));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "partition",
+            value: function partition(fn) {
+                var yes = new SET2BI(this.cap), no = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        (fn(pid, this) ? yes : no).add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return [
+                    yes,
+                    no
+                ];
+            }
+        },
+        {
+            key: "differenceBy",
+            value: function differenceBy(other, fn) {
+                var keys = new Set();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = other[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        keys.add(fn(pid));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                try {
+                    for(var _iterator1 = this[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                        var pid1 = _step1.value;
+                        if (!keys.has(fn(pid1))) out.add(pid1);
+                    }
+                } catch (err) {
+                    _didIteratorError1 = true;
+                    _iteratorError1 = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                            _iterator1.return();
+                        }
+                    } finally{
+                        if (_didIteratorError1) {
+                            throw _iteratorError1;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "uniqueBy",
+            value: function uniqueBy(fn) {
+                var keys = new Set();
+                var out = new SET2BI(this.cap);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        var key = fn(pid);
+                        if (keys.has(key)) continue;
+                        keys.add(key);
+                        out.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "find",
+            value: function find(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (fn(pid, this)) return pid;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return undefined;
+            }
+        },
+        {
+            key: "every",
+            value: function every(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!fn(pid, this)) return false;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return true;
+            }
+        },
+        {
+            key: "some",
+            value: function some(fn) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (fn(pid, this)) return true;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return false;
+            }
+        },
+        {
+            key: "reduce",
+            value: function reduce(fn, initial) {
+                var result = initial;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        result = fn(result, pid, this);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return result;
+            }
+        },
+        {
+            key: "addAll",
+            value: function addAll(pids) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        this.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            } //    [ADDALL]
+        },
+        {
+            key: "deleteAll",
+            value: function deleteAll(pids) {
+                var count = 0;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (this.delete(pid)) count++;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return count;
+            }
+        },
+        {
+            key: "retainAll",
+            value: function retainAll(pids) {
+                var keep = new SET2BI(this.cap, pids);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = set_byte_to_consumable_array(this)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        if (!keep.has(pid)) this.delete(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "update",
+            value: function update(pids) {
+                return this.addAll(pids);
+            } //                              [UPDATE]
+        },
+        {
+            key: "replace",
+            value: function replace(pids) {
+                this.clear();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = pids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        this.add(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return this;
+            }
+        },
+        {
+            key: "swap",
+            value: function swap(a, b) {
+                if (!this.has(a)) return false;
+                this.delete(a);
+                this.add(b);
+                return true;
+            }
+        },
+        {
+            key: "clone",
+            value: function clone() {
+                return new SET2BI(this.cap, this);
+            } //                                     [CLONE]
+        },
+        {
+            key: "toArray",
+            value: function toArray() {
+                return set_byte_to_consumable_array(this);
+            } //                                                   [TOARRAY]
+        },
+        {
+            key: "toMap",
+            value: function toMap(fn) {
+                var out = new Map();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        var _fn = set_byte_sliced_to_array(fn(pid), 2), key = _fn[0], result = _fn[1];
+                        out.set(key, result);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "toObject",
+            value: function toObject(fn) {
+                var out = {};
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var pid = _step.value;
+                        out[fn ? fn(pid) : String(pid)] = pid;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "toJSON",
+            value: function toJSON() {
+                return this.toArray();
+            } //                                                 [TOJSON]
+        }
+    ], [
+        {
+            key: "fromArray",
+            value: function fromArray(pids, maxParticles) {
+                var _Math;
+                return new SET2BI(maxParticles !== null && maxParticles !== void 0 ? maxParticles : (_Math = Math).max.apply(_Math, set_byte_to_consumable_array(pids).concat([
+                    0
+                ])) + 1, pids);
+            }
+        },
+        {
+            key: "fromObject",
+            value: function fromObject(obj, maxParticles) {
+                return SET2BI.fromArray(Object.values(obj), maxParticles);
+            }
+        },
+        {
+            key: "fromEntries",
+            value: function fromEntries(entries, maxParticles) {
+                var pids = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = set_byte_sliced_to_array(_step.value, 2), pid = _step_value[1];
+                        pids.push(pid);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return SET2BI.fromArray(pids, maxParticles);
+            }
+        },
+        {
+            key: "from",
+            value: function from(pids, maxParticles) {
+                return new SET2BI(maxParticles !== null && maxParticles !== void 0 ? maxParticles : 8192, pids);
+            }
+        }
+    ]);
+    return SET2BI;
+}();
+globalThis.SET2B = set_byte_SET2BI;
+
 function soa_codec_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
@@ -12964,4 +14165,5 @@ globalThis.WS2 = weak_set_WS2I;
 
 
 
-export { D2_CODEC, DATE_TAG, RECC2, array_A2I as A2I, boolean_byte_B2BI as B2BI, date_D2I as D2I, date_R2I as R2I, date_R2II as R2II, error_ER2I as ER2I, iterator_I2I as I2I, map_M2I as M2I, map_byte_M2BI as M2BI, map_rv as rv, map_sameValue as sameValue, number_N2I as N2I, object_O2I as O2I, promise_P2I as P2I, reg_ex_REC2 as REC2, set_SET2I as SET2I, soa_codec_SOA_CODEC as SOA_CODEC, string_S2I as S2I, unit8array_U82I as U82I, url_search_params_USP2I as USP2I, weak_map_WM2I as WM2I, weak_set_WS2I as WS2I };
+
+export { D2_CODEC, DATE_TAG, RECC2, array_A2I as A2I, boolean_byte_B2BI as B2BI, date_D2I as D2I, date_R2I as R2I, date_R2II as R2II, error_ER2I as ER2I, iterator_I2I as I2I, map_M2I as M2I, map_byte_M2BI as M2BI, map_rv as rv, map_sameValue as sameValue, number_N2I as N2I, object_O2I as O2I, promise_P2I as P2I, reg_ex_REC2 as REC2, set_SET2I as SET2I, set_byte_SET2BI as SET2BI, soa_codec_SOA_CODEC as SOA_CODEC, string_S2I as S2I, unit8array_U82I as U82I, url_search_params_USP2I as USP2I, weak_map_WM2I as WM2I, weak_set_WS2I as WS2I };

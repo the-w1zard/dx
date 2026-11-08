@@ -48,7 +48,35 @@
 >
 > Take what is currently... lacking in the ux dept. and give it the updates they desperatly need.
 
-
+> [!IMPORTANT] BENCH RESULTS
+>
+> Currently in the middle of creating and setting evreything up for the final boss. Since I have already created them, I'm going to be placing them within the solution due to the fact that I don't just throw everything away. Especially when they work like this.
+>
+> To give some context on the numbers, starting with the basic map. V8 has optimized maps path, really optimized when its only used with int's. Essentially, simply put, its a disruptor. Which is why the number is so high. The very next one, is 
+>
+> ```txt
+> === Starting 10-Second Nested Router Benchmarks ===
+> [1. ORIGINAL RECIPE] 50,081,792 ops -> 5,008,122 ops/sec
+> [2. INTERNED] 90,097,664 ops -> 9,009,692 ops/sec
+> [3. HOT PATH IDX] 91,598,848 ops -> 9,159,753 ops/sec
+> [4. NOT NESTED, CHS CONVERTED TO BIG INT] 30,720 ops -> 2,515 ops/sec
+> [5. 3D FLAT (M2BNestedClass)] 2,272,765,952 ops -> 227,274,854 ops/sec
+> [6. True Binary + Single-Slot Memo] 1,037,336,576 ops -> 103,733,619 ops/sec
+> === Benchmarks Complete ===
+> 
+> 
+> --- Starting 10-Second Binary Store Benchmarks (Set & Get) ---
+> [Map] 478,537,728 ops in 10.00s -> 47,853,532 ops/sec
+> [getNestedMap6 vs)] 24,862,720 ops in 10.00s -> 2,486,192 ops/sec
+> [BYTEOP_MAP LG vs)] 286,138,368 ops in 10.00s -> 28,613,545 ops/sec
+> [M2B] 896,022,528 ops in 10.00s -> 89,601,992 ops/sec
+> [M2] 366,237,696 ops in 10.00s -> 36,623,606 ops/sec
+> [BYTE_MAP small vs)] 41,459,712 ops in 10.00s -> 4,145,936 ops/sec
+> [M2Bin (Hybrid Map + Int32/F64)] 35,465,216 ops in 10.00s -> 3,546,358 ops/sec
+> [M2Dense (Dense Array + Live Byte Lane)] 23,777,280 ops in 10.00s -> 2,377,641 ops/sec
+> [M2Rows (Strided Row Buffer, stride=1)] 31,150,080 ops in 10.00s -> 3,114,899 ops/sec
+> --- Benchmarks Complete ---
+> ```
 
 </span>
 
