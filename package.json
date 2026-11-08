@@ -1,6 +1,6 @@
 {
 	"name": "@the-w1zard/dx",
-	"version": "1.0.13",
+	"version": "1.0.14",
 	"sideEffects": false,
 	"type": "module",
 	"main": "./dist/index.js",
