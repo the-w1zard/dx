@@ -861,7 +861,7 @@ function date_wrap_native_super(Class) {
     return date_wrap_native_super(Class);
 }
 var DATE_TAG = 0x4432; // "D2"
-var D2_CODEC = {
+var D2_CODEC = (/* unused pure expression or super */ null && ({
     tag: DATE_TAG,
     test: function test(v) {
         return date_instanceof1(v, Date);
@@ -872,7 +872,7 @@ var D2_CODEC = {
     dec: function dec(ms) {
         return new date_D2I(ms);
     }
-};
+}));
 var FORMAT = {
     full: {
         weekday: "short",
@@ -14166,4 +14166,5 @@ globalThis.WS2 = weak_set_WS2I;
 
 
 
-export { D2_CODEC, DATE_TAG, RECC2, array_A2I as A2I, boolean_byte_B2BI as B2BI, date_D2I as D2I, date_R2I as R2I, date_R2II as R2II, error_ER2I as ER2I, iterator_I2I as I2I, map_M2I as M2I, map_byte_M2BI as M2BI, map_rv as rv, map_sameValue as sameValue, number_N2I as N2I, object_O2I as O2I, promise_P2I as P2I, reg_ex_REC2 as REC2, set_SET2I as SET2I, set_byte_SET2BI as SET2BI, soa_codec_SOA_CODEC as SOA_CODEC, string_S2I as S2I, unit8array_U82I as U82I, url_search_params_USP2I as USP2I, weak_map_WM2I as WM2I, weak_set_WS2I as WS2I };
+
+export { RECC2 as RECC, array_A2I as A2, boolean_byte_B2BI as B2B, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_byte_M2BI as M2B, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as REC, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };

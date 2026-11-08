@@ -12,7 +12,7 @@
 	},
 	"files": [
 		"dist",
-		"./src/dx.d.ts"
+		"src"
 	],
 	"scripts": {
 		"1": "git add .",

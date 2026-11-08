@@ -1,6 +1,5 @@
 type F64 = Float64Array;
 type V128 = N | F64;   // a "value" is either scalar (stride=1) or a stride-length Float64 view
-
 type Derived = {
 	deps: AR<N>;
 	fn: (...vals: AR<V128>) => V128;
@@ -8,7 +7,6 @@ type Derived = {
 	has: B;
 	value?: V128;
 };
-
 export type M2BEvent = {
 	op: "set" | "upd" | "del" | "dirty";
 	pid: N;
@@ -18,7 +16,6 @@ export type M2BEvent = {
 	batch?: B;
 };
 type Sub = (e: M2BEvent) => V;
-
 const sameValue128 = (a: V128 | UD, b: V128 | UD): B => {
 	if (a === b) return true;
 	if (a instanceof Float64Array && b instanceof Float64Array) {
@@ -28,7 +25,6 @@ const sameValue128 = (a: V128 | UD, b: V128 | UD): B => {
 	}
 	return Object.is(a, b);
 };
-
 export class M2BI {
 	readonly cap: N;
 	readonly stride: N;
