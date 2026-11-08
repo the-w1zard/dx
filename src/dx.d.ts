@@ -1,3 +1,6 @@
+import { M2RI } from "./map_rows";
+import { M2DI } from "./map_dense";
+import { M2BINI } from "./map_bin";
 import { B2BI } from "./boolean_byte";
 import { M2I } from "./map";
 import { M2BI } from "./map_byte";
@@ -32,7 +35,10 @@ declare global {
 	var B2B: typeof B2BI; // BOOLEAN BINARY
 
 	var M2: typeof M2I; // map
-	var M2B: typeof M2BI; // map
+	var M2B: typeof M2BI; // byte
+	var M2BIN: typeof M2BINI; // binary
+	var M2D: typeof M2DI; // dense
+	var M2R: typeof M2RI; // rows
 
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set

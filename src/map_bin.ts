@@ -175,3 +175,5 @@ export class M2BINI<K = N, V = N> {
 
 export interface M2BIN<K, V> extends M2BINI {}
 Object.setPrototypeOf(M2BINI.prototype, Map.prototype);
+
+globalThis.M2BIN = M2BINI;
