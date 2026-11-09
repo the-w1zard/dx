@@ -209,4 +209,3 @@ export class N2I extends Number implements N2 {
 	}
 }
 
-globalThis.N2 = N2I;

@@ -840,6 +840,8 @@ The `cache()` method maintains its own nested addressing structure through the s
 
 ```ts
 const nested = new nestedi();
+// creating an instance is not required, just simply calling it via 'nested' anywhere within the code base will grant access modules created instance. If you do not need to share the store/nested storage implementation, then this will work perfectly.
+
 
 const users = nested.map('users');
 const sessions = nested.m2('sessions');
@@ -868,6 +870,17 @@ type ALL_MAPS =
 ```
 
 `nested<K = A, V = A>` provides generic typing for its fallback storage and map operations.
+
+> [!IMPORTANT] This small, insignificant, ordinary, unassuming snippet of code, doesn't look like it provides much value.
+>
+> If this is your current opinion or idea of it currently, HONESTLY... this one feature, which I almost did not add, is actually the most strongest, heavy hitting feature... even when you compare the entire solution against this. I will have to write this in sections/pieces, because this will get long. It still surprises me how such a snippet like this... could be of such a huge benefit and add so much to your arsenal while at the same time, entirely eliminating... MASSIVE headaches.
+>
+> This is used throughout ALL my codebases and projects, everywhere. It can, astonishingly, be used in every corner of the apps we create and work in.
+> 1. message queue / bus: used to provide a 4 tiered scoped channel system. Instantly granting multiplexing as a side effect.
+> 2. app context / state: used to grant users a very easy work surface to create an infinite amount of unique globally accessible contexts... all without the use of a provider
+> 3. databases: this one has layers, depending on how you use it. If using it for say... a kvdb, it can automatically provide VERY easy tables and db configurations, where users can simply change one value and it places the value in an entirely different table from one line to the next. If used within an app context, provides a namespace system where you can easily organize data. 
+> 4. router: this one, IS FUCKING HUGE... To this day, I am still fucking shocked it worked... let me put it this way, it works so well... as a router for your message queue, bus... whatever, right? I could NEVER replicate, the end result that this gives you. I don't think any one can. Even if you are a dev for 50-some odd years... it perfectly produces... zero errors, across 1000's of apps... all perfectly routed messages, without... configuring a single fucking thing. No routing tables, NOTHING. This is by far, the only thing that has saved me more time than any other.
+> 5. workspace identification
 
 ## `O2` — Object
 

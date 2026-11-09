@@ -441,9 +441,7 @@ export class R2I implements R2 {
 }
 export const R2II = (start: D, end: D): R2 => new R2I(new D2I(start), new D2I(end));
 
-globalThis.D2 = D2I;
-globalThis.R2 = R2I;
-globalThis.R2FN = R2II;
+
 
 /*  ====================================================================================================
      I don't know about you, but for me... I have spent so much time fine tuning appt schedulers and

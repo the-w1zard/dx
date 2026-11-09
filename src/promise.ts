@@ -306,4 +306,3 @@ export class P2I<T = A> extends Promise<T> implements P2<T> {
 	}
 }
 
-(globalThis as A).P2 = P2I as P2C;

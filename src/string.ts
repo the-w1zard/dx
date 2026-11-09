@@ -172,4 +172,3 @@ export class S2I extends String implements S2 {
 	}
 }
 
-globalThis.S2 = S2I ;

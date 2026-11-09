@@ -160,4 +160,3 @@ export class nestedi<K = A, V = A> {
 
 export const nested = new nestedi();
 
-(globalThis as any).nested = new nestedi()

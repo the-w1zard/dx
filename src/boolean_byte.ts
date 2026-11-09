@@ -20,4 +20,3 @@ export class B2BI {
     }/** Clear all flags instantly without reallocating memory. */
     public clear(): void { this.flags.fill(0);    }
 }
-globalThis.B2B = B2BI;

@@ -288,4 +288,3 @@ export class O2I   {
     }
 }
 
-globalThis.O2 = O2I;

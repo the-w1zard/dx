@@ -404,4 +404,3 @@ export class I2I<T = A> implements I2<T> {
 	}
 }
 
-globalThis.I2 = I2I;

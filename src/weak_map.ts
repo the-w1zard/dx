@@ -152,4 +152,3 @@ export class WM2I<H extends WeakKey = A, T = A> extends WeakMap<H, T> implements
 	}
 }
 
-globalThis.WM2 = WM2I;

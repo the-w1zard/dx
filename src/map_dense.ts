@@ -164,4 +164,3 @@ export class M2DI<Key=A, V = number> {
 
 export interface M2D<K, V> extends M2DI<K, V> {}
 
-globalThis.M2D = M2DI;

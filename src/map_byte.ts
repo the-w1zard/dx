@@ -415,4 +415,3 @@ export class M2BI {
 	}
 }
 
-globalThis.M2B = M2BI;

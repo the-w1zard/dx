@@ -415,8 +415,6 @@ export const RECC2: RE2Static = Object.assign(
 	},
 );
 
-(globalThis as A).RE2 = REC2;
-(globalThis as A).RES2 = RECC2;
 
 /*  ====================================================================================================
     

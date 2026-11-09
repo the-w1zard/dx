@@ -78,4 +78,3 @@ export class ER2I extends Error implements ER2 {
 	}
 }
 
-globalThis.ER2 = ER2I 

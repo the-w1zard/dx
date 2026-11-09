@@ -27,4 +27,3 @@ export class SOA_CODEC {// HIGH_PERFORMANCE_SOA_CODEC
 }
 
 export const soa_codeci = new SOA_CODEC()
-globalThis.soa_codec = soa_codeci 

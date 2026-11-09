@@ -2209,6 +2209,8 @@
 <p>The <code>cache()</code> method maintains its own nested addressing structure through the selected cache.</p>
 <h3 id="usage">Usage</h3>
 <pre><code class="language-ts"><span class="hljs-keyword">const</span> nested = <span class="hljs-keyword">new</span> <span class="hljs-title function_">nestedi</span>();
+<span class="hljs-comment">// creating an instance is not required, just simply calling it via &#x27;nested&#x27; anywhere within the code base will grant access modules created instance. If you do not need to share the store/nested storage implementation, then this will work perfectly.</span>
+
 
 <span class="hljs-keyword">const</span> users = nested.<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;users&#x27;</span>);
 <span class="hljs-keyword">const</span> sessions = nested.<span class="hljs-title function_">m2</span>(<span class="hljs-string">&#x27;sessions&#x27;</span>);
@@ -2230,6 +2232,17 @@
     | <span class="hljs-variable constant_">NU</span>;
 </code></pre>
 <p><code>nested&lt;K = A, V = A&gt;</code> provides generic typing for its fallback storage and map operations.</p>
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>This small, insignificant, ordinary, unassuming snippet of code, doesn't look like it provides much value.</p><p></p>
+<p>If this is your current opinion or idea of it currently, HONESTLY... this one feature, which I almost did not add, is actually the most strongest, heavy hitting feature... even when you compare the entire solution against this. I will have to write this in sections/pieces, because this will get long. It still surprises me how such a snippet like this... could be of such a huge benefit and add so much to your arsenal while at the same time, entirely eliminating... MASSIVE headaches.</p>
+<p>This is used throughout ALL my codebases and projects, everywhere. It can, astonishingly, be used in every corner of the apps we create and work in.</p>
+<ol>
+<li>message queue / bus: used to provide a 4 tiered scoped channel system. Instantly granting multiplexing as a side effect.</li>
+<li>app context / state: used to grant users a very easy work surface to create an infinite amount of unique globally accessible contexts... all without the use of a provider</li>
+<li>databases: this one has layers, depending on how you use it. If using it for say... a kvdb, it can automatically provide VERY easy tables and db configurations, where users can simply change one value and it places the value in an entirely different table from one line to the next. If used within an app context, provides a namespace system where you can easily organize data.</li>
+<li>router: this one, IS FUCKING HUGE... To this day, I am still fucking shocked it worked... let me put it this way, it works so well... as a router for your message queue, bus... whatever, right? I could NEVER replicate, the end result that this gives you. I don't think any one can. Even if you are a dev for 50-some odd years... it perfectly produces... zero errors, across 1000's of apps... all perfectly routed messages, without... configuring a single fucking thing. No routing tables, NOTHING. This is by far, the only thing that has saved me more time than any other.</li>
+<li>workspace identification</li>
+</ol>
+</div>
 <h2 id="o2--object"><code>O2</code> — Object</h2>
 <p>Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.</p>
 <table>

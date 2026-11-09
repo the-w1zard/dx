@@ -23,6 +23,8 @@ import { nestedi } from './nested'
 import { WM2I } from "./weak_map";
 import { WS2I } from "./weak_set";
 import { MaybePromisei, type MaybePromise } from './index'
+import { nestedi } from './nested'
+
 export {};
 
 
@@ -46,7 +48,7 @@ declare global {
 
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
-	var nested: typeof nestedi; // nested
+	var nested: nestedi; // nested
 
 	var RES2: typeof RECC2; // reg ex static
 	var RE2: typeof REC2; // reg ex
@@ -290,6 +292,57 @@ declare global {
 		clone(): RE2_IF;
 	}
 	interface REC2 extends RE2_IF {}
+	interface ExplainNode {
+		desc: S;
+		children?: AR<ExplainNode>;
+	}
+	
+	interface ExplainSource {
+		(source: S): AR<S>;
+	}
+	
+	interface RE2Static {
+		(input: RE2Input, flags?: S): RE2_IF;
+	
+		of(input: RE2Input, flags?: S): RE2_IF;
+		escape: typeof escapeRegex;
+		literal(str: S): RE2_IF;
+		seq(...parts: AR<RE2Input>): RE2_IF;
+		alt(...parts: AR<RE2Input>): RE2_IF;
+	
+		digit: RE2_IF;
+		word: RE2_IF;
+		space: RE2_IF;
+		any: RE2_IF;
+		notDigit: RE2_IF;
+		notWord: RE2_IF;
+		notSpace: RE2_IF;
+	
+		range(from: S, to: S): RE2_IF;
+		oneOf(chars: S): RE2_IF;
+		noneOf(chars: S): RE2_IF;
+	
+		email: RE2_IF;
+		url: RE2_IF;
+		uuid: RE2_IF;
+		ipv4: RE2_IF;
+		ipv6: RE2_IF;
+		hex: RE2_IF;
+		hexColor: RE2_IF;
+		slug: RE2_IF;
+		alphaNumeric: RE2_IF;
+		integer: RE2_IF;
+		float: RE2_IF;
+		phoneLoose: RE2_IF;
+		isoDate: RE2_IF;
+		base64: RE2_IF;
+		jwt: RE2_IF;
+		semver: RE2_IF;
+		creditCard: RE2_IF;
+		htmlTag: RE2_IF;
+		whitespaceOnly: RE2_IF;
+	}
+	interface RES2 extends RE2Static {}
 	// #endregion 
 	//                                                                                   [STATICS / PRESETS]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 

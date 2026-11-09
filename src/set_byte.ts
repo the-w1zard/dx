@@ -219,5 +219,4 @@ export class SET2BI {
 	}
 }
 
-globalThis.SET2B = SET2BI;
 

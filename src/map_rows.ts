@@ -142,4 +142,3 @@ export class M2RI<K = N> {
 export interface M2R<K> extends M2RI {}
 Object.setPrototypeOf(M2RI.prototype, Map.prototype);
 
-globalThis.M2R = M2RI;

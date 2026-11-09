@@ -298,4 +298,3 @@ export class A2I<T = A> extends Array<T> implements A2<T> {
     }
 }
 
-globalThis.A2 = A2I;

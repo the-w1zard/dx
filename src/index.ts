@@ -20,12 +20,41 @@ import { U82I } from './unit8array'
 import { USP2I } from './url_search_params'
 import { WM2I } from './weak_map'
 import { WS2I } from './weak_set'
+import { nestedi } from './nested'
+
 export type MaybePromise<R = any> = R;
 export function MaybePromisei<R = any>(v: R): MaybePromise {
     return v !== undefined ? v as R : Promise.resolve(v) as Promise<R> 
 }
-
+const nestedInstace =  new nestedi()
 globalThis.MaybePromise = MaybePromisei;
+globalThis.A2 = A2I;
+globalThis.B2B = B2BI;
+globalThis.D2 = D2I;
+globalThis.R2 = R2I;
+globalThis.R2FN = R2II;
+globalThis.ER2 = ER2I 
+globalThis.I2 = I2I;
+globalThis.M2 = M2I;
+globalThis.M2BIN = M2BINI;
+globalThis.M2B = M2BI;
+globalThis.M2D = M2DI;
+globalThis.M2R = M2RI;
+globalThis.nested = nestedInstace
+globalThis.N2 = N2I;
+globalThis.O2 = O2I;
+globalThis.P2 = P2I 
+globalThis.RE2 = REC2;
+globalThis.RES2 = RECC2;
+globalThis.SET2 = SET2I;
+globalThis.SET2B = SET2BI;
+globalThis.soa_codec = soa_codeci 
+globalThis.S2 = S2I ;
+globalThis.U82 = U82I;
+globalThis.USP2 = USP2I 
+globalThis.WM2 = WM2I;
+globalThis.WS2 = WS2I
+globalThis.M2BIN = M2BINI;
 
 export {
     M2RI as M2R,

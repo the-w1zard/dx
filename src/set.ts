@@ -195,4 +195,3 @@ export class SET2I<T = A> extends Set<T> implements SET2<T> {
 	}
 }
 
-globalThis.SET2 = SET2I;

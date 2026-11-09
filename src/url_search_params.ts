@@ -184,4 +184,3 @@ export class USP2I extends URLSearchParams implements USP2 {
 	}
 }
 
-globalThis.USP2 = USP2I 

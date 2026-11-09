@@ -371,4 +371,3 @@ export class U82I<T = A> extends Array<T> implements U82<T> {
 	}
 }
 
-globalThis.U82 = U82I;
