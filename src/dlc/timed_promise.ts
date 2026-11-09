@@ -1,0 +1,36 @@
+
+export function timedPromise<T>(gate: Promise<T>, timeoutMs: number): Promise<T> {
+    let timer!: ReturnType<typeof setTimeout>;
+    const timeout = new Promise<T>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`[rift] wait() timed out after ${timeoutMs}ms`)), timeoutMs);
+    });
+    return Promise.race([gate, timeout]).finally(() => clearTimeout(timer));
+}
+
+// just here because I prefer referencing this shape when using reusing this snippet style of code
+/**
+ function wait_and_promise<T = A>(timeoutMs: number, key: A, isOpen: A, current: A,) {
+    return new Promise<T>((resolve, reject) => { 
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        function sub<T>(first:A, second: A) {return {} as T} ;
+        const r = sub<RiftRecord<T>>(key, (next: A) => { 
+            if (next?.opened) {
+                if (timer) clearTimeout(timer);
+                resolve(next.value as T);
+            }
+        });
+        if (isOpen) { 
+            if (timer) clearTimeout(timer);
+            resolve(current as T);
+            return;
+        }
+        if (timeoutMs) {
+            timer = setTimeout(() => {
+                reject(new Error(`[rift] wait() timed out after ${timeoutMs}ms`));
+            }, timeoutMs);
+        }
+    });
+}
+
+
+ */

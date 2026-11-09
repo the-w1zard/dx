@@ -22,6 +22,36 @@ import { WM2I } from './weak_map'
 import { WS2I } from './weak_set'
 import { nestedi } from './nested'
 
+import { wait_and_promise as wait_and_promisei} from './dlc/wait_and_promise'
+import { twx as twxi} from './dlc/twx'
+import { lwwState as lwwStatei} from './dlc/lww'
+import { ignoreArg as ignoreArgi} from './dlc/ignore_arg'
+import { barrier as barrieri} from './dlc/barrier'
+import { callIf as callIfi} from './dlc/call_if'
+import { clamp as clampi} from './dlc/clamp'
+import { createLiveScope as createLiveScopei} from './dlc/create_live_scope'
+import { deferred as deferredi} from './dlc/deferred'
+import { evaluator as evaluatori} from './dlc/evaluator'
+import { Finally as Finallyi} from './dlc/finally'
+import { gate as gatei} from './dlc/gate'
+import { invoke as invokei} from './dlc/invoke'
+import { isDefined as isDefinedi} from './dlc/is_defined'
+import { isNotDefined as isNotDefinedi} from './dlc/is_not_defined'
+import { Lazy as Lazyi} from './dlc/lazy'
+import { once as oncei} from './dlc/once'
+import { orDefault as orDefaulti} from './dlc/or_default'
+import { patchState as patchStatei} from './dlc/patch_state'
+import { retryWithBackoff as retryWithBackoffi} from './dlc/retry_with_backoff'
+import { runWithRetry as runWithRetryi} from './dlc/run_with_retry'
+import { _serialExecutor as _serialExecutori} from './dlc/serial_executor'
+import { setKey as setKeyi} from './dlc/set_keys'
+import { setPrev as setPrevi} from './dlc/set_prev'
+import { sleep as sleepi} from './dlc/sleep'
+import { timedPromise as timedPromisei} from './dlc/timed_promise'
+import { toPromise as toPromisei} from './dlc/to_promise'
+import { tryCatch as tryCatchi} from './dlc/try_catch'
+import { unreachable as unreachablei} from './dlc/unreachable'
+
 export type MaybePromise<R = any> = R;
 export function MaybePromisei<R = any>(v: R): MaybePromise {
     return v !== undefined ? v as R : Promise.resolve(v) as Promise<R> 
@@ -55,6 +85,35 @@ globalThis.USP2 = USP2I
 globalThis.WM2 = WM2I;
 globalThis.WS2 = WS2I
 globalThis.M2BIN = M2BINI;
+globalThis.callIf = callIfi
+globalThis.clamp = clampi
+globalThis.createLiveScope = createLiveScopei
+globalThis.deferred = deferredi
+globalThis.evaluator = evaluatori
+globalThis.Finally = Finallyi
+globalThis.gate = gatei
+globalThis.invoke = invokei
+globalThis.isDefined = isDefinedi
+globalThis.isNotDefined = isNotDefinedi
+globalThis.Lazy = Lazyi
+globalThis.once = oncei
+globalThis.orDefault = orDefaulti
+globalThis.patchState = patchStatei
+globalThis.retryWithBackoff = retryWithBackoffi
+globalThis.runWithRetry = runWithRetryi
+globalThis._serialExecutor = _serialExecutori
+globalThis.setKey = setKeyi
+globalThis.setPrev = setPrevi
+globalThis.sleep = sleepi
+globalThis.timedPromise = timedPromisei
+globalThis.toPromise = toPromisei
+globalThis.tryCatch = tryCatchi
+globalThis.unreachable = unreachablei
+globalThis.wait_and_promise = wait_and_promisei
+globalThis.twx = twxi
+globalThis.lwwState = lwwStatei
+globalThis.ignoreArg = ignoreArgi
+globalThis.barrier = barrieri
 
 export {
     M2RI as M2R,
