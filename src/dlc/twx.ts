@@ -103,10 +103,9 @@ function MaybePromise<R = any>(v: R): MaybePromise {
 type PK = string | symbol | number;
 
 
-const TWX_GLOBAL = globalThis as typeof globalThis & Record<string, A>;
+const TWX_GLOBAL = globalThis as typeof globalThis & Record<string | symbol, A>;
 const UC: typeof TWX_DEFAULT_UC = TWX_GLOBAL.UC ?? (TWX_GLOBAL.UC = TWX_DEFAULT_UC);
-const TWX_MAP = Symbol.for("THE_WIZARD");
-
+const TWX_MAP = Symbol("THE_WIZARD");
 // 1. Corrected getNestedMap signature matching (s, m, r)
 function getNestedMap<K, V>(
 	s = UC.SAURON_SLAVE_REG,
@@ -511,32 +510,35 @@ export class ReChain<T = A> {
 		const [v] = this._use();
 		return this.branch(!!pred(v));
 	}
-
-	public switch() {
+	public switch(): {
+		case(val: A, fn: (v: A) => A): ReChain<T>;
+		default(fn: (v: A) => A): ReChain<T>;
+		done(): T;
+	} {
 		const [v, setV] = this._use();
 		let matched = false;
 		let out: ReChain<A> = this;
 		const self = this;
-		
+	
 		return {
-			case(val: A, fn: A) {
+			case(val, fn) {
 				if (!matched && (v === val || Object.is(v, val))) {
 					matched = true;
 					const next = fn(v);
-					setV(next); // write-through
+					setV(next);
 					out = new ReChain(next, self.id);
 				}
 				return self;
 			},
-			default(fn: A) {
+			default(fn) {
 				if (!matched) {
 					const next = fn(v);
-					setV(next); // write-through
+					setV(next);
 					out = new ReChain(next, self.id);
 				}
 				return self;
 			},
-			done: () => out.done(),
+			done: () => out.done() as T,
 		};
 	}
 

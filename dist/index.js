@@ -566,7 +566,6 @@ function grow(need) {
     _class_private_field_set(this, _vals, v);
 }
 Object.setPrototypeOf(map_rows_M2RI.prototype, Map.prototype);
-globalThis.M2R = map_rows_M2RI;
 
 function map_dense_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -1197,7 +1196,6 @@ function src_map_dense_grow(need) {
     l.set(map_dense_class_private_field_get(this, _live));
     map_dense_class_private_field_set(this, _live, l);
 }
-globalThis.M2D = map_dense_M2DI;
 
 function map_bin_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -1778,7 +1776,6 @@ function src_map_bin_grow(need) {
     map_bin_class_private_field_set(this, map_bin_vals, v);
 }
 Object.setPrototypeOf(map_bin_M2BINI.prototype, Map.prototype);
-globalThis.M2BIN = map_bin_M2BINI;
 
 function boolean_byte_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -1866,7 +1863,6 @@ function boolean_byte_define_property(obj, key, value) {
     ]);
     return B2BI;
 }();
-globalThis.B2B = boolean_byte_B2BI;
 
 function map_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -3636,7 +3632,9 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         }
     ]);
     return M2I;
-}(map_wrap_native_super(Map));
+} /*  ====================================================================================================
+    
+    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ (map_wrap_native_super(Map));
 function emit(e) {
     var _$_class_private_field_get;
     if (map_class_private_field_get(this, _batching) > 0) {
@@ -3727,9 +3725,6 @@ function assertNotIterating(op) {
         throw new Error("M2.".concat(op, "() during iteration. Use filterKV(), collect keys first, or disable $strict()."));
     }
 }
-globalThis.M2 = map_M2I; /*  ====================================================================================================
-    
-    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ 
 
 function map_byte_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -5465,7 +5460,6 @@ function writeSlot(slot, v) {
 function fresh() {
     return new map_byte_M2BI(this.cap, this.stride);
 }
-globalThis.M2B = map_byte_M2BI;
 
 function array_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -6024,7 +6018,6 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
     ]);
     return A2I;
 }(array_wrap_native_super(Array));
-globalThis.A2 = array_A2I;
 
 function date_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -7292,10 +7285,7 @@ var date_R2I = /*#__PURE__*/ function() {
 }();
 var date_R2II = function R2II(start, end) {
     return new date_R2I(new date_D2I(start), new date_D2I(end));
-};
-globalThis.D2 = date_D2I;
-globalThis.R2 = date_R2I;
-globalThis.R2FN = date_R2II; /*  ====================================================================================================
+}; /*  ====================================================================================================
      I don't know about you, but for me... I have spent so much time fine tuning appt schedulers and
      custom formatting the dates that come back, making sure the times line up with the time zone
      making sure it outputs in the req format for the next system to consume... fuck that shit dude...
@@ -7706,7 +7696,6 @@ var error_ER2I = /*#__PURE__*/ function _target(Error1) {
     ]);
     return ER2I;
 }(error_wrap_native_super(Error));
-globalThis.ER2 = error_ER2I;
 
 function iterator_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -8555,7 +8544,6 @@ var iterator_I2I = /*#__PURE__*/ function() {
     ]);
     return I2I;
 }();
-globalThis.I2 = iterator_I2I;
 
 function number_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -9000,7 +8988,6 @@ var number_N2I = /*#__PURE__*/ function(Number1) {
     ]);
     return N2I;
 }(number_wrap_native_super(Number));
-globalThis.N2 = number_N2I;
 
 function object_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -9611,7 +9598,6 @@ var object_O2I = /*#__PURE__*/ function() {
     ]);
     return O2I;
 }();
-globalThis.O2 = object_O2I;
 
 function promise_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -10260,7 +10246,6 @@ var promise_P2I = /*#__PURE__*/ function(Promise1) {
     ]);
     return P2I;
 }(promise_wrap_native_super(Promise));
-globalThis.P2 = promise_P2I;
 
 function reg_ex_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -11259,9 +11244,7 @@ var RECC2 = Object.assign(function(input, flags) {
     creditCard: new reg_ex_REC2("\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{1,4}"),
     htmlTag: new reg_ex_REC2("<\\/?[a-zA-Z][^>]*>"),
     whitespaceOnly: new reg_ex_REC2("^\\s*$")
-});
-globalThis.RE2 = reg_ex_REC2;
-globalThis.RES2 = RECC2; /*  ====================================================================================================
+}); /*  ====================================================================================================
     
     ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [REGEX] */ 
 
@@ -12252,7 +12235,6 @@ var set_SET2I = /*#__PURE__*/ function(Set1) {
     ]);
     return SET2I;
 }(set_wrap_native_super(Set));
-globalThis.SET2 = set_SET2I;
 
 function set_byte_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -13453,7 +13435,6 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
     ]);
     return SET2BI;
 }();
-globalThis.SET2B = set_byte_SET2BI;
 
 function soa_codec_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -13526,7 +13507,6 @@ var soa_codec_SOA_CODEC = /*#__PURE__*/ function() {
     return SOA_CODEC;
 }();
 var soa_codeci = new soa_codec_SOA_CODEC();
-globalThis.soa_codec = soa_codeci;
 
 function string_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -13885,7 +13865,6 @@ var string_S2I = /*#__PURE__*/ function(String1) {
     ]);
     return S2I;
 }(string_wrap_native_super(String));
-globalThis.S2 = string_S2I;
 
 function unit8array_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -14593,7 +14572,6 @@ var unit8array_U82I = /*#__PURE__*/ function _target(Array1) {
     ]);
     return U82I;
 }(unit8array_wrap_native_super(Array));
-globalThis.U82 = unit8array_U82I;
 
 function url_search_params_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -15110,7 +15088,6 @@ var url_search_params_USP2I = /*#__PURE__*/ function(URLSearchParams1) {
     ]);
     return USP2I;
 }(url_search_params_wrap_native_super(URLSearchParams));
-globalThis.USP2 = url_search_params_USP2I;
 
 function weak_map_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -15548,7 +15525,6 @@ var weak_map_WM2I = /*#__PURE__*/ function(WeakMap1) {
     ]);
     return WM2I;
 }(weak_map_wrap_native_super(WeakMap));
-globalThis.WM2 = weak_map_WM2I;
 
 function weak_set_instanceof(left, right) {
     "@swc/helpers - instanceof";
@@ -15926,7 +15902,2691 @@ var weak_set_WS2I = /*#__PURE__*/ function(WeakSet1) {
     ]);
     return WS2I;
 }(weak_set_wrap_native_super(WeakSet));
-globalThis.WS2 = weak_set_WS2I;
+
+function nested_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function nested_class_call_check(instance, Constructor) {
+    if (!nested_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function nested_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function nested_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) nested_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) nested_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function nested_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+var nested_nestedi = /*#__PURE__*/ function() {
+    "use strict";
+    function nestedi() {
+        var CACHE = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
+        nested_class_call_check(this, nestedi);
+        nested_define_property(this, "r", 'ROOT');
+        nested_define_property(this, "m", 'MASTER');
+        nested_define_property(this, "s", 'SLAVE');
+        nested_define_property(this, "CACHE", void 0);
+        nested_define_property(this, "FALLBACK", new M2());
+        this.CACHE = CACHE;
+    }
+    nested_create_class(nestedi, [
+        {
+            key: "map",
+            value: function map() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'map', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new Map();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new Map();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new Map();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "m2",
+            value: function m2() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'm2', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new M2();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "m2b",
+            value: function m2b() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'm2b', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new M2B();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2B();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2B();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "m2bin",
+            value: function m2bin() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'm2bin', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new M2BIN();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2BIN();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2BIN();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "m2d",
+            value: function m2d() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'm2d', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new M2D();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2D();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2D();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "m2r",
+            value: function m2r() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'm2r', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = globalThis[r];
+                if (!root) {
+                    root = new M2R();
+                    globalThis[r] = root;
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2R();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2R();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        },
+        {
+            key: "cache",
+            value: function cache() {
+                var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'cache', m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.m, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.r;
+                // 1. Root Lookup via Module Cache (Fast path)
+                var root = this.CACHE ? this.CACHE.get(r) : this.FALLBACK.get(r);
+                if (!root) {
+                    root = new M2();
+                    this.CACHE ? this.CACHE.set(r, root) : this.FALLBACK.set(r, root);
+                }
+                // 2. Master Map Lookup
+                var masterMap = root.get(m);
+                if (!masterMap) {
+                    masterMap = new M2();
+                    root.set(m, masterMap);
+                }
+                // 3. Slave Map Lookup
+                var slaveMap = masterMap.get(s);
+                if (!slaveMap) {
+                    slaveMap = new M2();
+                    masterMap.set(s, slaveMap);
+                }
+                return slaveMap;
+            }
+        }
+    ]);
+    return nestedi;
+}();
+var nested = new nested_nestedi();
+
+function wait_and_promise(timeoutMs, key, isOpen, current) {
+    return new Promise(function(resolve, reject) {
+        var timer;
+        var unsub = function unsub() {};
+        if (isOpen) {
+            if (timer) clearTimeout(timer);
+            unsub();
+            resolve(current);
+            return;
+        }
+        if (timeoutMs) {
+            timer = setTimeout(function() {
+                unsub();
+                reject(new Error("[rift] wait() timed out after ".concat(timeoutMs, "ms")));
+            }, timeoutMs);
+        }
+    });
+}
+
+function twx_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function twx_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function twx_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+        var info = gen[key](arg);
+        var value = info.value;
+    } catch (error) {
+        reject(error);
+        return;
+    }
+    if (info.done) resolve(value);
+    else Promise.resolve(value).then(_next, _throw);
+}
+function _async_to_generator(fn) {
+    return function() {
+        var self = this, args = arguments;
+        return new Promise(function(resolve, reject) {
+            var gen = fn.apply(self, args);
+            function _next(value) {
+                asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+            }
+            function _throw(err) {
+                asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+            }
+            _next(undefined);
+        });
+    };
+}
+function twx_class_call_check(instance, Constructor) {
+    if (!twx_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function twx_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function twx_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) twx_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) twx_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function twx_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function twx_instanceof1(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function twx_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function twx_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function twx_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            twx_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function twx_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function twx_object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        twx_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function twx_sliced_to_array(arr, i) {
+    return twx_array_with_holes(arr) || twx_iterable_to_array_limit(arr, i) || twx_unsupported_iterable_to_array(arr, i) || twx_non_iterable_rest();
+}
+function twx_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function twx_ts_values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) {
+        return m.call(o);
+    }
+    if (o && typeof o.length === "number") {
+        return {
+            next: function next() {
+                if (o && i >= o.length) {
+                    o = void 0;
+                }
+                return {
+                    value: o && o[i++],
+                    done: !o
+                };
+            }
+        };
+    }
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+function twx_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function twx_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return twx_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return twx_array_like_to_array(o, minLen);
+}
+var _TWX_GLOBAL_UC;
+/**
+twx.THE_POWER_OF_TWO;
+twx.SIGNALS;
+twx.HADRON_COLLIDER;
+
+twx.app("myKey");
+twx.app.set(myValue, "myKey");
+
+twx.app("myKey", "slave", "master", "root");
+twx.app.set(myValue, "myKey", "slave", "master", "root");
+
+const scope = twx("myKey", "slave", "master", "root");
+scope.get();
+scope.set(myValue);
+scope.map();
+
+twx();
+ */ //                                                                                          BYTE_ID
+// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+var twx_BYTE_ID = /*#__PURE__*/ function() {
+    "use strict";
+    function BYTE_ID() {
+        twx_class_call_check(this, BYTE_ID);
+        /*  ==========================================================================================================================
+         provides lightweight numeric and string ID generation, using a Uint32Array counter for incrementing byte-level IDs and 
+         a separate counter for string IDs. It also preallocates fixed-size timestamp and resolver arrays to 
+         track up to 4,096 pending operations.
+    
+         The update byteid function now shares the counter with sid, the string variant. At the smae time, a rollover counter that 
+         increments whenever the 32-bit counter wraps. Keeping the fact U32Array counter while producing ids that remain unique.
+        ================================================================================ ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [BYTE_ID] */ twx_define_property(this, "MAX_PENDING", 4096);
+        twx_define_property(this, "sentTimestamps", void 0);
+        twx_define_property(this, "pendingResolvers", void 0);
+        twx_define_property(this, "cursor", 0);
+        twx_define_property(this, "counter", void 0);
+        twx_define_property(this, "epoch", 0);
+        this.counter = new Uint32Array(1);
+        this.sentTimestamps = new Float64Array(this.MAX_PENDING);
+        this.pendingResolvers = new Array(this.MAX_PENDING);
+    }
+    twx_create_class(BYTE_ID, [
+        {
+            key: "_byteid",
+            value: function _byteid() {
+                var _g__sauronIdCounter;
+                var g = globalThis;
+                var c = (_g__sauronIdCounter = g._sauronIdCounter) !== null && _g__sauronIdCounter !== void 0 ? _g__sauronIdCounter : g._sauronIdCounter = new Uint32Array(1);
+                if (++c[0] === 0) this.epoch++;
+                g._sauronIdCounter = c;
+                return "".concat(this.epoch, ":").concat(c[0]);
+            }
+        },
+        {
+            key: "b",
+            value: function b() {
+                return this._byteid();
+            }
+        }
+    ]);
+    return BYTE_ID;
+}();
+function _sid() {
+    var _g__sauronIdCounter;
+    var g = globalThis;
+    var t = String(((_g__sauronIdCounter = g._sauronIdCounter) !== null && _g__sauronIdCounter !== void 0 ? _g__sauronIdCounter : 0) + 1);
+    g._sauronIdCounter = t;
+    return t;
+}
+// public _stringIdCounter = 0;
+var _bid = new twx_BYTE_ID();
+// || v != null
+// #endregion
+//                                                                                                   TWX_DEFAULT_UC
+// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+var TWX_DEFAULT_UC = {
+    APP_NAME: "THE_WIZARD",
+    _THE_WARLOCK_ACTIVE: false,
+    _THE_WARLOCK_PORTALS_ACTIVE: false,
+    _HC_CONTEXT_ACTIVE: false,
+    STATE_CONTEXT: "sauron",
+    WS_KEY: "THE_WIZARD_WORKSPACE_ID",
+    ENABLE_GLOBAL_WORKSPACE_CONTEXT: false,
+    CACHE_TYPE: "sauron",
+    THE_SINGULARITY_TEST: "THE_SINGULARITY_TEST",
+    THE_SINGULARITY_SL_CH: "THE_SINGULARITY_SL_CH",
+    THE_WARLOCK_TEST: "THE_SINGULARITY_TEST",
+    THE_WARLOCK_SL_CH: "THE_SINGULARITY_SL_CH",
+    GRIMOIRE_OF_VALUES_CH: "GRIMOIRE_OF_VALUES_CH",
+    THE_WIZARD_ROOT_REG: "THE_WIZARD_ROOT_REG",
+    SAURON_MASTER_REG: "SAURON_MASTER_REG",
+    SAURON_SLAVE_REG: "SAURON_SLAVE_REG",
+    THE_CLOUD_SL_REG: "THE_CLOUD_SL_REG",
+    SIGNALS_SL_REG: "SIGNALS_SL_REG",
+    HADRON_COLLIDER_SL_REG: "HADRON_COLLIDER_SL_REG"
+};
+function MaybePromise(v) {
+    return v !== undefined ? v : Promise.resolve(v);
+}
+var TWX_GLOBAL = globalThis;
+var UC = (_TWX_GLOBAL_UC = TWX_GLOBAL.UC) !== null && _TWX_GLOBAL_UC !== void 0 ? _TWX_GLOBAL_UC : TWX_GLOBAL.UC = TWX_DEFAULT_UC;
+var TWX_MAP = Symbol("THE_WIZARD");
+// 1. Corrected getNestedMap signature matching (s, m, r)
+function getNestedMap() {
+    var s = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : UC.SAURON_SLAVE_REG, m = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : UC.SAURON_MASTER_REG, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : UC.THE_WIZARD_ROOT_REG;
+    var root = globalThis[r];
+    if (!root) {
+        root = new Map();
+        globalThis[r] = root;
+    }
+    var masterMap = root.get(m);
+    if (!masterMap) {
+        masterMap = new Map();
+        root.set(m, masterMap);
+    }
+    var slaveMap = masterMap.get(s);
+    if (!slaveMap) {
+        slaveMap = new Map();
+        masterMap.set(s, slaveMap);
+    }
+    return slaveMap;
+}
+// 2. Register getNestedMap to globalThis[TWX_MAP]
+TWX_GLOBAL[TWX_MAP] = getNestedMap;
+function twxChannels(k, s, m, r) {
+    return {
+        k: k !== null && k !== void 0 ? k : UC.APP_NAME,
+        s: s !== null && s !== void 0 ? s : UC.SAURON_SLAVE_REG,
+        m: m !== null && m !== void 0 ? m : UC.SAURON_MASTER_REG,
+        r: r !== null && r !== void 0 ? r : UC.THE_WIZARD_ROOT_REG || UC.APP_NAME
+    };
+}
+// 3. Updated twxMap to pass correct (s, m, r) arguments to mapFn
+function twxMap(s, m, r) {
+    var ch = twxChannels(undefined, s, m, r);
+    var mapFn = TWX_GLOBAL[TWX_MAP];
+    if (!mapFn) {
+        throw new Error("TWX: _map() has not been registered.");
+    }
+    return mapFn(ch.s, ch.m, ch.r);
+}
+var twx_app = function app(k, s, m, r) {
+    return twxMap(s, m, r).get(k);
+};
+twx_app.get = function(k, s, m, r) {
+    return twxMap(s, m, r).get(k);
+};
+twx_app.set = function(v, k, s, m, r) {
+    twxMap(s, m, r).set(k, v);
+    return v;
+};
+twx_app.map = function(s, m, r) {
+    return twxMap(s, m, r);
+};
+function twxScope(k, s, m, r) {
+    var channels = twxChannels(k, s, m, r);
+    return {
+        channels: channels,
+        get: function get() {
+            var key = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : channels.k;
+            return twxMap(channels.s, channels.m, channels.r).get(key);
+        },
+        set: function set(v) {
+            var key = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : channels.k;
+            twxMap(channels.s, channels.m, channels.r).set(key, v);
+            return v;
+        },
+        map: function map() {
+            return twxMap(channels.s, channels.m, channels.r);
+        }
+    };
+}
+var twx = new Proxy(Object.assign(function(k, s, m, r) {
+    if (k === undefined && s === undefined && m === undefined && r === undefined) {
+        console.log({
+            UC: UC,
+            channels: twxChannels(),
+            platform: Object.keys(TWX_GLOBAL)
+        });
+        return;
+    }
+    return twxScope(k, s, m, r);
+}, {
+    UC: UC,
+    app: twx_app,
+    scope: twxScope
+}), {
+    get: function get(target, property, receiver) {
+        if (Reflect.has(target, property)) {
+            return Reflect.get(target, property, receiver);
+        }
+        return TWX_GLOBAL[property];
+    },
+    set: function set(_target, property, value) {
+        TWX_GLOBAL[property] = value;
+        return true;
+    },
+    has: function has(target, property) {
+        return Reflect.has(target, property) || property in TWX_GLOBAL;
+    }
+});
+TWX_GLOBAL.twx = twx;
+
+// #endregion
+//                                                                                                   TWX
+// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+var twx_k = "_THE_KEY_";
+var ss = "_THE_CLOUD_";
+var twx_c = "sauron";
+var mm = "_SOUL_SHARD_REGISTRY_";
+var rr = "_THE_WIZARD_";
+// ReChain / Chain — immutable or not, value pipeline for DRS. Difference from Chain: every step returns a NEW ReChain; no in-place mutation anywhere. Safe to hold across renders, share, or re-run.
+var cellStore = new Map();
+function useCell(v) {
+    var k = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "".concat(_bid._byteid(), "_USECELL"), s = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : ss, m = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : mm, r = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : rr;
+    var cellKey = "".concat(k, ":").concat(s, ":").concat(m, ":").concat(r);
+    // Initialize local state if not present
+    if (!cellStore.has(cellKey)) {
+        var initial = typeof v === "function" ? v() : v;
+        cellStore.set(cellKey, initial);
+    }
+    var currentState = cellStore.get(cellKey);
+    // Mock local setter that mimics setLive behavior
+    var setLive = function setLive(next) {
+        var current = cellStore.get(cellKey);
+        var newValue = typeof next === "function" ? next(current) : next;
+        cellStore.set(cellKey, newValue);
+        return newValue;
+    };
+    return [
+        currentState,
+        setLive
+    ];
+}
+function cell(v) {
+    var k = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "".concat(_bid._byteid(), "_USECELL"), s = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : ss, m = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : mm, r = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : rr;
+    var cellKey = "".concat(k, ":").concat(s, ":").concat(m, ":").concat(r);
+    // Initialize if not already present in the fallback store
+    if (!cellStore.has(cellKey)) {
+        var initial = typeof v === "function" ? v() : v;
+        cellStore.set(cellKey, initial);
+    }
+    var currentState = cellStore.get(cellKey);
+    // Matches your MCR_Com bo return structure (read-only, no setter)
+    return currentState;
+}
+var refStore = new Map();
+function twx_atom(v) {
+    var k = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "__THE_WARLOCK_SIGNALS_".concat(_bid._byteid()), s = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : ss, m = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : mm, r = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : rr;
+    var rk = "".concat(k, ":").concat(s, ":").concat(m, ":").concat(r);
+    if (!refStore.has(rk)) refStore.set(rk, {
+        current: typeof v === 'function' ? v() : v
+    });
+    var ref = refStore.get(rk);
+    return {
+        get value () {
+            return ref.current;
+        },
+        set value (v){
+            ref.current = v;
+        },
+        peek: function peek() {
+            return ref.current;
+        },
+        get current () {
+            return ref.current;
+        },
+        set current (v){
+            ref.current = v;
+        },
+        set crt (v){
+            ref.current = v;
+        },
+        set set (v){
+            ref.current = v;
+        }
+    };
+}
+function Maybe_Chain(v) {
+    return MaybePromise(new twx_Chain(v));
+}
+function Maybe_ReChain(v) {
+    return MaybePromise(new twx_ReChain(v, "Maybe_ReChain:".concat(_bid._byteid())));
+}
+function MCR_Combo(v, chain) {
+    if (chain === 'chain') return MaybePromise(new twx_Chain(v));
+    if (chain === 'rechain') return MaybePromise(new twx_ReChain(v, "Maybe_ReChain:".concat(_bid._byteid())));
+    return MaybePromise(v);
+}
+// #endregion
+//                                                                                                   TWX
+// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+var twx_Chain = /*#__PURE__*/ (/* unused pure expression or super */ null && (function() {
+    "use strict";
+    function Chain(value, id) {
+        twx_class_call_check(this, Chain);
+        twx_define_property(this, "initial_value", void 0);
+        twx_define_property(this, "id", void 0);
+        this.initial_value = value;
+        this.id = id ? id : Math.random().toString(36).substring(2, 9);
+    }
+    twx_create_class(Chain, [
+        {
+            key: "_use",
+            value: function _use() {
+                return useCell(this.initial_value, "re_chain_".concat(this.id));
+            }
+        },
+        {
+            /* ---------- branch logic ---------- */ key: "when",
+            value: function when(p) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                var ok = typeof p === 'function' ? p(v) : p;
+                return {
+                    then: function then(fn) {
+                        return ok ? fn(v) : undefined;
+                    },
+                    otherwise: function otherwise(fn) {
+                        return ok ? v : fn(v);
+                    }
+                };
+            }
+        },
+        {
+            key: "if",
+            value: function _if(p) {
+                return this.when(p);
+            }
+        },
+        {
+            key: "switch",
+            value: function _switch() {
+                var self = this;
+                var _this__use = twx_sliced_to_array(this._use(), 2), v0 = _this__use[0], setV = _this__use[1];
+                var matched = false;
+                var current = v0;
+                var view = {
+                    case: function _case(m, fn) {
+                        if (!matched && current === m) {
+                            matched = true;
+                            current = fn(current);
+                            setV(current);
+                            self.initial_value = current;
+                        }
+                        return view;
+                    },
+                    default: function _default(fn) {
+                        if (!matched) {
+                            current = fn(current);
+                            setV(current);
+                            self.initial_value = current;
+                        }
+                        return self;
+                    },
+                    done: function done() {
+                        return current;
+                    }
+                };
+                return view;
+            }
+        },
+        {
+            key: "guard",
+            value: function guard(p) {
+                var e = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : new Error('guard failed');
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                if (!p(v)) throw e;
+                return this;
+            }
+        },
+        {
+            /* ---------- mutation steps ---------- */ key: "set",
+            value: function set(v) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), current = _this__use[0], setV = _this__use[1];
+                var next = typeof v === 'function' ? v(current) : v;
+                setV(next);
+                this.initial_value = next;
+                return this;
+            }
+        },
+        {
+            key: "patch",
+            value: function patch(p) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), current = _this__use[0], setV = _this__use[1];
+                var next = twx_object_spread({}, current, p);
+                setV(next);
+                this.initial_value = next;
+                return this;
+            }
+        },
+        {
+            key: "merge",
+            value: function merge(o) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), current = _this__use[0], setV = _this__use[1];
+                var next = twx_object_spread({}, current, o);
+                setV(next);
+                this.initial_value = next;
+                return this;
+            }
+        },
+        {
+            key: "tap",
+            value: function tap(fn) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                fn(v);
+                return this;
+            }
+        },
+        {
+            key: "get",
+            value: function get(k) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return new Chain(v === null || v === void 0 ? void 0 : v[k]);
+            }
+        },
+        {
+            /* ---------- async ---------- */ key: "then",
+            value: function then(fn) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return Promise.resolve(v).then(fn).then(function(next) {
+                    return new Chain(next);
+                });
+            }
+        },
+        {
+            key: "catch",
+            value: function _catch(fn) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return Promise.resolve(v).catch(fn).then(function(next) {
+                    return new Chain(next);
+                });
+            }
+        },
+        {
+            key: "retry",
+            value: function retry(fn) {
+                var opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+                var _opts_attempts, _opts_baseDelayMs;
+                var attempts = (_opts_attempts = opts.attempts) !== null && _opts_attempts !== void 0 ? _opts_attempts : 3, base = (_opts_baseDelayMs = opts.baseDelayMs) !== null && _opts_baseDelayMs !== void 0 ? _opts_baseDelayMs : 2000;
+                var _this__use = twx_sliced_to_array(this._use(), 1), v0 = _this__use[0];
+                return function() {
+                    return _async_to_generator(function() {
+                        var _loop, lastErr, i, _ret;
+                        return twx_ts_generator(this, function(_state) {
+                            switch(_state.label){
+                                case 0:
+                                    _loop = function _loop(i) {
+                                        var _tmp, _, e;
+                                        return twx_ts_generator(this, function(_state) {
+                                            switch(_state.label){
+                                                case 0:
+                                                    _state.trys.push([
+                                                        0,
+                                                        2,
+                                                        ,
+                                                        5
+                                                    ]);
+                                                    _tmp = {};
+                                                    _ = Chain.bind;
+                                                    return [
+                                                        4,
+                                                        fn(v0)
+                                                    ];
+                                                case 1:
+                                                    return [
+                                                        2,
+                                                        (_tmp.v = new (_.apply(Chain, [
+                                                            void 0,
+                                                            _state.sent()
+                                                        ])), _tmp)
+                                                    ];
+                                                case 2:
+                                                    e = _state.sent();
+                                                    lastErr = e;
+                                                    if (!(i < attempts - 1)) return [
+                                                        3,
+                                                        4
+                                                    ];
+                                                    return [
+                                                        4,
+                                                        new Promise(function(r) {
+                                                            return setTimeout(r, base * Math.pow(2, i));
+                                                        })
+                                                    ];
+                                                case 3:
+                                                    _state.sent();
+                                                    _state.label = 4;
+                                                case 4:
+                                                    return [
+                                                        3,
+                                                        5
+                                                    ];
+                                                case 5:
+                                                    return [
+                                                        2
+                                                    ];
+                                            }
+                                        });
+                                    };
+                                    i = 0;
+                                    _state.label = 1;
+                                case 1:
+                                    if (!(i < attempts)) return [
+                                        3,
+                                        4
+                                    ];
+                                    return [
+                                        5,
+                                        twx_ts_values(_loop(i))
+                                    ];
+                                case 2:
+                                    _ret = _state.sent();
+                                    if (twx_type_of(_ret) === "object") return [
+                                        2,
+                                        _ret.v
+                                    ];
+                                    _state.label = 3;
+                                case 3:
+                                    i++;
+                                    return [
+                                        3,
+                                        1
+                                    ];
+                                case 4:
+                                    throw lastErr;
+                            }
+                        });
+                    })();
+                }();
+            }
+        },
+        {
+            key: "delay",
+            value: function delay(m) {
+                var _this = this;
+                return new Promise(function(r) {
+                    return setTimeout(function() {
+                        return r(_this);
+                    }, m);
+                });
+            }
+        },
+        {
+            key: "throw",
+            value: function _throw(e) {
+                throw e;
+            }
+        },
+        {
+            key: "done",
+            value: function done() {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return typeof v === 'function' ? v() : v;
+            }
+        }
+    ]);
+    return Chain;
+}()));
+var twx_ReChain = /*#__PURE__*/ (/* unused pure expression or super */ null && (function() {
+    "use strict";
+    function ReChain(value, id) {
+        twx_class_call_check(this, ReChain);
+        twx_define_property(this, "initial_value", void 0);
+        twx_define_property(this, "id", void 0);
+        this.initial_value = value;
+        this.id = id ? id : _bid._byteid();
+    }
+    twx_create_class(ReChain, [
+        {
+            key: "_use",
+            value: function _use() {
+                return useCell(this.initial_value, "re_chain_".concat(this.id));
+            }
+        },
+        {
+            key: "step",
+            value: // write=true means this transformation broadcasts to the store + bus.
+            function step(next) {
+                var write = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+                if (write) {
+                    var _this__use = twx_sliced_to_array(this._use(), 2), setV = _this__use[1];
+                    setV(next);
+                }
+                return twx_instanceof1(next, ReChain) ? next : new ReChain(next, this.id);
+            }
+        },
+        {
+            key: "branch",
+            value: // written (only one fires, like Chain), and each call returns a fresh
+            // ReChain — nothing mutated, order-independent.
+            function branch(passed) {
+                var _this = this;
+                var _this1 = this;
+                var step = function step(next) {
+                    var write = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+                    return _this1.step(next, write);
+                };
+                return {
+                    then: function then(fn) {
+                        return passed ? step(fn(_this.done()), true) : _this;
+                    },
+                    otherwise: function otherwise(fn) {
+                        return passed ? _this : step(fn(_this.done()), true);
+                    },
+                    else: function _else(fn) {
+                        return passed ? _this : step(fn(_this.done()), true);
+                    },
+                    done: function done() {
+                        return _this.done();
+                    }
+                };
+            }
+        },
+        {
+            key: "when",
+            value: function when(pred) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return this.branch(!!pred(v));
+            }
+        },
+        {
+            key: "if",
+            value: function _if(pred) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return this.branch(!!pred(v));
+            }
+        },
+        {
+            key: "switch",
+            value: function _switch() {
+                var _this__use = twx_sliced_to_array(this._use(), 2), v = _this__use[0], setV = _this__use[1];
+                var matched = false;
+                var out = this;
+                var self = this;
+                return {
+                    case: function _case(val, fn) {
+                        if (!matched && (v === val || Object.is(v, val))) {
+                            matched = true;
+                            var next = fn(v);
+                            setV(next);
+                            out = new ReChain(next, self.id);
+                        }
+                        return self;
+                    },
+                    default: function _default(fn) {
+                        if (!matched) {
+                            var next = fn(v);
+                            setV(next);
+                            out = new ReChain(next, self.id);
+                        }
+                        return self;
+                    },
+                    done: function done() {
+                        return out.done();
+                    }
+                };
+            }
+        },
+        {
+            key: "gate",
+            value: function gate(pred) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                if (!pred(v)) {
+                    var err = new Error('[Chain.gate] predicate failed');
+                    err.value = v;
+                    throw err;
+                }
+                return this;
+            }
+        },
+        {
+            key: "guard",
+            value: function guard(pred, onFail) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), v = _this__use[0], setV = _this__use[1];
+                if (pred(v)) return this;
+                var fallback = onFail ? onFail(v) : v;
+                setV(fallback); // write-through
+                return this.step(fallback);
+            }
+        },
+        {
+            key: "tap",
+            value: function tap(fn) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                fn(v);
+                return this;
+            }
+        },
+        {
+            key: "set",
+            value: function set(k, val) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), v = _this__use[0], setV = _this__use[1];
+                var next = twx_object_spread_props(twx_object_spread({}, v), twx_define_property({}, k, val));
+                setV(next); // write-through
+                return this.step(next);
+            }
+        },
+        {
+            key: "patch",
+            value: function patch(obj) {
+                var _this__use = twx_sliced_to_array(this._use(), 2), v = _this__use[0], setV = _this__use[1];
+                var next = twx_object_spread({}, v, obj);
+                setV(next); // write-through
+                return this.step(next);
+            }
+        },
+        {
+            key: "get",
+            value: function get(k) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return new ReChain(v === null || v === void 0 ? void 0 : v[k], _bid._byteid());
+            }
+        },
+        {
+            key: "merge",
+            value: function merge(other) {
+                var _ref;
+                var _this__use = twx_sliced_to_array(this._use(), 2), v = _this__use[0], setV = _this__use[1];
+                var next = twx_object_spread({}, v, (_ref = other === null || other === void 0 ? void 0 : other.initial_value) !== null && _ref !== void 0 ? _ref : other);
+                setV(next); // write-through
+                return this.step(next);
+            }
+        },
+        {
+            key: "delay",
+            value: function delay(m) {
+                var _this = this;
+                return new Promise(function(resolve) {
+                    return setTimeout(function() {
+                        return resolve(_this);
+                    }, m);
+                });
+            }
+        },
+        {
+            key: "throw",
+            value: function _throw(err) {
+                throw twx_instanceof1(err, Error) ? err : new Error(String(err));
+            }
+        },
+        {
+            key: "retry",
+            value: function retry(attempts) {
+                var _this = this;
+                var delayMs = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 100;
+                return new Promise(function(resolve, reject) {
+                    var n = 0;
+                    var attempt = function attempt1() {
+                        var _this__use = twx_sliced_to_array(_this._use(), 1), v = _this__use[0];
+                        var out = typeof v === 'function' ? v() : v;
+                        if (out !== undefined && out !== null) {
+                            Promise.resolve(out).then(resolve, reject);
+                            return;
+                        }
+                        if (n++ >= attempts) {
+                            reject(new Error('[Chain.retry] exhausted'));
+                            return;
+                        }
+                        setTimeout(attempt, delayMs);
+                    };
+                    attempt();
+                });
+            }
+        },
+        {
+            key: "catch",
+            value: function _catch(onRejected) {
+                return this.then(null, onRejected);
+            }
+        },
+        {
+            key: "finally",
+            value: function _finally(fn) {
+                fn();
+                return this;
+            }
+        },
+        {
+            key: "then",
+            value: function then(onFulfilled, onRejected) {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                var raw = typeof v === 'function' ? v() : v;
+                return Promise.resolve(raw).then(onFulfilled, onRejected);
+            }
+        },
+        {
+            key: "done",
+            value: function done() {
+                var _this__use = twx_sliced_to_array(this._use(), 1), v = _this__use[0];
+                return typeof v === 'function' ? v() : v;
+            }
+        }
+    ]);
+    return ReChain;
+} // #endregion
+()));
+
+function lww_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function lww_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function lww_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function lww_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function lww_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function lww_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            lww_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function lww_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function lww_object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        lww_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function lww_sliced_to_array(arr, i) {
+    return lww_array_with_holes(arr) || lww_iterable_to_array_limit(arr, i) || lww_unsupported_iterable_to_array(arr, i) || lww_non_iterable_rest();
+}
+function lww_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return lww_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return lww_array_like_to_array(o, minLen);
+}
+function lwwState(v) {
+    var state = lww_object_spread({}, v);
+    var ts = new Map(Object.entries(v !== null && v !== void 0 ? v : {}).map(function(param) {
+        var _param = lww_sliced_to_array(param, 1), k = _param[0];
+        return [
+            k,
+            0
+        ];
+    }));
+    var set = function set(patch) {
+        var p = patch !== null && patch !== void 0 ? patch : {};
+        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+        try {
+            for(var _iterator = Object.entries(p)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                var _step_value = lww_sliced_to_array(_step.value, 2), k = _step_value[0], _$v = _step_value[1];
+                var _ts_get;
+                var t = Date.now();
+                if (((_ts_get = ts.get(k)) !== null && _ts_get !== void 0 ? _ts_get : 0) < t) {
+                    ts.set(k, t);
+                    state = lww_object_spread_props(lww_object_spread({}, state), lww_define_property({}, k, _$v));
+                }
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally{
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                    _iterator.return();
+                }
+            } finally{
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    };
+    return [
+        state,
+        set
+    ];
+}
+
+var ignore_arg_ignoreArg = function ignoreArg(fn) {
+    return function(_arg) {
+        return fn() // Adapt a no-argument callback to APIs that pass an event.
+        ;
+    };
+};
+
+// Resolves when n callers have called .arrive(). That's it. And this is the only correct way to express "wait until N things have happened" without inventing a shared counter, a mutex, and a condition variable every time. Every distributed system, every parallel test runner, every "wait for all peers to check in" pattern, every "wait for the rasterizer to finish N tiles" — all of them are barriers. And 99% of them hand-roll the counter and the resolve call and get the race condition wrong.
+function barrier(n) {
+    var _gate = gate(), promise = _gate.promise, open = _gate.open;
+    var arrived = 0;
+    return {
+        arrive: function arrive() {
+            if (++arrived >= n) open();
+        },
+        wait: function wait() {
+            return promise;
+        }
+    };
+}
+
+function callIf(condition, fn) {
+    return condition ? fn() : undefined;
+}
+
+var clamp_clamp = function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+};
+
+//                                    CREATE LIVE SCOPE
+// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+function createLiveScope() {
+    var disposers = [];
+    var scope = {
+        setTimeout: function setTimeout1(fn, ms) {
+            var id = setTimeout(fn, ms);
+            disposers.push(function() {
+                return clearTimeout(id);
+            });
+            return id;
+        },
+        setInterval: function setInterval1(fn, ms) {
+            var id = setInterval(fn, ms);
+            disposers.push(function() {
+                return clearInterval(id);
+            });
+            return id;
+        },
+        subscribe: function subscribe(unsubFn) {
+            disposers.push(unsubFn);
+        },
+        dispose: function dispose() {
+            while(disposers.length)disposers.pop()();
+        }
+    };
+    return scope;
+} // #endregion
+
+function deferred_deferred() {
+    var resolve;
+    var reject;
+    var promise = new Promise(function(res, rej) {
+        resolve = res;
+        reject = rej;
+    });
+    return {
+        promise: promise,
+        resolve: resolve,
+        reject: reject
+    };
+}
+
+function evaluator_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function evaluator_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function evaluator(v) {
+    // ── axis 2 first: is it async? thenable (promise-like, not necessarily Promise)  ─────────────────────══
+    if (v != null && typeof v.then === 'function') /* */ return 'thenable';
+    // ─── async iterable ───────────────────────────────────────────────────────────────────────═────────────
+    if (v != null && typeof v[Symbol.asyncIterator] === 'function') /* */ return 'async-iterable';
+    // ── axis 1: what shape? ────────────────────────────────────────────────────────────────────────────────
+    if (v === null) /* null (typeof null === 'object', so separate) */ return 'null';
+    var t = typeof v /* */  === "undefined" ? "undefined" : evaluator_type_of(v);
+    if (t !== 'object' && t !== 'function') /* primitive: str/num/bool/bigint/sym/undefined */ return t;
+    if (typeof v === 'function') /* function */ return 'function';
+    if (ArrayBuffer.isView(v)) /* TypedArray or DataView */ return 'array';
+    if (evaluator_instanceof(v, Map)) /* */ return 'map';
+    if (evaluator_instanceof(v, Set)) /* */ return 'set';
+    if (evaluator_instanceof(v, Date)) /* */ return 'date';
+    if (evaluator_instanceof(v, RegExp)) /* */ return 'regexp';
+    if (evaluator_instanceof(v, Error)) /* */ return 'error';
+    if (typeof v[Symbol.iterator] === 'function') /* */ return 'iterable';
+    if (t === 'object') /* plain record */ return 'object';
+    // ─── iterable ──────────────────────────────────────────────────────────────────────────────────────────
+    if (v != null && typeof v[Symbol.iterator] === 'function') /* */ return 'iterator';
+    if (typeof v === 'string') /* */ return 'string';
+    if (typeof v === 'number') /* */ return 'number';
+    if (typeof v === 'boolean') /* */ return 'boolean';
+    if ((typeof v === "undefined" ? "undefined" : evaluator_type_of(v)) === 'bigint') /* */ return 'bigint';
+    if ((typeof v === "undefined" ? "undefined" : evaluator_type_of(v)) === 'symbol') /* */ return 'symbol';
+    if (typeof v === 'undefined') /* */ return 'undefined';
+    // ─── objects by constructor ────────────────────────────────────────────────────────────────────────────
+    if (evaluator_instanceof(v, Array)) /* or Array.isArray(v) */ return 'Array';
+    if (evaluator_instanceof(v, WeakMap)) /* */ return 'WeakMap';
+    if (evaluator_instanceof(v, WeakSet)) /* */ return 'WeakSet';
+    if (evaluator_instanceof(v, Promise)) /* */ return 'Promise';
+    if (evaluator_instanceof(v, ArrayBuffer)) /* */ return 'ArrayBuffer';
+    // ─── node-specific ─────────────────────────────────────────────────────────────────────────────────────
+    if (evaluator_instanceof(v, Buffer)) /* Node buffer */ return 'Buffer';
+    if (evaluator_instanceof(v, URL)) /* oWHATWG URL */ return 'URL';
+    if (evaluator_instanceof(v, URLSearchParams)) /* */ return 'URLSearchParams';
+    // ─── plain object / record ─────────────────────────────────────────────────────────────────────────────
+    if ((typeof v === "undefined" ? "undefined" : evaluator_type_of(v)) === 'object' && v !== null && !Array.isArray(v) && !evaluator_instanceof(v, Map) && !evaluator_instanceof(v, Set)) /* */ return 'plainObject';
+// ───────────────────────────────────────────────────────────────────────────────────────────────────────
+}
+
+function Finally(value, fn) {
+    fn();
+    return value;
+}
+
+// It's deferred minus the failure case. And it's the right choice when failure genuinely doesn't exist — "wait for this thing to be ready" is not a thing that fails, it just takes longer than you're willing to wait. So the caller brings the timeout (which is what wait(ms) does), not the gate. That asymmetry is important: the gate doesn't decide what "too late" means; the waiter does. Which is why wait(0) = forever and wait(5000) = give up at 5s are both correct — the gate is timeless, the wait has a time.
+function gate_gate() {
+    var resolve;
+    var promise = new Promise(function(r) {
+        resolve = r;
+    });
+    return {
+        promise: promise,
+        open: resolve
+    };
+}
+function reGate() {
+    /**
+     * const g = gate<void>()
+
+    g.open()
+    await g.promise // resolves
+
+    g.reset()
+
+    const next = g.promise
+    g.open()
+    await next // resolves in the next cycle
+    */ var open;
+    var promise;
+    var opened = false;
+    var reset = function reset() {
+        opened = false;
+        promise = new Promise(function(resolve) {
+            return open = resolve;
+        });
+    };
+    var release = function release(v) {
+        if (opened) return;
+        opened = true;
+        open(v);
+    };
+    reset();
+    return {
+        get promise () {
+            return promise;
+        },
+        get opened () {
+            return opened;
+        },
+        open: release,
+        reset: reset
+    };
+}
+
+var invoke_invoke = function invoke(fn) {
+    return function(_event) {
+        return fn() // Make an event handler that ignores the event.
+        ;
+    };
+};
+
+var is_defined_isDefined = function isDefined(x) {
+    return x != null;
+};
+
+var is_not_defined_isNotDefined = function isNotDefined(v) {
+    return v != undefined;
+};
+
+function lazy_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function lazy_class_call_check(instance, Constructor) {
+    if (!lazy_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function lazy_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function lazy_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) lazy_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) lazy_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function lazy_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+var lazy_Lazy = /*#__PURE__*/ function() {
+    "use strict";
+    function Lazy(factory) {
+        lazy_class_call_check(this, Lazy);
+        lazy_define_property(this, "_factory", void 0);
+        lazy_define_property(this, "_isValueCreated", false);
+        lazy_define_property(this, "_value", null);
+        this._factory = factory;
+    }
+    lazy_create_class(Lazy, [
+        {
+            key: "isValueCreated",
+            get: function get() {
+                return this._isValueCreated;
+            }
+        },
+        {
+            key: "value",
+            get: function get() {
+                if (!this._isValueCreated) {
+                    this._value = this._factory();
+                    this._isValueCreated = true;
+                }
+                return this._value;
+            }
+        }
+    ]);
+    return Lazy;
+}();
+
+function once_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function once_array_without_holes(arr) {
+    if (Array.isArray(arr)) return once_array_like_to_array(arr);
+}
+function once_iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function once_non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function once_to_consumable_array(arr) {
+    return once_array_without_holes(arr) || once_iterable_to_array(arr) || once_unsupported_iterable_to_array(arr) || once_non_iterable_spread();
+}
+function once_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return once_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return once_array_like_to_array(o, minLen);
+}
+// alongside resolveFactory, buildCtx, createLiveSelf
+function once(fn) {
+    var cached;
+    var done = false;
+    return function() {
+        if (!done) {
+            cached = fn();
+            done = true;
+        }
+        return cached;
+    };
+}
+function onceB(fn) {
+    var called = false;
+    var value;
+    return function() {
+        for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++){
+            args[_key] = arguments[_key];
+        }
+        if (!called) {
+            called = true;
+            value = fn.apply(void 0, once_to_consumable_array(args));
+        }
+        return value;
+    };
+}
+
+var or_default_orDefault = function orDefault(value, fallback) {
+    return value !== null && value !== void 0 ? value : fallback;
+};
+
+function patch_state_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function patch_state_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            patch_state_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function patchState(setState, patch) {
+    setState(function(prev) {
+        return patch_state_object_spread({}, prev, patch);
+    });
+}
+
+function retry_with_backoff_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+        var info = gen[key](arg);
+        var value = info.value;
+    } catch (error) {
+        reject(error);
+        return;
+    }
+    if (info.done) resolve(value);
+    else Promise.resolve(value).then(_next, _throw);
+}
+function retry_with_backoff_async_to_generator(fn) {
+    return function() {
+        var self = this, args = arguments;
+        return new Promise(function(resolve, reject) {
+            var gen = fn.apply(self, args);
+            function _next(value) {
+                retry_with_backoff_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+            }
+            function _throw(err) {
+                retry_with_backoff_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+            }
+            _next(undefined);
+        });
+    };
+}
+function retry_with_backoff_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+/**
+useEffect(() => {
+    let cancelled = false;
+    retryWithBackoff({
+        isCancelled: () => cancelled,
+        attempt: async (n) => {
+            console.log(`[STAFF_AGAIN] attempt ${n}`);
+            return staff ?? undefined;
+        },
+    });
+    return () => { cancelled = true; };
+}, []);
+ */ function retryWithBackoff(_0) {
+    return retry_with_backoff_async_to_generator(function(param) {
+        var _param_attempts, attempts, _param_baseDelayMs, baseDelayMs, _param_maxDelayMs, maxDelayMs, _param_isCancelled, isCancelled, _param_attempt, attempt, _param_onAttemptFailed, onAttemptFailed, _param_onGiveUp, onGiveUp, sleep, maxDelay, delay, n, v, err;
+        return retry_with_backoff_ts_generator(this, function(_state) {
+            switch(_state.label){
+                case 0:
+                    _param_attempts = param.attempts, attempts = _param_attempts === void 0 ? 4 : _param_attempts, _param_baseDelayMs = param.baseDelayMs, baseDelayMs = _param_baseDelayMs === void 0 ? 1000 : _param_baseDelayMs, _param_maxDelayMs = param.maxDelayMs, maxDelayMs = _param_maxDelayMs === void 0 ? 12000 : _param_maxDelayMs, _param_isCancelled = param.isCancelled, isCancelled = _param_isCancelled === void 0 ? function() {
+                        return false;
+                    } : _param_isCancelled, _param_attempt = param.attempt, attempt = _param_attempt === void 0 ? function(n) {
+                        return retry_with_backoff_async_to_generator(function() {
+                            return retry_with_backoff_ts_generator(this, function(_state) {
+                                console.log("[ATTEMPT][".concat(n, "]"));
+                                return [
+                                    2
+                                ];
+                            });
+                        })();
+                    } : _param_attempt, _param_onAttemptFailed = param.onAttemptFailed, onAttemptFailed = _param_onAttemptFailed === void 0 ? function(n, e) {
+                        return console.log("'[✘][FAILED: ATTEMPT][".concat(n, "]"), e);
+                    } : _param_onAttemptFailed, _param_onGiveUp = param.onGiveUp, onGiveUp = _param_onGiveUp === void 0 ? function() {
+                        return console.log('[✘][GAVE UP]');
+                    } : _param_onGiveUp;
+                    sleep = function sleep(ms) {
+                        return new Promise(function(r) {
+                            return setTimeout(r, ms);
+                        });
+                    };
+                    maxDelay = maxDelayMs !== null && maxDelayMs !== void 0 ? maxDelayMs : Infinity;
+                    delay = baseDelayMs;
+                    n = 1;
+                    _state.label = 1;
+                case 1:
+                    if (!(n <= attempts)) return [
+                        3,
+                        8
+                    ];
+                    if (isCancelled === null || isCancelled === void 0 ? void 0 : isCancelled()) return [
+                        2,
+                        undefined
+                    ];
+                    _state.label = 2;
+                case 2:
+                    _state.trys.push([
+                        2,
+                        4,
+                        ,
+                        5
+                    ]);
+                    return [
+                        4,
+                        attempt(n)
+                    ];
+                case 3:
+                    v = _state.sent();
+                    if (v !== undefined) return [
+                        2,
+                        v
+                    ];
+                    return [
+                        3,
+                        5
+                    ];
+                case 4:
+                    err = _state.sent();
+                    onAttemptFailed === null || onAttemptFailed === void 0 ? void 0 : onAttemptFailed(n, err);
+                    return [
+                        3,
+                        5
+                    ];
+                case 5:
+                    if (n === attempts) return [
+                        3,
+                        8
+                    ];
+                    if (isCancelled === null || isCancelled === void 0 ? void 0 : isCancelled()) return [
+                        2,
+                        undefined
+                    ];
+                    return [
+                        4,
+                        sleep(delay)
+                    ];
+                case 6:
+                    _state.sent();
+                    if (isCancelled === null || isCancelled === void 0 ? void 0 : isCancelled()) return [
+                        2,
+                        undefined
+                    ];
+                    delay = Math.min(delay * 2, maxDelay);
+                    _state.label = 7;
+                case 7:
+                    n++;
+                    return [
+                        3,
+                        1
+                    ];
+                case 8:
+                    onGiveUp === null || onGiveUp === void 0 ? void 0 : onGiveUp();
+                    return [
+                        2,
+                        undefined
+                    ];
+            }
+        });
+    }).apply(this, arguments);
+}
+
+function run_with_retry_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+        var info = gen[key](arg);
+        var value = info.value;
+    } catch (error) {
+        reject(error);
+        return;
+    }
+    if (info.done) resolve(value);
+    else Promise.resolve(value).then(_next, _throw);
+}
+function run_with_retry_async_to_generator(fn) {
+    return function() {
+        var self = this, args = arguments;
+        return new Promise(function(resolve, reject) {
+            var gen = fn.apply(self, args);
+            function _next(value) {
+                run_with_retry_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+            }
+            function _throw(err) {
+                run_with_retry_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+            }
+            _next(undefined);
+        });
+    };
+}
+function run_with_retry_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function runWithRetry(fn, label) {
+    var maxAttempts = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 3, baseDelay = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : 1000;
+    return run_with_retry_async_to_generator(function() {
+        var attempt, delay, err;
+        return run_with_retry_ts_generator(this, function(_state) {
+            switch(_state.label){
+                case 0:
+                    attempt = 0;
+                    delay = baseDelay;
+                    _state.label = 1;
+                case 1:
+                    if (!(attempt < maxAttempts)) return [
+                        3,
+                        7
+                    ];
+                    _state.label = 2;
+                case 2:
+                    _state.trys.push([
+                        2,
+                        4,
+                        ,
+                        6
+                    ]);
+                    return [
+                        4,
+                        fn()
+                    ];
+                case 3:
+                    return [
+                        2,
+                        _state.sent()
+                    ];
+                case 4:
+                    err = _state.sent();
+                    attempt++;
+                    console.log("[TimeMachine:".concat(label, "] attempt ").concat(attempt, " failed"), err);
+                    if (attempt >= maxAttempts) {
+                        console.log("[TimeMachine:".concat(label, "] all retries failed"));
+                        return [
+                            2
+                        ];
+                    }
+                    return [
+                        4,
+                        new Promise(function(res) {
+                            return setTimeout(res, delay);
+                        })
+                    ];
+                case 5:
+                    _state.sent();
+                    delay *= 2;
+                    return [
+                        3,
+                        6
+                    ];
+                case 6:
+                    return [
+                        3,
+                        1
+                    ];
+                case 7:
+                    return [
+                        2
+                    ];
+            }
+        });
+    })();
+}
+
+function serial_executor_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function serial_executor_class_call_check(instance, Constructor) {
+    if (!serial_executor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function serial_executor_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function serial_executor_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) serial_executor_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) serial_executor_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function serial_executor_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+var serial_executor_serialExecutor = /*#__PURE__*/ function() {
+    "use strict";
+    function _serialExecutor() {
+        serial_executor_class_call_check(this, _serialExecutor);
+        serial_executor_define_property(this, "chain", Promise.resolve());
+    }
+    serial_executor_create_class(_serialExecutor, [
+        {
+            key: "enqueue",
+            value: function enqueue(fn) {
+                var run = this.chain.then(fn);
+                this.chain = run.then(function() {
+                    return undefined;
+                }, function() {
+                    return undefined;
+                });
+                return run;
+            }
+        },
+        {
+            key: "exec",
+            get: function get() {
+                return this.chain;
+            }
+        }
+    ]);
+    return _serialExecutor;
+}();
+function serial_executor_executor() {
+    return new serial_executor_serialExecutor();
+} /**
+ const serial = executor();
+
+ await serial.enqueue(() => doThing());
+ await serial.exec;
+ */ 
+
+function set_keys_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function set_keys_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            set_keys_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function set_keys_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function set_keys_object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        set_keys_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function setKey(setState, key, value) {
+    setState(function(prev) {
+        return set_keys_object_spread_props(set_keys_object_spread({}, prev), set_keys_define_property({}, key, value));
+    });
+}
+
+function set_prev_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function set_prev_object_spread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.keys(source);
+        if (typeof Object.getOwnPropertySymbols === "function") {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
+        }
+        ownKeys.forEach(function(key) {
+            set_prev_define_property(target, key, source[key]);
+        });
+    }
+    return target;
+}
+function set_prev_ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) {
+            symbols = symbols.filter(function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            });
+        }
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function set_prev_object_spread_props(target, source) {
+    source = source != null ? source : {};
+    if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    else {
+        set_prev_ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function setPrev(setter, v, k) {
+    setter(function(prev) {
+        return k !== undefined ? set_prev_object_spread_props(set_prev_object_spread({}, prev), set_prev_define_property({}, k, v)) : set_prev_object_spread({}, prev, v);
+    });
+}
+function setPrevB(setter) {
+    setter(function(prev) {
+        return !prev;
+    });
+}
+
+var sleep_sleep = function sleep(ms) {
+    return new Promise(function(resolve) {
+        return setTimeout(resolve, ms);
+    });
+};
+
+function timedPromise(gate, timeoutMs) {
+    var timer;
+    var timeout = new Promise(function(_, reject) {
+        timer = setTimeout(function() {
+            return reject(new Error("[rift] wait() timed out after ".concat(timeoutMs, "ms")));
+        }, timeoutMs);
+    });
+    return Promise.race([
+        gate,
+        timeout
+    ]).finally(function() {
+        return clearTimeout(timer);
+    });
+} // just here because I prefer referencing this shape when using reusing this snippet style of code
+ /**
+ function wait_and_promise<T = A>(timeoutMs: number, key: A, isOpen: A, current: A,) {
+    return new Promise<T>((resolve, reject) => { 
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        function sub<T>(first:A, second: A) {return {} as T} ;
+        const r = sub<RiftRecord<T>>(key, (next: A) => { 
+            if (next?.opened) {
+                if (timer) clearTimeout(timer);
+                resolve(next.value as T);
+            }
+        });
+        if (isOpen) { 
+            if (timer) clearTimeout(timer);
+            resolve(current as T);
+            return;
+        }
+        if (timeoutMs) {
+            timer = setTimeout(() => {
+                reject(new Error(`[rift] wait() timed out after ${timeoutMs}ms`));
+            }, timeoutMs);
+        }
+    });
+}
+
+
+ */ 
+
+var to_promise_toPromise = function toPromise(value) {
+    return Promise.resolve(value);
+};
+
+function try_catch_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+        var info = gen[key](arg);
+        var value = info.value;
+    } catch (error) {
+        reject(error);
+        return;
+    }
+    if (info.done) resolve(value);
+    else Promise.resolve(value).then(_next, _throw);
+}
+function try_catch_async_to_generator(fn) {
+    return function() {
+        var self = this, args = arguments;
+        return new Promise(function(resolve, reject) {
+            var gen = fn.apply(self, args);
+            function _next(value) {
+                try_catch_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+            }
+            function _throw(err) {
+                try_catch_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+            }
+            _next(undefined);
+        });
+    };
+}
+function try_catch_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function try_catch_ts_generator(thisArg, body) {
+    var f, y, t, _ = {
+        label: 0,
+        sent: function sent() {
+            if (t[0] & 1) throw t[1];
+            return t[1];
+        },
+        trys: [],
+        ops: []
+    }, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype), d = Object.defineProperty;
+    return d(g, "next", {
+        value: verb(0)
+    }), d(g, "throw", {
+        value: verb(1)
+    }), d(g, "return", {
+        value: verb(2)
+    }), typeof Symbol === "function" && d(g, Symbol.iterator, {
+        value: function value() {
+            return this;
+        }
+    }), g;
+    function verb(n) {
+        return function(v) {
+            return step([
+                n,
+                v
+            ]);
+        };
+    }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while(g && (g = 0, op[0] && (_ = 0)), _)try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [
+                op[0] & 2,
+                t.value
+            ];
+            switch(op[0]){
+                case 0:
+                case 1:
+                    t = op;
+                    break;
+                case 4:
+                    _.label++;
+                    return {
+                        value: op[1],
+                        done: false
+                    };
+                case 5:
+                    _.label++;
+                    y = op[1];
+                    op = [
+                        0
+                    ];
+                    continue;
+                case 7:
+                    op = _.ops.pop();
+                    _.trys.pop();
+                    continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                        _ = 0;
+                        continue;
+                    }
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                        _.label = op[1];
+                        break;
+                    }
+                    if (op[0] === 6 && _.label < t[1]) {
+                        _.label = t[1];
+                        t = op;
+                        break;
+                    }
+                    if (t && _.label < t[2]) {
+                        _.label = t[2];
+                        _.ops.push(op);
+                        break;
+                    }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop();
+                    continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) {
+            op = [
+                6,
+                e
+            ];
+            y = 0;
+        } finally{
+            f = t = 0;
+        }
+        if (op[0] & 5) throw op[1];
+        return {
+            value: op[0] ? op[1] : void 0,
+            done: true
+        };
+    }
+}
+function tryCatch(fn) {
+    return try_catch_async_to_generator(function() {
+        var _tmp, e;
+        return try_catch_ts_generator(this, function(_state) {
+            switch(_state.label){
+                case 0:
+                    _state.trys.push([
+                        0,
+                        2,
+                        ,
+                        3
+                    ]);
+                    _tmp = [
+                        undefined
+                    ];
+                    return [
+                        4,
+                        fn()
+                    ];
+                case 1:
+                    return [
+                        2,
+                        _tmp.concat([
+                            _state.sent()
+                        ])
+                    ];
+                case 2:
+                    e = _state.sent();
+                    return [
+                        2,
+                        [
+                            try_catch_instanceof(e, Error) ? e : new Error(String(e)),
+                            undefined
+                        ]
+                    ];
+                case 3:
+                    return [
+                        2
+                    ];
+            }
+        });
+    })();
+}
+
+var unreachable_unreachable = function unreachable(value) {
+    throw new Error("Unreachable value: ".concat(String(value)));
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -15953,7 +18613,64 @@ globalThis.WS2 = weak_set_WS2I;
 function MaybePromisei(v) {
     return v !== undefined ? v : Promise.resolve(v);
 }
+var nestedInstace = new nested_nestedi();
 globalThis.MaybePromise = MaybePromisei;
+globalThis.A2 = array_A2I;
+globalThis.B2B = boolean_byte_B2BI;
+globalThis.D2 = date_D2I;
+globalThis.R2 = date_R2I;
+globalThis.R2FN = date_R2II;
+globalThis.ER2 = error_ER2I;
+globalThis.I2 = iterator_I2I;
+globalThis.M2 = map_M2I;
+globalThis.M2BIN = map_bin_M2BINI;
+globalThis.M2B = map_byte_M2BI;
+globalThis.M2D = map_dense_M2DI;
+globalThis.M2R = map_rows_M2RI;
+globalThis.nested = nestedInstace;
+globalThis.N2 = number_N2I;
+globalThis.O2 = object_O2I;
+globalThis.P2 = promise_P2I;
+globalThis.RE2 = reg_ex_REC2;
+globalThis.RES2 = RECC2;
+globalThis.SET2 = set_SET2I;
+globalThis.SET2B = set_byte_SET2BI;
+globalThis.soa_codec = soa_codeci;
+globalThis.S2 = string_S2I;
+globalThis.U82 = unit8array_U82I;
+globalThis.USP2 = url_search_params_USP2I;
+globalThis.WM2 = weak_map_WM2I;
+globalThis.WS2 = weak_set_WS2I;
+globalThis.M2BIN = map_bin_M2BINI;
+globalThis.callIf = callIf;
+globalThis.clamp = clamp_clamp;
+globalThis.createLiveScope = createLiveScope;
+globalThis.deferred = deferred_deferred;
+globalThis.evaluator = evaluator;
+globalThis.Finally = Finally;
+globalThis.gate = gate_gate;
+globalThis.invoke = invoke_invoke;
+globalThis.isDefined = is_defined_isDefined;
+globalThis.isNotDefined = is_not_defined_isNotDefined;
+globalThis.Lazy = lazy_Lazy;
+globalThis.once = once;
+globalThis.orDefault = or_default_orDefault;
+globalThis.patchState = patchState;
+globalThis.retryWithBackoff = retryWithBackoff;
+globalThis.runWithRetry = runWithRetry;
+globalThis._serialExecutor = serial_executor_serialExecutor;
+globalThis.setKey = setKey;
+globalThis.setPrev = setPrev;
+globalThis.sleep = sleep_sleep;
+globalThis.timedPromise = timedPromise;
+globalThis.toPromise = to_promise_toPromise;
+globalThis.tryCatch = tryCatch;
+globalThis.unreachable = unreachable_unreachable;
+globalThis.wait_and_promise = wait_and_promise;
+globalThis.twx = twx;
+globalThis.lwwState = lwwState;
+globalThis.ignoreArg = ignore_arg_ignoreArg;
+globalThis.barrier = barrier;
 
 
 export { MaybePromisei, RECC2 as RES2, array_A2I as A2, boolean_byte_B2BI as B2B, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_rows_M2RI as M2R, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };
