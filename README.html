@@ -2547,8 +2547,218 @@ HITS:  1,000,000
 <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
  <span class="hljs-variable language_">this</span>.<span class="hljs-property">_atom</span> = 
 }
-
 </code></pre>
+<p>Below you will find a much larger and in depth example from a project that I'm currently working on. At the time of writing not ALL of the paths that are coded in have been benched, but that will be done so shortly. I'll be sure to post the results.</p>
+</div>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> rootRegistry = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WAR_ROOOM</span> {
+	public <span class="hljs-attr">r</span>: A = <span class="hljs-string">&quot;THE_WIZARD_ROOT_REG&quot;</span>;
+	public <span class="hljs-attr">m</span>: A = <span class="hljs-string">&quot;SAURON_MASTER_REG&quot;</span>;
+	public <span class="hljs-attr">s</span>: A = <span class="hljs-string">&quot;SAURON_SLAVE_REG&quot;</span>;
+	public <span class="hljs-attr">k</span>: A = <span class="hljs-string">&quot;__SAURON__&quot;</span>;
+	private <span class="hljs-attr">raven</span>: <span class="hljs-variable constant_">DEATH_STAR</span>;
+
+ 
+	<span class="hljs-comment">//                                                                                                                  MAIN CACHES</span>
+	<span class="hljs-comment">// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════</span>
+	#<span class="hljs-variable constant_">META</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_meta</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">SIGNALS</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_signals</span>: <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">NAKED_SIGNALS</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_naked_signals</span>: <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">SIGNALS_STATE</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_signals_state</span>: <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">CONTEXT</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_context</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">ATOMS</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_atoms</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">SAURON</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_sauron</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	#<span class="hljs-variable constant_">BUS</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+	<span class="hljs-attr">_bus</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	<span class="hljs-attr">_gt</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+
+	<span class="hljs-variable constant_">COMPONENTS</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;S, <span class="hljs-title class_">ComponentInstance</span>&gt;();
+	<span class="hljs-comment">// #endregion</span>
+	<span class="hljs-comment">//                                                                                                                    THE CLOUD</span>
+	<span class="hljs-comment">// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════</span>
+	<span class="hljs-attr">_components</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	<span class="hljs-attr">_batches</span>: <span class="hljs-title class_">MTracer</span>&lt;S | <span class="hljs-variable constant_">SY</span>&gt;;
+	<span class="hljs-attr">_batchQueue</span>: <span class="hljs-title class_">MTracer</span>&lt;S | <span class="hljs-variable constant_">SY</span>, A&gt;;
+	<span class="hljs-attr">_batchOpts</span>: M&lt;S | <span class="hljs-variable constant_">SY</span>, { triggerRender?: B }&gt;;
+	<span class="hljs-attr">_sys</span>: <span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SysEntry</span>&gt;;
+	<span class="hljs-attr">_sealed</span>: <span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SysEntry</span>&gt;;
+	<span class="hljs-attr">_keyContracts</span>: M&lt;S, <span class="hljs-variable constant_">ST</span>&lt;S&gt;&gt;;
+	<span class="hljs-attr">_conflicts</span>: <span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">ConflictPolicy</span>&gt;;
+	<span class="hljs-attr">_conflictStrategies</span>: <span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-string">&quot;latest&quot;</span> | <span class="hljs-string">&quot;fail&quot;</span> | <span class="hljs-string">&quot;accumulate&quot;</span>&gt;;
+	<span class="hljs-attr">_causal</span>: M&lt;S, <span class="hljs-title class_">CausalEntry</span>[]&gt;;
+	<span class="hljs-attr">_history</span>: M&lt;S | <span class="hljs-variable constant_">SY</span>, <span class="hljs-title class_">HistoryEntry</span>[]&gt;;
+	<span class="hljs-attr">_scopes</span>: <span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SignalScope</span>&gt;;
+	<span class="hljs-attr">_msgHandlers</span>: M&lt;S, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">(<span class="hljs-params">p: A</span>) =&gt;</span> V&gt;&gt;;
+	<span class="hljs-attr">_lastWriteSource</span>: M&lt;S, S&gt;;
+	<span class="hljs-attr">_mainMap</span>: <span class="hljs-title class_">MTracer</span>&lt;A, S&gt;;
+	<span class="hljs-attr">_tupleCache</span>: <span class="hljs-title class_">MTracer</span>&lt;S, S&gt;;
+	<span class="hljs-attr">_weakMap</span>: <span class="hljs-title class_">MTracer</span>&lt;O, S&gt;;
+	<span class="hljs-attr">_boundaries</span>: <span class="hljs-title class_">MTracer</span>&lt;O, S&gt;;
+	<span class="hljs-attr">_persistent</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	<span class="hljs-attr">_persistent_keys</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+
+	<span class="hljs-attr">_global_subscribers</span>: <span class="hljs-variable constant_">M2</span>&lt;S, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">() =&gt;</span> V&gt;&gt;;
+	<span class="hljs-attr">_waiters</span>: <span class="hljs-variable constant_">M2</span>&lt;S | <span class="hljs-variable constant_">SY</span>, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">(<span class="hljs-params">value: A</span>) =&gt;</span> V&gt;&gt;;
+	<span class="hljs-attr">_listeners</span>: <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">(<span class="hljs-params">value: A</span>) =&gt;</span> <span class="hljs-keyword">void</span>&gt;&gt;;
+	<span class="hljs-comment">// #endregion</span>
+	<span class="hljs-comment">//                                                                                                                    SIGNALS</span>
+	<span class="hljs-comment">// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════</span>
+	<span class="hljs-attr">_timeTravelMaul</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+	<span class="hljs-attr">_historyMaul</span>: <span class="hljs-title class_">MTracer</span>&lt;A, A&gt;;
+
+	<span class="hljs-attr">_subscribersMaul</span>: <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;;
+	<span class="hljs-attr">_listenersMaul</span>: <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;;
+	<span class="hljs-comment">// #endregion</span>
+	<span class="hljs-title function_">constructor</span>(<span class="hljs-params">raven: DEATH_STAR</span>) {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">raven</span> = raven;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span> = raven.<span class="hljs-property">r</span> ?? <span class="hljs-string">&quot;THE_WIZARD_ROOT_REG&quot;</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span> = raven.<span class="hljs-property">m</span> ?? <span class="hljs-string">&quot;SAURON_MASTER_REG&quot;</span>;
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">s</span> = raven.<span class="hljs-property">s</span> ?? <span class="hljs-string">&quot;SAURON_SLAVE_REG&quot;</span>;
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">k</span> = raven.<span class="hljs-property">k</span> ?? <span class="hljs-string">&quot;THE_K_KEY&quot;</span>;
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_signals_state</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">map</span>(<span class="hljs-string">&quot;_signals_state&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS_STATE&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_meta</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_meta&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#META&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_signals</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">map</span>(<span class="hljs-string">&quot;_signals&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_naked_signals</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">map</span>(<span class="hljs-string">&quot;_naked_signals&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#NAKED_SIGNALS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_context</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_context&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#CONTEXT&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_atoms</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_atoms&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#ATOMS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_sauron</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_sauron&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SAURON&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_bus</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_bus&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#BUS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_gt</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_gt&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_listeners</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">map</span>(<span class="hljs-string">&quot;_listeners_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_global_subscribers</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">() =&gt;</span> V&gt;&gt;&gt;(<span class="hljs-string">&quot;_global_subscribers_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_waiters</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S | <span class="hljs-variable constant_">SY</span>, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">(<span class="hljs-params">value: A</span>) =&gt;</span> V&gt;&gt;&gt;(<span class="hljs-string">&quot;_waiters_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_persistent_keys</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_persistent_keys_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_persistent</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_persistent_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_components</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_components_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_batches</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_batches_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_batchQueue</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_batchQueue_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_batchOpts</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S | <span class="hljs-variable constant_">SY</span>, { triggerRender?: B }&gt;&gt;(<span class="hljs-string">&quot;_batchOpts_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_sys</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SysEntry</span>&gt;&gt;(<span class="hljs-string">&quot;_sys_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_sealed</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SysEntry</span>&gt;&gt;(<span class="hljs-string">&quot;_sealed_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_keyContracts</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S, <span class="hljs-variable constant_">ST</span>&lt;S&gt;&gt;&gt;(<span class="hljs-string">&quot;_keyContracts_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_conflicts</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">ConflictPolicy</span>&gt;&gt;(<span class="hljs-string">&quot;_conflicts_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_conflictStrategies</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-string">&quot;latest&quot;</span> | <span class="hljs-string">&quot;fail&quot;</span> | <span class="hljs-string">&quot;accumulate&quot;</span>&gt;&gt;(<span class="hljs-string">&quot;_conflictStrategies_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_causal</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S, <span class="hljs-title class_">CausalEntry</span>[]&gt;&gt;(<span class="hljs-string">&quot;_causal_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_history</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S | <span class="hljs-variable constant_">SY</span>, <span class="hljs-title class_">HistoryEntry</span>[]&gt;&gt;(<span class="hljs-string">&quot;_history_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_scopes</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, <span class="hljs-title class_">SignalScope</span>&gt;&gt;(<span class="hljs-string">&quot;_scopes_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_msgHandlers</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S, <span class="hljs-variable constant_">ST</span>&lt;<span class="hljs-function">(<span class="hljs-params">p: A</span>) =&gt;</span> V&gt;&gt;&gt;(<span class="hljs-string">&quot;_msgHandlers_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_lastWriteSource</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;M&lt;S, S&gt;&gt;(<span class="hljs-string">&quot;_lastWriteSource_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_mainMap</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">tracer</span>(<span class="hljs-string">&quot;_mainMap_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_tupleCache</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;S, S&gt;&gt;(<span class="hljs-string">&quot;_tupleCache_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_weakMap</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot;_weakMap_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_boundaries</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot;_boundaries_raven&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>);
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_timeTravelMaul</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot;_timeTravel_maul&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_historyMaul</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">tracer</span>&lt;<span class="hljs-title class_">MTracer</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot;_history_maul&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS&quot;</span>);
+
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_subscribersMaul</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;<span class="hljs-variable constant_">M2</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot; _subscribers_maul&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS&quot;</span>);
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_listenersMaul</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">map</span>&lt;<span class="hljs-variable constant_">M2</span>&lt;O, S&gt;&gt;(<span class="hljs-string">&quot; _listeners_maul&quot;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, <span class="hljs-string">&quot;#SIGNALS&quot;</span>);
+	}
+	<span class="hljs-title function_">get_root</span>(<span class="hljs-params">c: S, r: S</span>) {
+		<span class="hljs-keyword">let</span> root;
+		<span class="hljs-keyword">switch</span> (c) {
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SIGNALS_STATE&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SIGNALS_STATE</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#CONTEXT&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">CONTEXT</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#META&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">META</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SIGNALS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SIGNALS</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#ATOMS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">ATOMS</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SAURON&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SAURON</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#BUS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">BUS</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#NAKED_SIGNALS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">NAKED_SIGNALS</span>.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;gt&quot;</span>: { root = rootRegistry.<span class="hljs-title function_">get</span>(r); <span class="hljs-keyword">break</span>; }
+			<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;globalThis&quot;</span>: { (globalThis <span class="hljs-keyword">as</span> A)[r]; <span class="hljs-keyword">break</span>; }
+		}
+		<span class="hljs-keyword">if</span> (!root) {
+			root = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;&gt;();
+			<span class="hljs-keyword">switch</span> (c) {
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SIGNALS_STATE&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SIGNALS_STATE</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#CONTEXT&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">CONTEXT</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#META&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">META</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SIGNALS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SIGNALS</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#ATOMS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">ATOMS</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#SAURON&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">SAURON</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#NAKED_SIGNALS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">NAKED_SIGNALS</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;#BUS&quot;</span>: { root = <span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">BUS</span>.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;gt&quot;</span>: { rootRegistry.<span class="hljs-title function_">set</span>(r, root); <span class="hljs-keyword">break</span>; }
+				<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;globalThis&quot;</span>: { (globalThis <span class="hljs-keyword">as</span> A)[r] = root; <span class="hljs-keyword">break</span>; }
+			}
+			<span class="hljs-variable language_">this</span>.#<span class="hljs-variable constant_">CONTEXT</span>.<span class="hljs-title function_">set</span>(r, root);
+		}
+		<span class="hljs-keyword">return</span> root;
+	}
+	map&lt;K = A, V = A&gt;(s = <span class="hljs-variable language_">this</span>.<span class="hljs-property">s</span>, m = <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, r = <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, c = <span class="hljs-string">&quot;gt&quot;</span>): <span class="hljs-variable constant_">M2</span>&lt;K, V&gt; | K | V {
+		<span class="hljs-keyword">const</span> root = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get_root</span>(c, r);
+		<span class="hljs-keyword">let</span> masterMap = root.<span class="hljs-title function_">get</span>(m);
+		<span class="hljs-keyword">if</span> (!masterMap) {
+			masterMap = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;();
+			root.<span class="hljs-title function_">set</span>(m, masterMap);
+		}
+		<span class="hljs-keyword">let</span> slaveMap = masterMap.<span class="hljs-title function_">get</span>(s);
+		<span class="hljs-keyword">if</span> (!slaveMap) {
+			slaveMap = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;K, V&gt;();
+			masterMap.<span class="hljs-title function_">set</span>(s, slaveMap);
+		}
+		<span class="hljs-keyword">return</span> slaveMap;
+	}
+	tracer&lt;K = A, V = A&gt;(s = <span class="hljs-variable language_">this</span>.<span class="hljs-property">s</span>, m = <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, r = <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, c = <span class="hljs-string">&quot;gt&quot;</span>): <span class="hljs-title class_">MTracer</span>&lt;K, V&gt; | K | V {
+		<span class="hljs-keyword">const</span> root = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get_root</span>(c, r);
+		<span class="hljs-keyword">let</span> masterMap = root.<span class="hljs-title function_">get</span>(m);
+		<span class="hljs-keyword">if</span> (!masterMap) {
+			masterMap = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;();
+			root.<span class="hljs-title function_">set</span>(m, masterMap);
+		}
+		<span class="hljs-keyword">let</span> slaveMap = masterMap.<span class="hljs-title function_">get</span>(s);
+		<span class="hljs-keyword">if</span> (!slaveMap) {
+			slaveMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MTracer</span>&lt;K, V&gt;();
+			masterMap.<span class="hljs-title function_">set</span>(s, slaveMap);
+		}
+		<span class="hljs-keyword">return</span> slaveMap;
+	}
+	set&lt;V = A&gt;(s = <span class="hljs-variable language_">this</span>.<span class="hljs-property">s</span>, m = <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, r = <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, c = <span class="hljs-string">&quot;gt&quot;</span>): <span class="hljs-title class_">STracer</span>&lt;V&gt; | K | V {
+		<span class="hljs-keyword">const</span> root = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get_root</span>(c, r);
+		<span class="hljs-keyword">let</span> masterMap = root.<span class="hljs-title function_">get</span>(m);
+		<span class="hljs-keyword">if</span> (!masterMap) {
+			masterMap = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;();
+			root.<span class="hljs-title function_">set</span>(m, masterMap);
+		}
+		<span class="hljs-keyword">let</span> slaveMap = masterMap.<span class="hljs-title function_">get</span>(s);
+		<span class="hljs-keyword">if</span> (!slaveMap) {
+			slaveMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">STracer</span>&lt;V&gt;();
+			masterMap.<span class="hljs-title function_">set</span>(s, slaveMap);
+		}
+		<span class="hljs-keyword">return</span> slaveMap;
+	}
+	obj&lt;V = A&gt;(s = <span class="hljs-variable language_">this</span>.<span class="hljs-property">s</span>, m = <span class="hljs-variable language_">this</span>.<span class="hljs-property">m</span>, r = <span class="hljs-variable language_">this</span>.<span class="hljs-property">r</span>, c = <span class="hljs-string">&quot;gt&quot;</span>): <span class="hljs-title class_">OTracer</span>&lt;V&gt; | K | V {
+		<span class="hljs-keyword">const</span> root = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get_root</span>(c, r);
+		<span class="hljs-keyword">let</span> masterMap = root.<span class="hljs-title function_">get</span>(m);
+		<span class="hljs-keyword">if</span> (!masterMap) {
+			masterMap = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">M2</span>&lt;A, <span class="hljs-variable constant_">M2</span>&lt;A, A&gt;&gt;();
+			root.<span class="hljs-title function_">set</span>(m, masterMap);
+		}
+		<span class="hljs-keyword">let</span> slaveMap = masterMap.<span class="hljs-title function_">get</span>(s);
+		<span class="hljs-keyword">if</span> (!slaveMap) {
+			slaveMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">OTracer</span>&lt;V&gt;();
+			masterMap.<span class="hljs-title function_">set</span>(s, slaveMap);
+		}
+		<span class="hljs-keyword">return</span> slaveMap;
+	}
+	
+}
+</code></pre>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>As you can see a mix of M2, disruptor maps, disruptor sets, SET2, as well as a disruptor obj for one item. With so many different types landing in the last spot of the nested map, I had broken up the original fn so as to keep code to a minimum due to the fact that this time around I wanted to try splitting everything up by section, rather than you one single storage format for everything.</p>
 </div>
 <h2 id="o2--object"><code>O2</code> — Object</h2>
 <p>Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.</p>

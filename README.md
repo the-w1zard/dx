@@ -1139,9 +1139,222 @@ type ALL_MAPS =
 > constructor() {
 >  this._atom = 
 > }
->
 > ```
+>
+> Below you will find a much larger and in depth example from a project that I'm currently working on. At the time of writing not ALL of the paths that are coded in have been benched, but that will be done so shortly. I'll be sure to post the results.
 
+```tsx
+const rootRegistry = new M2<A, M2<A, M2<A, A>>>();
+
+export class WAR_ROOOM {
+	public r: A = "THE_WIZARD_ROOT_REG";
+	public m: A = "SAURON_MASTER_REG";
+	public s: A = "SAURON_SLAVE_REG";
+	public k: A = "__SAURON__";
+	private raven: DEATH_STAR;
+
+ 
+	//                                                                                                                  MAIN CACHES
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	#META = new M2<A, M2<A, M2<A, A>>>();
+	_meta: MTracer<A, A>;
+	#SIGNALS = new M2<A, M2<A, M2<A, A>>>();
+	_signals: M2<A, A>;
+	#NAKED_SIGNALS = new M2<A, M2<A, M2<A, A>>>();
+	_naked_signals: M2<A, A>;
+	#SIGNALS_STATE = new M2<A, M2<A, M2<A, A>>>();
+	_signals_state: M2<A, A>;
+	#CONTEXT = new M2<A, M2<A, M2<A, A>>>();
+	_context: MTracer<A, A>;
+	#ATOMS = new M2<A, M2<A, M2<A, A>>>();
+	_atoms: MTracer<A, A>;
+	#SAURON = new M2<A, M2<A, M2<A, A>>>();
+	_sauron: MTracer<A, A>;
+	#BUS = new M2<A, M2<A, M2<A, A>>>();
+	_bus: MTracer<A, A>;
+	_gt: MTracer<A, A>;
+
+	COMPONENTS = new M2<S, ComponentInstance>();
+	// #endregion
+	//                                                                                                                    THE CLOUD
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	_components: MTracer<A, A>;
+	_batches: MTracer<S | SY>;
+	_batchQueue: MTracer<S | SY, A>;
+	_batchOpts: M<S | SY, { triggerRender?: B }>;
+	_sys: MTracer<S, SysEntry>;
+	_sealed: MTracer<S, SysEntry>;
+	_keyContracts: M<S, ST<S>>;
+	_conflicts: MTracer<S, ConflictPolicy>;
+	_conflictStrategies: MTracer<S, "latest" | "fail" | "accumulate">;
+	_causal: M<S, CausalEntry[]>;
+	_history: M<S | SY, HistoryEntry[]>;
+	_scopes: MTracer<S, SignalScope>;
+	_msgHandlers: M<S, ST<(p: A) => V>>;
+	_lastWriteSource: M<S, S>;
+	_mainMap: MTracer<A, S>;
+	_tupleCache: MTracer<S, S>;
+	_weakMap: MTracer<O, S>;
+	_boundaries: MTracer<O, S>;
+	_persistent: MTracer<A, A>;
+	_persistent_keys: MTracer<A, A>;
+
+	_global_subscribers: M2<S, ST<() => V>>;
+	_waiters: M2<S | SY, ST<(value: A) => V>>;
+	_listeners: M2<A, ST<(value: A) => void>>;
+	// #endregion
+	//                                                                                                                    SIGNALS
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	_timeTravelMaul: MTracer<A, A>;
+	_historyMaul: MTracer<A, A>;
+
+	_subscribersMaul: M2<A, A>;
+	_listenersMaul: M2<A, A>;
+	// #endregion
+	constructor(raven: DEATH_STAR) {
+		this.raven = raven;
+		this.r = raven.r ?? "THE_WIZARD_ROOT_REG";
+		this.m = raven.m ?? "SAURON_MASTER_REG";
+
+		this.s = raven.s ?? "SAURON_SLAVE_REG";
+		this.k = raven.k ?? "THE_K_KEY";
+
+		this._signals_state = this.map("_signals_state", this.m, this.r, "#SIGNALS_STATE");
+		this._meta = this.tracer("_meta", this.m, this.r, "#META");
+		this._signals = this.map("_signals", this.m, this.r, "#SIGNALS");
+		this._naked_signals = this.map("_naked_signals", this.m, this.r, "#NAKED_SIGNALS");
+		this._context = this.tracer("_context", this.m, this.r, "#CONTEXT");
+		this._atoms = this.tracer("_atoms", this.m, this.r, "#ATOMS");
+		this._sauron = this.tracer("_sauron", this.m, this.r, "#SAURON");
+		this._bus = this.tracer("_bus", this.m, this.r, "#BUS");
+		this._gt = this.tracer("_gt", this.m, this.r);
+
+		this._listeners = this.map("_listeners_raven", this.m, this.r);
+		this._global_subscribers = this.map<M<S, ST<() => V>>>("_global_subscribers_raven", this.m, this.r);
+		this._waiters = this.map<M<S | SY, ST<(value: A) => V>>>("_waiters_raven", this.m, this.r);
+
+		this._persistent_keys = this.tracer("_persistent_keys_raven", this.m, this.r);
+		this._persistent = this.tracer("_persistent_raven", this.m, this.r);
+		this._components = this.tracer("_components_raven", this.m, this.r);
+		this._batches = this.tracer("_batches_raven", this.m, this.r);
+		this._batchQueue = this.tracer("_batchQueue_raven", this.m, this.r);
+		this._batchOpts = this.map<M<S | SY, { triggerRender?: B }>>("_batchOpts_raven", this.m, this.r);
+		this._sys = this.tracer<MTracer<S, SysEntry>>("_sys_raven", this.m, this.r);
+		this._sealed = this.tracer<MTracer<S, SysEntry>>("_sealed_raven", this.m, this.r);
+		this._keyContracts = this.map<M<S, ST<S>>>("_keyContracts_raven", this.m, this.r);
+		this._conflicts = this.tracer<MTracer<S, ConflictPolicy>>("_conflicts_raven", this.m, this.r);
+		this._conflictStrategies = this.tracer<MTracer<S, "latest" | "fail" | "accumulate">>("_conflictStrategies_raven", this.m, this.r);
+		this._causal = this.map<M<S, CausalEntry[]>>("_causal_raven", this.m, this.r);
+		this._history = this.map<M<S | SY, HistoryEntry[]>>("_history_raven", this.m, this.r);
+		this._scopes = this.tracer<MTracer<S, SignalScope>>("_scopes_raven", this.m, this.r);
+		this._msgHandlers = this.map<M<S, ST<(p: A) => V>>>("_msgHandlers_raven", this.m, this.r);
+		this._lastWriteSource = this.map<M<S, S>>("_lastWriteSource_raven", this.m, this.r);
+		this._mainMap = this.tracer("_mainMap_raven", this.m, this.r);
+		this._tupleCache = this.tracer<MTracer<S, S>>("_tupleCache_raven", this.m, this.r);
+		this._weakMap = this.tracer<MTracer<O, S>>("_weakMap_raven", this.m, this.r);
+		this._boundaries = this.tracer<MTracer<O, S>>("_boundaries_raven", this.m, this.r);
+
+		this._timeTravelMaul = this.tracer<MTracer<O, S>>("_timeTravel_maul", this.m, this.r, "#SIGNALS");
+		this._historyMaul = this.tracer<MTracer<O, S>>("_history_maul", this.m, this.r, "#SIGNALS");
+
+		this._subscribersMaul = this.map<M2<O, S>>(" _subscribers_maul", this.m, this.r, "#SIGNALS");
+		this._listenersMaul = this.map<M2<O, S>>(" _listeners_maul", this.m, this.r, "#SIGNALS");
+	}
+	get_root(c: S, r: S) {
+		let root;
+		switch (c) {
+			case "#SIGNALS_STATE": { root = this.#SIGNALS_STATE.get(r); break; }
+			case "#CONTEXT": { root = this.#CONTEXT.get(r); break; }
+			case "#META": { root = this.#META.get(r); break; }
+			case "#SIGNALS": { root = this.#SIGNALS.get(r); break; }
+			case "#ATOMS": { root = this.#ATOMS.get(r); break; }
+			case "#SAURON": { root = this.#SAURON.get(r); break; }
+			case "#BUS": { root = this.#BUS.get(r); break; }
+			case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.get(r); break; }
+			case "gt": { root = rootRegistry.get(r); break; }
+			case "globalThis": { (globalThis as A)[r]; break; }
+		}
+		if (!root) {
+			root = new M2<A, M2<A, M2<A, A>>>();
+			switch (c) {
+				case "#SIGNALS_STATE": { root = this.#SIGNALS_STATE.set(r, root); break; }
+				case "#CONTEXT": { root = this.#CONTEXT.set(r, root); break; }
+				case "#META": { root = this.#META.set(r, root); break; }
+				case "#SIGNALS": { root = this.#SIGNALS.set(r, root); break; }
+				case "#ATOMS": { root = this.#ATOMS.set(r, root); break; }
+				case "#SAURON": { root = this.#SAURON.set(r, root); break; }
+				case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.set(r, root); break; }
+				case "#BUS": { root = this.#BUS.set(r, root); break; }
+				case "gt": { rootRegistry.set(r, root); break; }
+				case "globalThis": { (globalThis as A)[r] = root; break; }
+			}
+			this.#CONTEXT.set(r, root);
+		}
+		return root;
+	}
+	map<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): M2<K, V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new M2<K, V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	tracer<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): MTracer<K, V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new MTracer<K, V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	set<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): STracer<V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new STracer<V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	obj<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): OTracer<V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new OTracer<V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	
+}
+```
+
+> [!NOTE]
+>
+> As you can see a mix of M2, disruptor maps, disruptor sets, SET2, as well as a disruptor obj for one item. With so many different types landing in the last spot of the nested map, I had broken up the original fn so as to keep code to a minimum due to the fact that this time around I wanted to try splitting everything up by section, rather than you one single storage format for everything.
 
 ## `O2` — Object
 
