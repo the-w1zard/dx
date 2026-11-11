@@ -158,8 +158,6 @@ The package extends native classes and exposes their implementations through `gl
 
 The global declarations provide TypeScript access to these APIs. `MaybePromise` is also declared globally as a type alias and fn.
 
-## Quick Reference
-
 ## Most Recent Benches
 
 Map and M2, just swapped places from test to test. While this test bed focused on gets, sets and a mixed bag of the two, it proves that the M2 solution is exactly as advertised. An upgraded version of the original Map solution provided with the runtime. Unfortuantly this is as far as the test can go in terms of putting the two up against one another as maps api... is basically this and only this. Meanwhile, M2... is DRASTICALLY different. 
@@ -4355,7 +4353,7 @@ Use `setPrev` when you're doing a merge (no key). Use `setKey` when you're setti
 > Functional state setters for React-style `useState`. Give them a setter, give them a value, and they update based on the previous state without you having to write `setX(prev => …)` inline every time.
 
 ```ts
-setPrev(setUser, "Alice", "name")   // setUser(prev => ({ ...prev, name: "Alice" }))
+setPrev(setUser, "name", "Alice")   // setUser(prev => ({ ...prev, name: "Alice" }))
 setPrev(setUser, { age: 30 })       // setUser(prev => ({ ...prev, age: 30 }))
 setPrevB(setOpen)                   // setOpen(prev => !prev)
 ```
@@ -4375,7 +4373,7 @@ import { setPrev, setPrevB } from "platform"
 setPrevB(setOpen)
 
 // Set one key on an object
-setPrev(setForm, "Alice", "name")
+setPrev(setForm, "name", "Alice")
 
 // Merge several keys
 setPrev(setForm, { name: "Alice", age: 30 })
@@ -4390,7 +4388,7 @@ They exist because `setState(prev => ({ ...prev, key: value }))` is the same boi
 #### Signatures
 
 ```ts
-function setPrev<T = any>(setter: any, v: any, k?: any): void
+function setPrev<T = any>(setter: any, k?: any, v?: any): void
 function setPrevB(setter: any): void
 ```
 
@@ -4404,7 +4402,7 @@ Both return `void`. They call the setter with a functional updater and don't ret
 #### What `setPrev` does
 
 ```ts
-setPrev(setter, v, k?)
+setPrev(setter, k?, v)
 ```
 
 Two modes, chosen by whether `k` is `undefined`:
@@ -4459,8 +4457,8 @@ The functional form is correct. The direct-object form is a footgun that works i
 **Controlled form fields**
 
 ```tsx
-<input onChange={e => setPrev(setForm, e.target.value, "name")} />
-<input onChange={e => setPrev(setForm, e.target.value, "email")} />
+<input onChange={e => setPrev(setForm, "name", e.target.value)} />
+<input onChange={e => setPrev(setForm, "email", e.target.value)} />
 ```
 
 **Multi-field updates**
@@ -4479,7 +4477,7 @@ setPrev(setForm, { name: "", email: "", submitted: true })
 **Reset a field**
 
 ```ts
-setPrev(setForm, undefined, "error")
+setPrev(setForm, "error", undefined)
 ```
 
 **Clear a form**
@@ -5371,13 +5369,34 @@ await wait_and_promise(0, key, isOpen, current)
 ```ts
 const value = await wait_and_promise(250, key, isOpen, current)
 ```
+ 
+## SECRET AREA
 
+> [!NOTE]
+>
+> Do you fucking hate github as much as I do? Dafuq do you mean, I need to type out 13 fucking terminal cmds... TO SAVE A FUCKING .TXT FILE?! That's LITERALLY... what github is, a service that saves .txt files. An extremely over glorified .txt saving service, but none the less, it is still only a .txt saving service. If your answer is yes, well by golly have I got the thing for you... 
+>
+> It isn't a fn, or a vscode extension... but I garauntee you it will make using github suck a lot less!
 
+```json
+{
+	"scripts": {
+		"build": "tsc --emitDeclarationOnly && rspack build",
+    "dev": "rspack serve",
+    "check": "tsc --noEmit",
+		"1": "git add .",
+		"2": "git commit -m \"first commit\"",
+		"3": "git pull",
+		"4": "git push",
+		"5": "npm version patch",
+		"6": "git push",
+		"7": "git push --tags",
+		"8": "npm publish --access public",
+		"*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
+	},
+}
+```
 
-
-
-
-
-
-
-
+> [!NOTE]
+>
+> Obviously, you probably won't need build, dev, or check... but the remaining ones you do want, and trust me I was just as shocked as you probably are that it let me us '*' as a label for one of the scripts. And yes... it works perfectly, as you will never experience another failed push again when using this script. 

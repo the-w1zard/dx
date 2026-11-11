@@ -400,7 +400,6 @@
 </tbody>
 </table>
 <p>The global declarations provide TypeScript access to these APIs. <code>MaybePromise</code> is also declared globally as a type alias and fn.</p>
-<h2 id="quick-reference">Quick Reference</h2>
 <h2 id="most-recent-benches">Most Recent Benches</h2>
 <p>Map and M2, just swapped places from test to test. While this test bed focused on gets, sets and a mixed bag of the two, it proves that the M2 solution is exactly as advertised. An upgraded version of the original Map solution provided with the runtime. Unfortuantly this is as far as the test can go in terms of putting the two up against one another as maps api... is basically this and only this. Meanwhile, M2... is DRASTICALLY different.</p>
 <pre><code class="language-txt">========== M2 RESULTS ==========
@@ -6118,7 +6117,7 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 <blockquote>
 <p>Functional state setters for React-style <code>useState</code>. Give them a setter, give them a value, and they update based on the previous state without you having to write <code>setX(prev =&gt; …)</code> inline every time.</p>
 </blockquote>
-<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setUser, <span class="hljs-string">&quot;Alice&quot;</span>, <span class="hljs-string">&quot;name&quot;</span>)   <span class="hljs-comment">// setUser(prev =&gt; ({ ...prev, name: &quot;Alice&quot; }))</span>
+<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setUser, <span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Alice&quot;</span>)   <span class="hljs-comment">// setUser(prev =&gt; ({ ...prev, name: &quot;Alice&quot; }))</span>
 <span class="hljs-title function_">setPrev</span>(setUser, { <span class="hljs-attr">age</span>: <span class="hljs-number">30</span> })       <span class="hljs-comment">// setUser(prev =&gt; ({ ...prev, age: 30 }))</span>
 <span class="hljs-title function_">setPrevB</span>(setOpen)                   <span class="hljs-comment">// setOpen(prev =&gt; !prev)</span>
 </code></pre>
@@ -6132,7 +6131,7 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 <span class="hljs-title function_">setPrevB</span>(setOpen)
 
 <span class="hljs-comment">// Set one key on an object</span>
-<span class="hljs-title function_">setPrev</span>(setForm, <span class="hljs-string">&quot;Alice&quot;</span>, <span class="hljs-string">&quot;name&quot;</span>)
+<span class="hljs-title function_">setPrev</span>(setForm, <span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Alice&quot;</span>)
 
 <span class="hljs-comment">// Merge several keys</span>
 <span class="hljs-title function_">setPrev</span>(setForm, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Alice&quot;</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">30</span> })
@@ -6141,7 +6140,7 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 <p>They exist because <code>setState(prev =&gt; ({ ...prev, key: value }))</code> is the same boilerplate every time, and the form with the spread is where people accidentally write <code>setState({ ...state, ... })</code> and use a stale <code>state</code>. These helpers force the functional form, so you can't reference stale state by accident.</p>
 <h3 id="-everyone-else-17">🔵 Everyone else</h3>
 <h4 id="signatures-1">Signatures</h4>
-<pre><code class="language-ts"><span class="hljs-keyword">function</span> setPrev&lt;T = <span class="hljs-built_in">any</span>&gt;(<span class="hljs-attr">setter</span>: <span class="hljs-built_in">any</span>, <span class="hljs-attr">v</span>: <span class="hljs-built_in">any</span>, k?: <span class="hljs-built_in">any</span>): <span class="hljs-built_in">void</span>
+<pre><code class="language-ts"><span class="hljs-keyword">function</span> setPrev&lt;T = <span class="hljs-built_in">any</span>&gt;(<span class="hljs-attr">setter</span>: <span class="hljs-built_in">any</span>, k?: <span class="hljs-built_in">any</span>, v?: <span class="hljs-built_in">any</span>): <span class="hljs-built_in">void</span>
 <span class="hljs-keyword">function</span> <span class="hljs-title function_">setPrevB</span>(<span class="hljs-params">setter: <span class="hljs-built_in">any</span></span>): <span class="hljs-built_in">void</span>
 </code></pre>
 <ul>
@@ -6152,7 +6151,7 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 </ul>
 <p>Both return <code>void</code>. They call the setter with a functional updater and don't return anything.</p>
 <h4 id="what-setprev-does">What <code>setPrev</code> does</h4>
-<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setter, v, k?)
+<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setter, k?, v)
 </code></pre>
 <p>Two modes, chosen by whether <code>k</code> is <code>undefined</code>:</p>
 <p><strong>With <code>k</code> — single-key update:</strong></p>
@@ -6182,8 +6181,8 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 <p>The functional form is correct. The direct-object form is a footgun that works in tests and breaks in production. <code>setPrev</code> and <code>setPrevB</code> make the correct form the only form. You can't accidentally reach for stale state because the helper never gives you a way to.</p>
 <h4 id="common-patterns-18">Common patterns</h4>
 <p><strong>Controlled form fields</strong></p>
-<pre><code class="language-tsx">&lt;input onChange={<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> <span class="hljs-title function_">setPrev</span>(setForm, e.<span class="hljs-property">target</span>.<span class="hljs-property">value</span>, <span class="hljs-string">&quot;name&quot;</span>)} /&gt;
-<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">onChange</span>=<span class="hljs-string">{e</span> =&gt;</span> setPrev(setForm, e.target.value, &quot;email&quot;)} /&gt;</span>
+<pre><code class="language-tsx">&lt;input onChange={<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> <span class="hljs-title function_">setPrev</span>(setForm, <span class="hljs-string">&quot;name&quot;</span>, e.<span class="hljs-property">target</span>.<span class="hljs-property">value</span>)} /&gt;
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">onChange</span>=<span class="hljs-string">{e</span> =&gt;</span> setPrev(setForm, &quot;email&quot;, e.target.value)} /&gt;</span>
 </code></pre>
 <p><strong>Multi-field updates</strong></p>
 <pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setForm, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-attr">email</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-attr">submitted</span>: <span class="hljs-literal">true</span> })
@@ -6193,7 +6192,7 @@ setup.<span class="hljs-title function_">enqueue</span>(<span class="hljs-functi
 <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setPrevB(setLoading)}&gt;Loading<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
 </code></pre>
 <p><strong>Reset a field</strong></p>
-<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setForm, <span class="hljs-literal">undefined</span>, <span class="hljs-string">&quot;error&quot;</span>)
+<pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setForm, <span class="hljs-string">&quot;error&quot;</span>, <span class="hljs-literal">undefined</span>)
 </code></pre>
 <p><strong>Clear a form</strong></p>
 <pre><code class="language-ts"><span class="hljs-title function_">setPrev</span>(setForm, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-attr">email</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-attr">error</span>: <span class="hljs-literal">undefined</span> })
@@ -6824,6 +6823,31 @@ t2: resolve immediately
 <p><strong>Wait with a short bound, on a hot path</strong></p>
 <pre><code class="language-ts"><span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> <span class="hljs-title function_">wait_and_promise</span>(<span class="hljs-number">250</span>, key, isOpen, current)
 </code></pre>
+<h2 id="secret-area">SECRET AREA</h2>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>Do you fucking hate github as much as I do? Dafuq do you mean, I need to type out 13 fucking terminal cmds... TO SAVE A FUCKING .TXT FILE?! That's LITERALLY... what github is, a service that saves .txt files. An extremely over glorified .txt saving service, but none the less, it is still only a .txt saving service. If your answer is yes, well by golly have I got the thing for you...</p>
+<p>It isn't a fn, or a vscode extension... but I garauntee you it will make using github suck a lot less!</p>
+</div>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+	<span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+		<span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tsc --emitDeclarationOnly &amp;&amp; rspack build&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;dev&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;rspack serve&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;check&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tsc --noEmit&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git add .&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git commit -m \&quot;first commit\&quot;&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;3&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git pull&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;4&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git push&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;5&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;npm version patch&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;6&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git push&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;7&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git push --tags&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;8&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;npm publish --access public&quot;</span><span class="hljs-punctuation">,</span>
+		<span class="hljs-attr">&quot;*&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;npm run 1 &amp;&amp; npm run 2 &amp;&amp; npm run 3 &amp;&amp; npm run 4 &amp;&amp; npm run 5 &amp;&amp; npm run 6 &amp;&amp; npm run 7 &amp;&amp; npm run 8&quot;</span>
+	<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>Obviously, you probably won't need build, dev, or check... but the remaining ones you do want, and trust me I was just as shocked as you probably are that it let me us '*' as a label for one of the scripts. And yes... it works perfectly, as you will never experience another failed push again when using this script.</p>
+</div>
 
             <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
             
