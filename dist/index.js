@@ -18558,6 +18558,1889 @@ var unreachable_unreachable = function unreachable(value) {
     throw new Error("Unreachable value: ".concat(String(value)));
 };
 
+function map_disruptor_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_disruptor_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function map_disruptor_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function map_disruptor_class_call_check(instance, Constructor) {
+    if (!map_disruptor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_disruptor_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_disruptor_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_disruptor_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_disruptor_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function map_disruptor_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function map_disruptor_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function map_disruptor_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function map_disruptor_sliced_to_array(arr, i) {
+    return map_disruptor_array_with_holes(arr) || map_disruptor_iterable_to_array_limit(arr, i) || map_disruptor_unsupported_iterable_to_array(arr, i) || map_disruptor_non_iterable_rest();
+}
+function map_disruptor_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function map_disruptor_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return map_disruptor_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_disruptor_array_like_to_array(o, minLen);
+}
+function assertEncodable(value) {
+    if (typeof value === "function") {
+        throw new TypeError("[RAVEN] state values must be plain data — functions can't be stored here.");
+    }
+}
+function map_disruptor_encode(value) {
+    assertEncodable(value);
+    if (value === null || (typeof value === "undefined" ? "undefined" : map_disruptor_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+function map_disruptor_decode(value) {
+    if (value === null || (typeof value === "undefined" ? "undefined" : map_disruptor_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+var map_disruptor_nextPow2 = function nextPow2(n) {
+    return 1 << Math.ceil(Math.log2(Math.max(2, n)));
+};
+var map_disruptor_Disruptor = /*#__PURE__*/ function() {
+    "use strict";
+    function Disruptor(capacity) {
+        map_disruptor_class_call_check(this, Disruptor);
+        map_disruptor_define_property(this, "capacity", void 0);
+        map_disruptor_define_property(this, "mask", void 0);
+        map_disruptor_define_property(this, "buffer", void 0);
+        map_disruptor_define_property(this, "cursor", void 0);
+        this.capacity = capacity;
+        this.cursor = -1;
+        var size = map_disruptor_nextPow2(capacity);
+        this.mask = size - 1;
+        this.buffer = Array.from({
+            length: size
+        }, function() {
+            return {
+                sequence: -1,
+                key: undefined,
+                payload: undefined,
+                tombstone: false
+            };
+        });
+    }
+    map_disruptor_create_class(Disruptor, [
+        {
+            /** The slot that WILL be claimed next — peek before you commit to it. */ key: "peekNext",
+            value: function peekNext() {
+                return this.buffer[this.cursor + 1 & this.mask];
+            }
+        },
+        {
+            key: "publish",
+            value: function publish(key, payload) {
+                var tombstone = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+                var seq = this.cursor + 1;
+                var slot = this.buffer[seq & this.mask];
+                slot.sequence = seq;
+                slot.key = key;
+                slot.payload = payload;
+                slot.tombstone = tombstone;
+                this.cursor = seq;
+                return seq;
+            }
+        },
+        {
+            key: "read",
+            value: function read(seq) {
+                if (seq < 0 || seq > this.cursor) return undefined;
+                var slot = this.buffer[seq & this.mask];
+                return slot.sequence === seq ? slot : undefined;
+            }
+        }
+    ]);
+    return Disruptor;
+}();
+var map_disruptor_MDisruptor = /*#__PURE__*/ function() {
+    "use strict";
+    function MDisruptor() {
+        var initialCapacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
+        map_disruptor_class_call_check(this, MDisruptor);
+        map_disruptor_define_property(this, "ring", void 0);
+        map_disruptor_define_property(this, "index", new Map());
+        this.ring = new map_disruptor_Disruptor(initialCapacity);
+    }
+    map_disruptor_create_class(MDisruptor, [
+        {
+            key: "size",
+            get: function get() {
+                return this.index.size;
+            }
+        },
+        {
+            key: "get",
+            value: function get(key) {
+                var seq = this.index.get(key);
+                if (seq === undefined) return undefined;
+                var slot = this.ring.read(seq);
+                if (!slot || slot.tombstone) return undefined;
+                return map_disruptor_decode(slot.payload);
+            }
+        },
+        {
+            key: "has",
+            value: function has(key) {
+                var seq = this.index.get(key);
+                if (seq === undefined) return false;
+                var slot = this.ring.read(seq);
+                return !!slot && !slot.tombstone;
+            }
+        },
+        {
+            key: "set",
+            value: function set(key, value) {
+                this.growIfNeeded();
+                // Evict-and-carry: whatever currently sits in the slot we're about
+                // to claim gets relocated forward first if it's still a live key,
+                // so a full ring never loses data on wraparound.
+                while(true){
+                    var occupant = this.ring.peekNext();
+                    var stillLive = occupant.sequence >= 0 && !occupant.tombstone && this.index.get(occupant.key) === occupant.sequence;
+                    if (!stillLive) break;
+                    var movedSeq = this.ring.publish(occupant.key, occupant.payload, false);
+                    this.index.set(occupant.key, movedSeq);
+                }
+                var seq = this.ring.publish(key, map_disruptor_encode(value), false);
+                this.index.set(key, seq);
+                return this;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(key) {
+                // No need to touch the ring at all — removing the index entry is
+                // enough; the slot is reclaimed lazily the next time it's evicted.
+                return this.index.delete(key);
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                this.index.clear();
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var out = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index.keys()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var key = _step.value;
+                        var v = this.get(key);
+                        if (v !== undefined) out.push([
+                            key,
+                            v
+                        ]);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "growIfNeeded",
+            value: function growIfNeeded() {
+                if (this.index.size / this.ring.capacity < 0.75) return;
+                var grown = new map_disruptor_Disruptor(this.ring.capacity * 2);
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_disruptor_sliced_to_array(_step.value, 1), key = _step_value[0];
+                        var v = this.get(key); // decode current value
+                        if (v === undefined) continue;
+                        var seq = grown.publish(key, map_disruptor_encode(v), false);
+                        this.index.set(key, seq);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                this.ring = grown;
+            }
+        }
+    ]);
+    return MDisruptor;
+}();
+
+function map_tracer_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function map_tracer_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function map_tracer_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function map_tracer_class_call_check(instance, Constructor) {
+    if (!map_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function map_tracer_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function map_tracer_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) map_tracer_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) map_tracer_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function map_tracer_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function map_tracer_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function map_tracer_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function map_tracer_sliced_to_array(arr, i) {
+    return map_tracer_array_with_holes(arr) || map_tracer_iterable_to_array_limit(arr, i) || map_tracer_unsupported_iterable_to_array(arr, i) || map_tracer_non_iterable_rest();
+}
+function map_tracer_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function map_tracer_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return map_tracer_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_tracer_array_like_to_array(o, minLen);
+}
+var map_tracer_nextPow2 = function nextPow2(n) {
+    return 1 << Math.ceil(Math.log2(Math.max(2, n)));
+};
+var map_tracer_Disruptor = /*#__PURE__*/ function() {
+    "use strict";
+    function Disruptor(capacity) {
+        map_tracer_class_call_check(this, Disruptor);
+        map_tracer_define_property(this, "capacity", void 0);
+        map_tracer_define_property(this, "mask", void 0);
+        map_tracer_define_property(this, "buffer", void 0);
+        map_tracer_define_property(this, "cursor", void 0);
+        this.capacity = capacity;
+        this.cursor = -1;
+        var size = map_tracer_nextPow2(capacity);
+        this.mask = size - 1;
+        this.buffer = Array.from({
+            length: size
+        }, function() {
+            return {
+                sequence: -1,
+                key: undefined,
+                payload: undefined,
+                tombstone: false
+            };
+        });
+    }
+    map_tracer_create_class(Disruptor, [
+        {
+            /** The slot that WILL be claimed next — peek before you commit to it. */ key: "peekNext",
+            value: function peekNext() {
+                return this.buffer[this.cursor + 1 & this.mask];
+            }
+        },
+        {
+            key: "publish",
+            value: function publish(key, payload) {
+                var tombstone = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+                var seq = this.cursor + 1;
+                var slot = this.buffer[seq & this.mask];
+                slot.sequence = seq;
+                slot.key = key;
+                slot.payload = payload;
+                slot.tombstone = tombstone;
+                this.cursor = seq;
+                return seq;
+            }
+        },
+        {
+            key: "read",
+            value: function read(seq) {
+                if (seq < 0 || seq > this.cursor) return undefined;
+                var slot = this.buffer[seq & this.mask];
+                return slot.sequence === seq ? slot : undefined;
+            }
+        }
+    ]);
+    return Disruptor;
+}();
+function map_tracer_assertEncodable(value) {
+    if (typeof value === "function") {
+        throw new TypeError("[RAVEN] state values must be plain data — functions can't be stored here.");
+    }
+}
+function map_tracer_encode(value) {
+    map_tracer_assertEncodable(value);
+    if (value === null || (typeof value === "undefined" ? "undefined" : map_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+function map_tracer_decode(value) {
+    if (value === null || (typeof value === "undefined" ? "undefined" : map_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+var map_tracer_Lane = /*#__PURE__*/ function() {
+    "use strict";
+    function Lane(capacity) {
+        map_tracer_class_call_check(this, Lane);
+        map_tracer_define_property(this, "capacity", void 0);
+        map_tracer_define_property(this, "ring", void 0);
+        map_tracer_define_property(this, "writes", void 0);
+        this.capacity = capacity;
+        this.writes = 0;
+        this.ring = new map_tracer_Disruptor(capacity);
+    }
+    map_tracer_create_class(Lane, [
+        {
+            key: "isFull",
+            get: function get() {
+                return this.writes >= this.capacity;
+            }
+        },
+        {
+            key: "pressure",
+            get: function get() {
+                return this.writes / this.capacity;
+            }
+        },
+        {
+            key: "write",
+            value: function write(key, value) {
+                this.writes++;
+                return this.ring.publish(key, value);
+            }
+        },
+        {
+            key: "readAt",
+            value: function readAt(seq) {
+                var slot = this.ring.read(seq);
+                return slot && !slot.tombstone ? slot.payload : undefined;
+            }
+        },
+        {
+            /** Day 0 gets physically rewritten here — we don't tombstone the old
+	 *  ring, we just stop referencing it. The old Disruptor object (and
+	 *  everything it held) is garbage the moment nothing points at it. */ key: "reset",
+            value: function reset() {
+                this.writes = 0;
+                this.ring = new map_tracer_Disruptor(this.capacity);
+            }
+        }
+    ]);
+    return Lane;
+}();
+var map_tracer_MTracer = /*#__PURE__*/ function() {
+    "use strict";
+    function MTracer() {
+        var laneCapacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256, dialSize = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 7;
+        map_tracer_class_call_check(this, MTracer);
+        map_tracer_define_property(this, "laneCapacity", void 0);
+        map_tracer_define_property(this, "dialSize", void 0);
+        map_tracer_define_property(this, "lanes", void 0);
+        map_tracer_define_property(this, "index", void 0);
+        map_tracer_define_property(this, "dial", void 0);
+        /** The tracer particle itself — ticks once per completed lap, forever.
+	 *  Nobody reads Date.now() anywhere in this class. */ map_tracer_define_property(this, "revolution", void 0);
+        this.laneCapacity = laneCapacity;
+        this.dialSize = dialSize;
+        this.index = new Map();
+        this.dial = 0;
+        this.revolution = 0;
+        this.lanes = Array.from({
+            length: dialSize
+        }, function() {
+            return new map_tracer_Lane(laneCapacity);
+        });
+    }
+    map_tracer_create_class(MTracer, [
+        {
+            key: "activeLane",
+            get: function get() {
+                return this.lanes[this.dial];
+            }
+        },
+        {
+            key: "advanceDialIfFull",
+            value: function advanceDialIfFull() {
+                if (!this.activeLane.isFull) return;
+                this.revolution++;
+                this.dial = (this.dial + 1) % this.dialSize;
+                // We've swept back around to the lane that was "day 0". Reset it —
+                // this is the rewrite — then drop any index entries still pointing
+                // at it so get() can't hand back memory that no longer belongs to them.
+                this.lanes[this.dial].reset();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = map_tracer_sliced_to_array(_step.value, 2), key = _step_value[0], entry = _step_value[1];
+                        if (entry.lane === this.dial) this.index.delete(key);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "set",
+            value: function set(key, value) {
+                this.advanceDialIfFull();
+                var seq = this.activeLane.write(key, map_tracer_encode(value));
+                this.index.set(key, {
+                    lane: this.dial,
+                    seq: seq
+                });
+            }
+        },
+        {
+            key: "get",
+            value: function get(key) {
+                var entry = this.index.get(key);
+                if (!entry) return undefined;
+                var payload = this.lanes[entry.lane].readAt(entry.seq);
+                if (payload === undefined) {
+                    this.index.delete(key);
+                    return undefined;
+                }
+                return map_tracer_decode(payload);
+            }
+        },
+        {
+            key: "has",
+            value: function has(key) {
+                return this.index.has(key) && this.get(key) !== undefined;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(key) {
+                return this.index.delete(key);
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                this.index.clear();
+                this.lanes.forEach(function(l) {
+                    return l.reset();
+                });
+                this.dial = 0;
+            }
+        },
+        {
+            key: "entries",
+            value: function entries() {
+                var out = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index.keys()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var key = _step.value;
+                        var v = this.get(key);
+                        if (v !== undefined) out.push([
+                            key,
+                            v
+                        ]);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "pressure",
+            get: /** Free backpressure: how close the active lane is to ticking the dial
+	 *  over. A producer driving this toward 1 while nobody's reading is
+	 *  exactly "queue depth" — except no timer instrumented it. */ function get() {
+                return this.activeLane.pressure;
+            }
+        }
+    ]);
+    return MTracer;
+}();
+
+function avro_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function avro_check_private_redeclaration(obj, privateCollection) {
+    if (privateCollection.has(obj)) {
+        throw new TypeError("Cannot initialize the same private elements twice on an object");
+    }
+}
+function avro_class_call_check(instance, Constructor) {
+    if (!avro_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function avro_class_private_method_get(receiver, privateSet, fn) {
+    if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
+    return fn;
+}
+function avro_class_private_method_init(obj, privateSet) {
+    avro_check_private_redeclaration(obj, privateSet);
+    privateSet.add(obj);
+}
+function avro_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function avro_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) avro_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) avro_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function avro_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function avro_instanceof1(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function avro_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+var avro_AVROWriter = /*#__PURE__*/ function() {
+    "use strict";
+    function AVROWriter() {
+        var _this = this;
+        avro_class_call_check(this, AVROWriter);
+        avro_define_property(this, "buf", new Uint8Array(256));
+        avro_define_property(this, "pos", 0);
+        avro_define_property(this, "byte", function(v) {
+            _this.ensure(1);
+            _this.buf[_this.pos++] = v;
+            return _this;
+        });
+        avro_define_property(this, "bytes", function(v) {
+            _this.ensure(v.length);
+            _this.buf.set(v, _this.pos);
+            _this.pos += v.length;
+            return _this;
+        });
+        avro_define_property(this, "long", function(value) {
+            var n = BigInt(value);
+            if (n < -(1n << 63n) || n > (1n << 63n) - 1n) throw new Error("Avro: long out of range");
+            n = n >= 0n ? n << 1n : (-n << 1n) - 1n;
+            while(n >= 0x80n){
+                _this.byte(Number(n & 0x7fn) | 0x80);
+                n >>= 7n;
+            }
+            _this.byte(Number(n));
+            return _this;
+        });
+        avro_define_property(this, "int", function(value) {
+            if (!Number.isInteger(value) || value < -2147483648 || value > 2147483647) throw new Error("Avro: int out of range");
+            _this.long(value);
+            return _this;
+        });
+        avro_define_property(this, "float", function(value) {
+            _this.ensure(4);
+            new DataView(_this.buf.buffer).setFloat32(_this.pos, value, true);
+            _this.pos += 4;
+            return _this;
+        });
+        avro_define_property(this, "double", function(value) {
+            _this.ensure(8);
+            new DataView(_this.buf.buffer).setFloat64(_this.pos, value, true);
+            _this.pos += 8;
+            return _this;
+        });
+        avro_define_property(this, "finish", function() {
+            return _this.buf.slice(0, _this.pos);
+        });
+    }
+    avro_create_class(AVROWriter, [
+        {
+            key: "ensure",
+            value: function ensure(length) {
+                if (this.pos + length <= this.buf.length) return this;
+                var size = this.buf.length;
+                while(size < this.pos + length)size *= 2;
+                var next = new Uint8Array(size);
+                next.set(this.buf);
+                this.buf = next;
+                return this;
+            }
+        },
+        {
+            key: "offset",
+            get: function get() {
+                return this.pos;
+            }
+        }
+    ]);
+    return AVROWriter;
+}();
+var avro_AVROReader = /*#__PURE__*/ function() {
+    "use strict";
+    function AVROReader(buf) {
+        avro_class_call_check(this, AVROReader);
+        avro_define_property(this, "buf", void 0);
+        avro_define_property(this, "pos", void 0);
+        avro_define_property(this, "view", void 0);
+        this.buf = buf;
+        this.pos = 0;
+        this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+    }
+    avro_create_class(AVROReader, [
+        {
+            key: "ensure",
+            value: function ensure(length) {
+                if (length < 0 || this.pos + length > this.buf.length) throw new Error("Avro: truncated buffer");
+            }
+        },
+        {
+            key: "byte",
+            value: function byte() {
+                this.ensure(1);
+                return this.buf[this.pos++];
+            }
+        },
+        {
+            key: "bytes",
+            value: function bytes(length) {
+                this.ensure(length);
+                var out = this.buf.slice(this.pos, this.pos + length);
+                this.pos += length;
+                return out;
+            }
+        },
+        {
+            key: "long",
+            value: function long() {
+                var n = 0n;
+                var shift = 0n;
+                for(var i = 0; i < 10; i++){
+                    var b = this.byte();
+                    n |= BigInt(b & 0x7f) << shift;
+                    if ((b & 0x80) === 0) {
+                        var value = (n & 1n) === 0n ? n >> 1n : -((n >> 1n) + 1n);
+                        return value >= BigInt(Number.MIN_SAFE_INTEGER) && value <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(value) : value;
+                    }
+                    shift += 7n;
+                }
+                throw new Error("Avro: invalid long");
+            }
+        },
+        {
+            key: "int",
+            value: function int() {
+                var n = this.long();
+                if ((typeof n === "undefined" ? "undefined" : avro_type_of(n)) === "bigint" || n < -2147483648 || n > 2147483647) throw new Error("Avro: invalid int");
+                return n;
+            }
+        },
+        {
+            key: "float",
+            value: function float() {
+                this.ensure(4);
+                var n = this.view.getFloat32(this.pos, true);
+                this.pos += 4;
+                return n;
+            }
+        },
+        {
+            key: "double",
+            value: function double() {
+                this.ensure(8);
+                var n = this.view.getFloat64(this.pos, true);
+                this.pos += 8;
+                return n;
+            }
+        },
+        {
+            key: "done",
+            value: function done() {
+                return this.pos === this.buf.length;
+            }
+        }
+    ]);
+    return AVROReader;
+}();
+var AVRO_ERROR_SCHEMA = {
+    type: "record",
+    name: "AVROError",
+    fields: [
+        {
+            name: "type",
+            type: "string"
+        },
+        {
+            name: "error",
+            type: "string"
+        },
+        {
+            name: "id",
+            type: "string"
+        }
+    ]
+};
+var _collect = /*#__PURE__*/ new WeakSet(), _resolve = /*#__PURE__*/ new WeakSet(), _kind = /*#__PURE__*/ new WeakSet(), _matches = /*#__PURE__*/ new WeakSet(), _write = /*#__PURE__*/ new WeakSet(), _read = /*#__PURE__*/ new WeakSet(), _encode = /*#__PURE__*/ new WeakSet(), _decode = /*#__PURE__*/ new WeakSet();
+var avro_BINARY_AVRO = /*#__PURE__*/ function() {
+    "use strict";
+    function BINARY_AVRO(schema) {
+        avro_class_call_check(this, BINARY_AVRO);
+        avro_class_private_method_init(this, _collect);
+        avro_class_private_method_init(this, _resolve);
+        avro_class_private_method_init(this, _kind);
+        avro_class_private_method_init(this, _matches);
+        avro_class_private_method_init(this, _write);
+        avro_class_private_method_init(this, _read);
+        avro_class_private_method_init(this, _encode);
+        avro_class_private_method_init(this, _decode);
+        avro_define_property(this, "encoder", new TextEncoder());
+        avro_define_property(this, "decoder", new TextDecoder());
+        avro_define_property(this, "schema", void 0);
+        avro_define_property(this, "names", Object.create(null));
+        avro_define_property(this, "errorSchema", AVRO_ERROR_SCHEMA);
+        avro_define_property(this, "wireSchema", void 0);
+        if (Array.isArray(schema)) throw new Error("Avro: root schema cannot be a union");
+        this.schema = schema;
+        this.wireSchema = [
+            schema,
+            this.errorSchema
+        ];
+        avro_class_private_method_get(this, _collect, collect).call(this, schema);
+        avro_class_private_method_get(this, _collect, collect).call(this, this.errorSchema);
+    }
+    avro_create_class(BINARY_AVRO, [
+        {
+            key: "encode_msg",
+            value: function encode_msg(msg) {
+                if (avro_instanceof1(msg, Uint8Array)) return msg;
+                try {
+                    return avro_class_private_method_get(this, _encode, avro_encode).call(this, msg, 0);
+                } catch (err) {
+                    var _ref;
+                    console.log("[AVRO_PIPE] Failed to encode outbound packet:", err);
+                    return avro_class_private_method_get(this, _encode, avro_encode).call(this, {
+                        type: "error",
+                        error: avro_instanceof1(err, Error) ? err.message : "Encoding failed",
+                        id: String((_ref = msg === null || msg === void 0 ? void 0 : msg.id) !== null && _ref !== void 0 ? _ref : "unknown")
+                    }, 1);
+                }
+            }
+        },
+        {
+            key: "decode_msg",
+            value: function decode_msg(raw) {
+                if (!avro_instanceof1(raw, Uint8Array) && !isBuffer(raw)) {
+                    console.error("[AVRO_PIPE] Protocol violation: Expected encoded Uint8Array data stream.");
+                    return null;
+                }
+                try {
+                    var bytes = avro_instanceof1(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength);
+                    return avro_class_private_method_get(this, _decode, avro_decode).call(this, bytes);
+                } catch (err) {
+                    console.error("[AVRO_PIPE] Failed to decode inbound packet:", err);
+                    return null;
+                }
+            }
+        }
+    ]);
+    return BINARY_AVRO;
+}();
+function collect(schema) {
+    if (Array.isArray(schema)) {
+        var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+        try {
+            for(var _iterator = schema[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                var branch = _step.value;
+                avro_class_private_method_get(this, _collect, collect).call(this, branch);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally{
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                    _iterator.return();
+                }
+            } finally{
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+        return;
+    }
+    if (typeof schema === "string") return;
+    if (schema.name) this.names[schema.name] = schema;
+    if (Array.isArray(schema.type)) avro_class_private_method_get(this, _collect, collect).call(this, schema.type);
+    else if (avro_type_of(schema.type) === "object") avro_class_private_method_get(this, _collect, collect).call(this, schema.type);
+    else if (typeof schema.type === "string" && ![
+        "null",
+        "boolean",
+        "int",
+        "long",
+        "float",
+        "double",
+        "bytes",
+        "string",
+        "record",
+        "array",
+        "map",
+        "enum",
+        "fixed"
+    ].includes(schema.type)) {
+        if (!this.names[schema.type]) throw new Error("Avro: unknown named type ".concat(schema.type));
+    }
+    var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+    if (schema.fields) try {
+        for(var _iterator1 = schema.fields[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+            var field = _step1.value;
+            avro_class_private_method_get(this, _collect, collect).call(this, field.type);
+        }
+    } catch (err) {
+        _didIteratorError1 = true;
+        _iteratorError1 = err;
+    } finally{
+        try {
+            if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                _iterator1.return();
+            }
+        } finally{
+            if (_didIteratorError1) {
+                throw _iteratorError1;
+            }
+        }
+    }
+    if (schema.items) avro_class_private_method_get(this, _collect, collect).call(this, schema.items);
+    if (schema.values) avro_class_private_method_get(this, _collect, collect).call(this, schema.values);
+}
+function avro_resolve(schema) {
+    if (typeof schema === "string" && this.names[schema]) return this.names[schema];
+    return schema;
+}
+function avro_kind(schema) {
+    schema = avro_class_private_method_get(this, _resolve, avro_resolve).call(this, schema);
+    if (typeof schema === "string") return schema;
+    if (Array.isArray(schema)) return "union";
+    return typeof schema.type === "string" ? schema.type : avro_class_private_method_get(this, _kind, avro_kind).call(this, schema.type);
+}
+function avro_matches(schema, value) {
+    schema = avro_class_private_method_get(this, _resolve, avro_resolve).call(this, schema);
+    var _$kind = avro_class_private_method_get(this, _kind, avro_kind).call(this, schema);
+    switch(_$kind){
+        case "null":
+            return value === null || value === undefined;
+        case "boolean":
+            return typeof value === "boolean";
+        case "int":
+            return typeof value === "number" && Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
+        case "long":
+            return (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "bigint" || typeof value === "number" && Number.isSafeInteger(value);
+        case "float":
+        case "double":
+            return typeof value === "number";
+        case "string":
+            return typeof value === "string";
+        case "bytes":
+        case "fixed":
+            return avro_instanceof1(value, Uint8Array) && (_$kind !== "fixed" || value.length === schema.size);
+        case "array":
+            return Array.isArray(value);
+        case "map":
+            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof1(value, Uint8Array);
+        case "record":
+            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof1(value, Uint8Array);
+        case "enum":
+            return typeof value === "string" && schema.symbols.includes(value);
+        default:
+            return false;
+    }
+}
+function avro_write(w, schema, value) {
+    var _this = this;
+    schema = avro_class_private_method_get(this, _resolve, avro_resolve).call(this, schema);
+    if (Array.isArray(schema)) {
+        var index = schema.findIndex(function(branch) {
+            return avro_class_private_method_get(_this, _matches, avro_matches).call(_this, branch, value);
+        });
+        if (index === -1) throw new Error("Avro: no matching union branch");
+        w.long(index);
+        avro_class_private_method_get(this, _write, avro_write).call(this, w, schema[index], value);
+        return;
+    }
+    if (typeof schema === "string") {
+        switch(schema){
+            case "null":
+                return;
+            case "boolean":
+                w.byte(value ? 1 : 0);
+                return;
+            case "int":
+                w.int(value);
+                return;
+            case "long":
+                w.long(value);
+                return;
+            case "float":
+                w.float(value);
+                return;
+            case "double":
+                w.double(value);
+                return;
+            case "string":
+                {
+                    var bytes = this.encoder.encode(value);
+                    w.long(bytes.length);
+                    w.bytes(bytes);
+                    return;
+                }
+            case "bytes":
+                {
+                    w.long(value.length);
+                    w.bytes(value);
+                    return;
+                }
+            default:
+                throw new Error("Avro: unknown type ".concat(schema));
+        }
+    }
+    if (typeof schema.type !== "string") {
+        avro_class_private_method_get(this, _write, avro_write).call(this, w, schema.type, value);
+        return;
+    }
+    switch(schema.type){
+        case "null":
+            return;
+        case "boolean":
+            w.byte(value ? 1 : 0);
+            return;
+        case "int":
+            w.int(value);
+            return;
+        case "long":
+            w.long(value);
+            return;
+        case "float":
+            w.float(value);
+            return;
+        case "double":
+            w.double(value);
+            return;
+        case "string":
+            {
+                var bytes1 = this.encoder.encode(value);
+                w.long(bytes1.length);
+                w.bytes(bytes1);
+                return;
+            }
+        case "bytes":
+            w.long(value.length);
+            w.bytes(value);
+            return;
+        case "fixed":
+            if (!avro_instanceof1(value, Uint8Array) || value.length !== schema.size) throw new Error("Avro: invalid fixed value");
+            w.bytes(value);
+            return;
+        case "enum":
+            {
+                var index1 = schema.symbols.indexOf(value);
+                if (index1 < 0) throw new Error("Avro: invalid enum symbol ".concat(value));
+                w.long(index1);
+                return;
+            }
+        case "record":
+            var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+            try {
+                for(var _iterator = schema.fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                    var field = _step.value;
+                    if (value[field.name] === undefined && !Array.isArray(field.type)) throw new Error("Avro: missing field ".concat(field.name));
+                    avro_class_private_method_get(this, _write, avro_write).call(this, w, field.type, value[field.name]);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally{
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return != null) {
+                        _iterator.return();
+                    }
+                } finally{
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+            return;
+        case "array":
+            if (value.length) {
+                w.long(value.length);
+                var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                try {
+                    for(var _iterator1 = value[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                        var item = _step1.value;
+                        avro_class_private_method_get(this, _write, avro_write).call(this, w, schema.items, item);
+                    }
+                } catch (err) {
+                    _didIteratorError1 = true;
+                    _iteratorError1 = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                            _iterator1.return();
+                        }
+                    } finally{
+                        if (_didIteratorError1) {
+                            throw _iteratorError1;
+                        }
+                    }
+                }
+            }
+            w.long(0);
+            return;
+        case "map":
+            {
+                var keys = Object.keys(value);
+                if (keys.length) {
+                    w.long(keys.length);
+                    var _iteratorNormalCompletion2 = true, _didIteratorError2 = false, _iteratorError2 = undefined;
+                    try {
+                        for(var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true){
+                            var key = _step2.value;
+                            avro_class_private_method_get(this, _write, avro_write).call(this, w, "string", key);
+                            avro_class_private_method_get(this, _write, avro_write).call(this, w, schema.values, value[key]);
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally{
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+                                _iterator2.return();
+                            }
+                        } finally{
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+                }
+                w.long(0);
+                return;
+            }
+        default:
+            throw new Error("Avro: unsupported schema type ".concat(schema.type));
+    }
+}
+function avro_read(r, schema) {
+    schema = avro_class_private_method_get(this, _resolve, avro_resolve).call(this, schema);
+    if (Array.isArray(schema)) {
+        var index = r.long();
+        if (typeof index !== "number" || index < 0 || index >= schema.length) throw new Error("Avro: invalid union index");
+        return avro_class_private_method_get(this, _read, avro_read).call(this, r, schema[index]);
+    }
+    if (typeof schema === "string") {
+        switch(schema){
+            case "null":
+                return null;
+            case "boolean":
+                {
+                    var b = r.byte();
+                    if (b > 1) throw new Error("Avro: invalid boolean");
+                    return b === 1;
+                }
+            case "int":
+                return r.int();
+            case "long":
+                return r.long();
+            case "float":
+                return r.float();
+            case "double":
+                return r.double();
+            case "string":
+                return this.decoder.decode(r.bytes(Number(r.long())));
+            case "bytes":
+                return r.bytes(Number(r.long()));
+            default:
+                throw new Error("Avro: unknown type ".concat(schema));
+        }
+    }
+    if (typeof schema.type !== "string") return avro_class_private_method_get(this, _read, avro_read).call(this, r, schema.type);
+    switch(schema.type){
+        case "null":
+            return null;
+        case "boolean":
+            {
+                var b1 = r.byte();
+                if (b1 > 1) throw new Error("Avro: invalid boolean");
+                return b1 === 1;
+            }
+        case "int":
+            return r.int();
+        case "long":
+            return r.long();
+        case "float":
+            return r.float();
+        case "double":
+            return r.double();
+        case "string":
+            return this.decoder.decode(r.bytes(Number(r.long())));
+        case "bytes":
+            return r.bytes(Number(r.long()));
+        case "fixed":
+            return r.bytes(schema.size);
+        case "enum":
+            {
+                var index1 = r.long();
+                if (typeof index1 !== "number" || index1 < 0 || index1 >= schema.symbols.length) throw new Error("Avro: invalid enum index");
+                return schema.symbols[index1];
+            }
+        case "record":
+            {
+                var out = {};
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = schema.fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var field = _step.value;
+                        out[field.name] = avro_class_private_method_get(this, _read, avro_read).call(this, r, field.type);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        case "array":
+            {
+                var out1 = [];
+                var count;
+                while((count = r.long()) !== 0){
+                    if ((typeof count === "undefined" ? "undefined" : avro_type_of(count)) === "bigint") throw new Error("Avro: array block too large");
+                    if (count < 0) {
+                        count = -count;
+                        var blockSize = r.long();
+                        if (typeof blockSize !== "number" || blockSize < 0) throw new Error("Avro: invalid array block");
+                    }
+                    for(var i = 0; i < count; i++)out1.push(avro_class_private_method_get(this, _read, avro_read).call(this, r, schema.items));
+                }
+                return out1;
+            }
+        case "map":
+            {
+                var out2 = {};
+                var count1;
+                while((count1 = r.long()) !== 0){
+                    if ((typeof count1 === "undefined" ? "undefined" : avro_type_of(count1)) === "bigint") throw new Error("Avro: map block too large");
+                    if (count1 < 0) {
+                        count1 = -count1;
+                        var blockSize1 = r.long();
+                        if (typeof blockSize1 !== "number" || blockSize1 < 0) throw new Error("Avro: invalid map block");
+                    }
+                    for(var i1 = 0; i1 < count1; i1++){
+                        var key = avro_class_private_method_get(this, _read, avro_read).call(this, r, "string");
+                        out2[key] = avro_class_private_method_get(this, _read, avro_read).call(this, r, schema.values);
+                    }
+                }
+                return out2;
+            }
+        default:
+            throw new Error("Avro: unsupported schema type ".concat(schema.type));
+    }
+}
+function avro_encode(value, branch) {
+    var w = new avro_AVROWriter();
+    w.long(branch);
+    avro_class_private_method_get(this, _write, avro_write).call(this, w, this.wireSchema[branch], value);
+    return w.finish();
+}
+function avro_decode(bytes) {
+    var r = new avro_AVROReader(bytes);
+    var branch = r.long();
+    if (typeof branch !== "number" || branch < 0 || branch >= this.wireSchema.length) throw new Error("Avro: invalid envelope branch");
+    var value = avro_class_private_method_get(this, _read, avro_read).call(this, r, this.wireSchema[branch]);
+    if (!r.done()) throw new Error("Avro: trailing bytes");
+    return value;
+}
+function isBuffer(x) {
+    return typeof Buffer !== "undefined" && Buffer.isBuffer(x);
+}
+var AVROI = new avro_BINARY_AVRO({
+    type: "record",
+    name: "SITHMessage",
+    fields: [
+        {
+            name: "pid",
+            type: "int"
+        },
+        {
+            name: "op",
+            type: "int"
+        },
+        {
+            name: "value",
+            type: [
+                "null",
+                "double"
+            ]
+        },
+        {
+            name: "payload",
+            type: [
+                "null",
+                "bytes"
+            ]
+        }
+    ]
+});
+
+function cbor_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function cbor_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function cbor_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function cbor_class_call_check(instance, Constructor) {
+    if (!cbor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function cbor_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function cbor_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) cbor_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) cbor_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function cbor_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function cbor_instanceof1(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function cbor_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function cbor_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function cbor_sliced_to_array(arr, i) {
+    return cbor_array_with_holes(arr) || cbor_iterable_to_array_limit(arr, i) || cbor_unsupported_iterable_to_array(arr, i) || cbor_non_iterable_rest();
+}
+function cbor_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function cbor_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return cbor_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return cbor_array_like_to_array(o, minLen);
+}
+var cbor_CBORI = /*#__PURE__*/ function() {
+    "use strict";
+    function CBORI() {
+        cbor_class_call_check(this, CBORI);
+        cbor_define_property(this, "encoder", new TextEncoder());
+        cbor_define_property(this, "decoder", new TextDecoder());
+    }
+    cbor_create_class(CBORI, [
+        {
+            key: "ensureAvailable",
+            value: function ensureAvailable(buf, pos, length) {
+                if (pos < 0 || length < 0 || pos + length > buf.length) throw new Error("CBOR: truncated buffer");
+            }
+        },
+        {
+            key: "readUint",
+            value: function readUint(buf, pos) {
+                this.ensureAvailable(buf, pos, 1);
+                var info = buf[pos] & 0x1f;
+                if (info <= 23) return [
+                    info,
+                    pos + 1
+                ];
+                if (info === 24) {
+                    this.ensureAvailable(buf, pos + 1, 1);
+                    return [
+                        buf[pos + 1],
+                        pos + 2
+                    ];
+                }
+                if (info === 25) {
+                    this.ensureAvailable(buf, pos + 1, 2);
+                    return [
+                        new DataView(buf.buffer, buf.byteOffset + pos + 1, 2).getUint16(0, false),
+                        pos + 3
+                    ];
+                }
+                if (info === 26) {
+                    this.ensureAvailable(buf, pos + 1, 4);
+                    return [
+                        new DataView(buf.buffer, buf.byteOffset + pos + 1, 4).getUint32(0, false),
+                        pos + 5
+                    ];
+                }
+                if (info === 27) {
+                    this.ensureAvailable(buf, pos + 1, 8);
+                    var value = new DataView(buf.buffer, buf.byteOffset + pos + 1, 8).getBigUint64(0, false);
+                    if (value > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("CBOR: integer exceeds Number.MAX_SAFE_INTEGER");
+                    return [
+                        Number(value),
+                        pos + 9
+                    ];
+                }
+                ;
+                throw new Error("CBOR: unsupported additional info ".concat(info));
+            }
+        },
+        {
+            key: "encodeUint64",
+            value: function encodeUint64(majorShifted, n) {
+                if (n <= 23n) return new Uint8Array([
+                    majorShifted | Number(n)
+                ]);
+                if (n <= 0xffn) {
+                    return new Uint8Array([
+                        majorShifted | 24,
+                        Number(n)
+                    ]);
+                }
+                if (n <= 0xffffn) {
+                    var b = new Uint8Array(3);
+                    b[0] = majorShifted | 25;
+                    new DataView(b.buffer).setUint16(1, Number(n), false);
+                    return b;
+                }
+                if (n <= 0xffffffffn) {
+                    var b1 = new Uint8Array(5);
+                    b1[0] = majorShifted | 26;
+                    new DataView(b1.buffer).setUint32(1, Number(n), false);
+                    return b1;
+                }
+                var b2 = new Uint8Array(9);
+                b2[0] = majorShifted | 27;
+                new DataView(b2.buffer).setBigUint64(1, n, false);
+                return b2;
+            }
+        },
+        {
+            key: "encode",
+            value: function encode(value) {
+                var parts = [];
+                this.encodeValue(value, parts);
+                var total = parts.reduce(function(n, p) {
+                    return n + p.length;
+                }, 0);
+                var out = new Uint8Array(total);
+                var offset = 0;
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = parts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var p = _step.value;
+                        out.set(p, offset);
+                        offset += p.length;
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return out;
+            }
+        },
+        {
+            key: "encodeValue",
+            value: function encodeValue(v, out) {
+                if (v === null) {
+                    out.push(new Uint8Array([
+                        0xf6
+                    ]));
+                    return;
+                }
+                if (v === undefined) {
+                    out.push(new Uint8Array([
+                        0xf7
+                    ]));
+                    return;
+                }
+                if (v === true) {
+                    out.push(new Uint8Array([
+                        0xf5
+                    ]));
+                    return;
+                }
+                if (v === false) {
+                    out.push(new Uint8Array([
+                        0xf4
+                    ]));
+                    return;
+                }
+                if (typeof v === 'number') {
+                    if (Number.isSafeInteger(v)) {
+                        if (v >= 0) out.push(this.encodeUint64(0x00, BigInt(v)));
+                        else out.push(this.encodeUint64(0x20, BigInt(-1 - v)));
+                    } else {
+                        var b = new Uint8Array(9);
+                        b[0] = 0xfb;
+                        new DataView(b.buffer).setFloat64(1, v, false);
+                        out.push(b);
+                    }
+                    return;
+                }
+                if (typeof v === 'string') {
+                    var encoded = this.encoder.encode(v);
+                    out.push(this.encodeUint(0x60, encoded.length));
+                    out.push(encoded);
+                    return;
+                }
+                if (cbor_instanceof1(v, Uint8Array)) {
+                    out.push(this.encodeUint(0x40, v.length));
+                    out.push(v);
+                    return;
+                }
+                if (Array.isArray(v)) {
+                    out.push(this.encodeUint(0x80, v.length));
+                    var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                    try {
+                        for(var _iterator = v[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                            var item = _step.value;
+                            this.encodeValue(item, out);
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally{
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return != null) {
+                                _iterator.return();
+                            }
+                        } finally{
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                    return;
+                }
+                if ((typeof v === "undefined" ? "undefined" : cbor_type_of(v)) === 'object') {
+                    var _ref;
+                    var _v_constructor;
+                    var proto = Object.getPrototypeOf(v);
+                    if (proto !== Object.prototype && proto !== null) throw new Error("CBOR: unsupported object type ".concat((_ref = (_v_constructor = v.constructor) === null || _v_constructor === void 0 ? void 0 : _v_constructor.name) !== null && _ref !== void 0 ? _ref : "unknown"));
+                    var keys = Object.keys(v);
+                    out.push(this.encodeUint(0xa0, keys.length));
+                    var _iteratorNormalCompletion1 = true, _didIteratorError1 = false, _iteratorError1 = undefined;
+                    try {
+                        for(var _iterator1 = keys[Symbol.iterator](), _step1; !(_iteratorNormalCompletion1 = (_step1 = _iterator1.next()).done); _iteratorNormalCompletion1 = true){
+                            var key = _step1.value;
+                            this.encodeValue(key, out);
+                            this.encodeValue(v[key], out);
+                        }
+                    } catch (err) {
+                        _didIteratorError1 = true;
+                        _iteratorError1 = err;
+                    } finally{
+                        try {
+                            if (!_iteratorNormalCompletion1 && _iterator1.return != null) {
+                                _iterator1.return();
+                            }
+                        } finally{
+                            if (_didIteratorError1) {
+                                throw _iteratorError1;
+                            }
+                        }
+                    }
+                    return;
+                }
+                ;
+                throw new Error("CBOR: unsupported value type ".concat(typeof v === "undefined" ? "undefined" : cbor_type_of(v)));
+            }
+        },
+        {
+            key: "encodeUint",
+            value: function encodeUint(majorShifted, n) {
+                if (n <= 23) return new Uint8Array([
+                    majorShifted | n
+                ]);
+                if (n <= 0xff) return new Uint8Array([
+                    majorShifted | 24,
+                    n
+                ]);
+                if (n <= 0xffff) {
+                    var b = new Uint8Array(3);
+                    b[0] = majorShifted | 25;
+                    new DataView(b.buffer).setUint16(1, n, false);
+                    return b;
+                }
+                ;
+                var b1 = new Uint8Array(5);
+                b1[0] = majorShifted | 26;
+                new DataView(b1.buffer).setUint32(1, n, false);
+                return b1;
+            }
+        },
+        {
+            key: "decode",
+            value: function decode(buf) {
+                var _this_decodeValue = cbor_sliced_to_array(this.decodeValue(buf, 0), 2), value = _this_decodeValue[0], end = _this_decodeValue[1];
+                if (end !== buf.length) {
+                    throw new Error("CBOR: trailing bytes");
+                }
+                ;
+                return value;
+            }
+        },
+        {
+            key: "decodeValue",
+            value: function decodeValue(buf, pos) {
+                this.ensureAvailable(buf, pos, 1);
+                var first = buf[pos];
+                var major = first >> 5;
+                var info = first & 0x1f;
+                if (major === 7) {
+                    if (info === 20) return [
+                        false,
+                        pos + 1
+                    ];
+                    if (info === 21) return [
+                        true,
+                        pos + 1
+                    ];
+                    if (info === 22) return [
+                        null,
+                        pos + 1
+                    ];
+                    if (info === 23) return [
+                        undefined,
+                        pos + 1
+                    ];
+                    if (info === 27) {
+                        this.ensureAvailable(buf, pos + 1, 8);
+                        var dv = new DataView(buf.buffer, buf.byteOffset + pos + 1, 8);
+                        return [
+                            dv.getFloat64(0, false),
+                            pos + 9
+                        ];
+                    }
+                }
+                var _this_readUint = cbor_sliced_to_array(this.readUint(buf, pos), 2), n = _this_readUint[0], nextPos = _this_readUint[1];
+                if (major === 0) return [
+                    n,
+                    nextPos
+                ];
+                if (major === 1) return [
+                    -1 - n,
+                    nextPos
+                ];
+                if (major === 2) {
+                    this.ensureAvailable(buf, nextPos, n);
+                    var bytes = buf.slice(nextPos, nextPos + n);
+                    return [
+                        bytes,
+                        nextPos + n
+                    ];
+                }
+                if (major === 3) {
+                    this.ensureAvailable(buf, nextPos, n);
+                    var bytes1 = buf.slice(nextPos, nextPos + n);
+                    return [
+                        this.decoder.decode(bytes1),
+                        nextPos + n
+                    ];
+                }
+                if (major === 4) {
+                    var arr = [];
+                    var p = nextPos;
+                    for(var i = 0; i < n; i++){
+                        var _this_decodeValue = cbor_sliced_to_array(this.decodeValue(buf, p), 2), item = _this_decodeValue[0], np = _this_decodeValue[1];
+                        arr.push(item);
+                        p = np;
+                    }
+                    return [
+                        arr,
+                        p
+                    ];
+                }
+                if (major === 5) {
+                    var obj = {};
+                    var p1 = nextPos;
+                    for(var i1 = 0; i1 < n; i1++){
+                        var _this_decodeValue1 = cbor_sliced_to_array(this.decodeValue(buf, p1), 2), k = _this_decodeValue1[0], kp = _this_decodeValue1[1];
+                        var _this_decodeValue2 = cbor_sliced_to_array(this.decodeValue(buf, kp), 2), v = _this_decodeValue2[0], vp = _this_decodeValue2[1];
+                        obj[k] = v;
+                        p1 = vp;
+                    }
+                    return [
+                        obj,
+                        p1
+                    ];
+                }
+                ;
+                throw new Error("CBOR: unsupported major type ".concat(major));
+            }
+        },
+        {
+            key: "encode_msg",
+            value: function encode_msg(msg) {
+                if (cbor_instanceof1(msg, Uint8Array)) return msg; // If it's already an encoded Uint8Array, don't re-encode it
+                try {
+                    return this.encode(msg);
+                } catch (err) {
+                    console.log("[BINARY_PIPE] Failed to encode outbound packet strictly:", err);
+                    return this.encode({
+                        type: "error",
+                        error: "Encoding failed",
+                        id: (msg === null || msg === void 0 ? void 0 : msg.id) || "unknown"
+                    });
+                }
+            }
+        },
+        {
+            key: "decode_msg",
+            value: function decode_msg(raw) {
+                if (!cbor_instanceof1(raw, Uint8Array) && !(typeof Buffer !== 'undefined' && Buffer.isBuffer(raw))) {
+                    console.error("[BINARY_PIPE] Protocol violation: Expected encoded Uint8Array data stream.");
+                    return null;
+                }
+                try {
+                    var uint8 = cbor_instanceof1(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.length);
+                    return this.decode(uint8);
+                } catch (err) {
+                    console.error("[BINARY_PIPE] Failed to decode inbound packet:", err);
+                    return null;
+                }
+            }
+        }
+    ]);
+    return CBORI;
+}();
+
+
+
+
+
 
 
 
@@ -18615,6 +20498,12 @@ function MaybePromisei(v) {
 }
 var nestedInstace = new nested_nestedi();
 globalThis.MaybePromise = MaybePromisei;
+globalThis.CBOR = cbor_CBORI;
+globalThis.AVRO = avro_BINARY_AVRO;
+globalThis.AVROReader = avro_AVROReader;
+globalThis.AVROWriter = avro_AVROWriter;
+globalThis.MDisruptor = map_disruptor_MDisruptor;
+globalThis.MTracer = map_tracer_MTracer;
 globalThis.A2 = array_A2I;
 globalThis.B2B = boolean_byte_B2BI;
 globalThis.D2 = date_D2I;
@@ -18673,4 +20562,4 @@ globalThis.ignoreArg = ignore_arg_ignoreArg;
 globalThis.barrier = barrier;
 
 
-export { MaybePromisei, RECC2 as RES2, array_A2I as A2, boolean_byte_B2BI as B2B, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_rows_M2RI as M2R, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };
+export { MaybePromisei, RECC2 as RES2, array_A2I as A2, avro_AVROReader as AVROReader, avro_AVROWriter as AVROWriter, avro_BINARY_AVRO as AVRO, boolean_byte_B2BI as B2B, cbor_CBORI as CBOR, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_disruptor_MDisruptor as MDisruptor, map_rows_M2RI as M2R, map_tracer_MTracer as MTracer, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };

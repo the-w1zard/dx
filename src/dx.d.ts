@@ -54,6 +54,10 @@ import { twx as twxi} from './dlc/twx'
 import { lwwState as lwwStatei} from './dlc/lww'
 import { ignoreArg as ignoreArgi} from './dlc/ignore_arg'
 import { barrier as barrieri} from './dlc/barrier'
+import { MDisruptor as MDisruptorI } from "./map_disruptor";
+import { MTracer as MTracerI } from "./map_tracer";
+import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI, IAVROWriter, IAVROReader  } from "./avro";
+import { CBORI  } from "./cbor";
 
 export {};
 
@@ -125,6 +129,12 @@ declare global {
 	var lwwState: typeof lwwStatei
 	var ignoreArg: typeof ignoreArgi
 	var barrier: typeof barrieri
+	var MDisruptor: typeof MDisruptorI
+	var MTracer: typeof MTracerI
+	var CBOR: typeof CBORI
+	var AVROWriter: typeof AVROWriterI
+	var AVROReader: typeof AVROReaderI
+	var AVRO: typeof BINARY_AVROI
 
 
     var soa_codec: typeof soa_codeci;
@@ -258,6 +268,99 @@ declare global {
 	}
 	
 	interface nestedi<K = A, V = A> extends nested<K, V> {}
+	interface IMDisruptor<K = any, V = any> {
+		/** Number of live entries currently addressable via the index. */
+		readonly size: number;
+	
+		/** Retrieve the decoded value for `key`, or `undefined` if absent/tombstoned. */
+		get(key: K): V | undefined;
+	
+		/** Whether `key` currently resolves to a live (non-tombstoned) slot. */
+		has(key: K): boolean;
+	
+		/**
+		 * Insert or overwrite `key`.
+		 * Values must be plain data (no functions); they are encoded on write.
+		 * Returns `this` for chaining.
+		 */
+		set(key: K, value: V): this;
+	
+		/** Remove `key` from the index. Returns `true` if it was present. */
+		delete(key: K): boolean;
+	
+		/** Drop every index entry (ring slots are reclaimed lazily). */
+		clear(): void;
+	
+		/** Snapshot of all live `[key, value]` pairs, values decoded. */
+		entries(): [K, V][];
+	}
+	interface MDisruptorI<K = any, V = any> extends IMDisruptor<K, V> {}
+	interface IMTracer<K = any, V = any> {
+		/**
+		 * Number of completed laps around the dial. Increments once each
+		 * time the active lane fills and the dial advances. Never resets
+		 * (even on `clear()` — see note below).
+		 */
+		readonly revolution: number;
+
+		/**
+		 * How full the *active* lane is, in `[0, 1]`. Values approaching 1
+		 * mean the dial is about to tick over. This is the queue-depth
+		 * signal a producer can use for backpressure.
+		 */
+		readonly pressure: number;
+
+		/** Insert or overwrite `key` in the active lane (encoded on write). */
+		set(key: K, value: V): void;
+
+		/** Retrieve the decoded value for `key`, or `undefined` if absent/aged out. */
+		get(key: K): V | undefined;
+
+		/** Whether `key` currently resolves to a live value. */
+		has(key: K): boolean;
+
+		/** Remove `key` from the index. Returns `true` if it was present. */
+		delete(key: K): boolean;
+
+		/**
+		 * Drop all index entries and reset every lane. `dial` returns to 0.
+		 * Does **not** reset `revolution` — the tracer particle keeps ticking.
+		 */
+		clear(): void;
+
+		/** Snapshot of all live `[key, value]` pairs, values decoded. */
+		entries(): [K, V][];
+	}
+	interface MTracerI<K = any, V = any> extends IMTracer<K, V> {}
+	interface IBINARY_AVRO {
+		encode_msg(msg: AVROValue): Uint8Array;
+		decode_msg(raw: unknown): AVROValue | null;
+	}
+	interface AVROWriterI extends IAVROWriter {}
+	interface AVROReaderI extends IAVROReader {}
+	
+	interface ICBORI {
+		/**
+		 * Encode `msg` to CBOR bytes.
+		 *
+		 * - If `msg` is already a `Uint8Array`, it is returned **as-is**
+		 *   (assumed pre-encoded; no re-encoding, no validation).
+		 * - On encode failure, returns an encoded error frame
+		 *   `{ type: "error", error: "Encoding failed", id }`.
+		 */
+		encode_msg(msg: CBORValue): Uint8Array;
+	
+		/**
+		 * Decode CBOR bytes to a `CBORValue`.
+		 *
+		 * - Accepts `Uint8Array` or Node `Buffer`.
+		 * - Returns `null` on any failure path; never throws.
+		 * - Rejects trailing bytes.
+		 */
+		decode_msg(raw: unknown): CBORValue | null;
+	}
+	interface CBORI extends ICBORI {}
+
 	// #endregion 
 	//                                                                              [R2 — REGEX, THE M2 WAY]
 	// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 

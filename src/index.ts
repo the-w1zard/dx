@@ -1,3 +1,4 @@
+
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
@@ -51,6 +52,10 @@ import { timedPromise as timedPromisei} from './dlc/timed_promise'
 import { toPromise as toPromisei} from './dlc/to_promise'
 import { tryCatch as tryCatchi} from './dlc/try_catch'
 import { unreachable as unreachablei} from './dlc/unreachable'
+import { MDisruptor as MDisruptorI } from "./map_disruptor";
+import { MTracer as MTracerI } from "./map_tracer";
+import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI  } from "./avro";
+import { CBORI  } from "./cbor";
 
 export type MaybePromise<R = any> = R;
 export function MaybePromisei<R = any>(v: R): MaybePromise {
@@ -58,6 +63,12 @@ export function MaybePromisei<R = any>(v: R): MaybePromise {
 }
 const nestedInstace =  new nestedi()
 globalThis.MaybePromise = MaybePromisei;
+globalThis.CBOR = CBORI;
+globalThis.AVRO = BINARY_AVROI;
+globalThis.AVROReader = AVROReaderI;
+globalThis.AVROWriter = AVROWriterI;
+globalThis.MDisruptor = MDisruptorI;
+globalThis.MTracer = MTracerI;
 globalThis.A2 = A2I;
 globalThis.B2B = B2BI;
 globalThis.D2 = D2I;
@@ -116,6 +127,12 @@ globalThis.ignoreArg = ignoreArgi
 globalThis.barrier = barrieri
 
 export {
+    AVROWriterI as  AVROWriter,
+     AVROReaderI as AVROReader,
+     BINARY_AVROI as AVRO,
+CBORI as CBOR, 
+     MDisruptorI as MDisruptor,
+ MTracerI as MTracer,
     M2RI as M2R,
     M2DI as M2D, 
     M2BINI as M2BIN, 

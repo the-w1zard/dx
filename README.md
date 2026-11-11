@@ -81,7 +81,7 @@
 </span>
 
 
-# Built-in API Extensions
+## Built-in API Extensions
 
 Extensions to native JavaScript objects that improve developer experience by adding commonly needed operations while preserving the original APIs.
 
@@ -787,6 +787,208 @@ Consequently, dense slot positions are not stable across deletions. Use `slotOf(
 - Zero-copy row views are desirable.
 
 
+## `M2Disruptor`
+
+> [!NOTE] Experimental Map Implementation
+>
+> Personally, I think this is pretty cool... but who knows, it might be absolute shit, haha.
+>
+> This implementation is intended for anything **other than nested map configurations**. I've found that particular workload simply doesn't bode well for disruptors. I've tried rebuilding the nested map function as a disruptor more times than I care to count, and I haven't managed to get it to perform better than the original. At that point, there's simply no reason to keep pursuing it.
+>
+> This implementation takes a different approach. The idea is to provide a more performant alternative to `Map`, while keeping the operations as close to native Map functions as possible. The less overhead introduced by the disruptor itself, the better.
+>
+> There are two planned versions:
+>
+> - **`MDisruptor`** — The conventional implementation, using sequence numbers to track ring positions and manage slot ownership. It uses an index to locate entries and a circular buffer to hold their payloads.
+> - **`M2Tracer`** — A variation that replaces wall-clock epochs with what I call a *tracer particle*. Rather than maintaining a centralized clock somewhere inside the class, each key-value pair carries its own clock value directly in the ring.
+>
+> ### The Tracer Particle
+>
+> The idea is surprisingly simple: every time a particle completes a revolution around the ring, its counter increments.
+>
+> Instead of relying on timestamps, expiration is measured in revolutions. This gives us a clock that advances alongside the actual workload rather than independently of it.
+>
+> The benefits of this approach extend well beyond simply replacing an epoch:
+>
+> - **Free backpressure:** The ring's own progression provides a natural mechanism for managing data lifetime.
+> - **Revolution-based TTL:** Entries expire according to actual ring activity rather than elapsed wall time.
+> - **No stale data accumulation:** Data cannot remain valid indefinitely simply because an external clock hasn't triggered cleanup.
+> - **No background expiration work:** There is no need for timers or periodic sweeps to keep the data current.
+> - **Per-entry timekeeping:** Each particle carries its own clock, eliminating the need for a centralized expiration clock.
+> - **Workload-driven expiration:** Idle systems don't need to wake up just to advance expiration timers.
+>
+> The particularly interesting part is that the clock isn't an additional mechanism running alongside the data structure. It is part of the data structure itself.
+>
+> ### Implementation
+>
+> Both implementations are intentionally kept extremely small. In fact, the conventional implementation is among the smallest map implementations in this library.
+>
+> `MDisruptor` uses two primary structures:
+>
+> | Structure | Responsibility |
+> |---|---|
+> | `Disruptor` | Circular buffer holding sequenced key-value slots |
+> | `index` | Native `Map` providing direct key-to-sequence lookup |
+>
+> The ring uses power-of-two capacity and bitwise masking for slot addressing. Each slot carries its sequence number, key, payload, and tombstone state.
+>
+> A few implementation details are worth highlighting:
+>
+> - **Evict-and-carry:** Before claiming a ring slot, a still-live occupant is relocated forward and its index updated. This prevents live entries from being silently overwritten during ring wraparound.
+> - **Lazy deletion:** Deleting an entry removes its index reference without immediately modifying the ring. The old slot can be reclaimed when it is encountered again.
+> - **Automatic growth:** Capacity increases when the indexed entry count reaches the configured occupancy threshold.
+> - **Value isolation:** Values are encoded on insertion and decoded on retrieval, using `structuredClone` when available and a JSON fallback otherwise.
+> - **Function rejection:** Functions cannot be stored as state values. This implementation is intended for data, not executable behavior.
+>
+> ### API
+>
+> | Method | Description |
+> |---|---|
+> | `get(key)` | Retrieve a value by key |
+> | `has(key)` | Check whether a key exists |
+> | `set(key, value)` | Insert or replace an entry |
+> | `delete(key)` | Remove an entry |
+> | `clear()` | Remove all indexed entries |
+> | `entries()` | Return all currently indexed key-value pairs |
+> | `size` | Number of indexed entries |
+>
+> ### The Bigger Idea
+>
+> The interesting part here isn't simply putting a Map on top of a disruptor.
+>
+> It's finding ways to make the underlying transport do more of the work that would otherwise require additional machinery. The tracer particle is a particularly good example: a tiny addition to each entry potentially eliminates an entire category of centralized timekeeping and expiration overhead.
+>
+> That's the direction I'm exploring with this implementation. Keep the hot path small, keep the operations familiar, and let the ring do the heavy lifting.
+
+## `MTracer` — Tracer Particle Map
+
+`MTracer` is the second implementation of `M2Disruptor`. Rather than relying on a conventional epoch or wall-clock timestamps, it uses a revolution-based clock that advances with the ring itself.
+
+The central idea is the **tracer particle**: every entry is assigned to a lane, and each lane represents a position in a rolling time window. As entries are written, the active lane fills. Once full, the dial advances to the next lane. Completing a full rotation increments the revolution counter.
+
+There is no `Date.now()`, no interval, no background timer, and no periodic cleanup process.
+
+### Architecture
+
+The implementation consists of three primary structures:
+
+| Structure | Responsibility |
+|---|---|
+| `Disruptor` | Circular buffer with sequence-based slot addressing |
+| `Lane` | Manages a ring, tracks write capacity, and reports pressure |
+| `index` | Native `Map` providing direct key-to-lane and sequence lookup |
+
+The `MTracer` itself coordinates the lanes through a rotating dial.
+
+By default, it uses seven lanes, each with a capacity of 256 entries. This creates a rolling seven-lane window, with each completed rotation advancing the revolution counter.
+
+### The Tracer Particle
+
+The tracer particle is the clock.
+
+```ts
+public revolution = 0;
+```
+
+Every time the dial completes a full rotation, the revolution counter increments.
+
+Each entry is associated with its lane and sequence number:
+
+```ts
+interface IndexEntry {
+    lane: number;
+    seq: number;
+}
+```
+
+This means expiration is implicit in the lifecycle of the lane containing the entry.
+
+When the dial returns to a previously occupied lane, that lane is reset. Its previous ring is replaced entirely, and index entries still pointing to that lane are removed.
+
+The old ring is no longer referenced and becomes eligible for garbage collection.
+
+No individual entries need to be traversed, tombstoned, or explicitly expired inside the ring.
+
+### Lane Rotation
+
+The lifecycle is straightforward:
+
+1. Writes enter the currently active lane.
+2. Each write advances that lane's write counter.
+3. Once the lane reaches capacity, the dial advances.
+4. Completing a full rotation increments `revolution`.
+5. The lane being revisited is reset and its remaining index references are discarded.
+
+This produces a rolling expiration window without requiring an independent expiration mechanism.
+
+### Backpressure
+
+One particularly interesting property is that pressure comes directly from lane utilization.
+
+| Property | Description |
+|---|---|
+| `isFull` | Whether the active lane has reached capacity |
+| `pressure` | Active lane utilization, from `0` to `1` |
+| `revolution` | Number of completed dial rotations |
+| `dial` | Current active lane |
+
+The `pressure` getter provides an immediate indication of how close the active lane is to triggering a rotation.
+
+```ts
+get pressure(): number {
+    return this.activeLane.pressure;
+}
+```
+
+There is no separate queue-depth tracker or instrumentation required. The structure already knows how much work has entered its active lane.
+
+### API
+
+| Method | Description |
+|---|---|
+| `get(key)` | Retrieve a value; automatically removes stale index references |
+| `has(key)` | Check whether a key currently has a valid entry |
+| `set(key, value)` | Insert or replace an entry in the active lane |
+| `delete(key)` | Remove an entry from the index |
+| `clear()` | Reset all lanes and clear the index |
+| `entries()` | Return currently valid key-value pairs |
+| `size` | Not currently exposed; the index tracks the number of indexed entries |
+| `pressure` | Active lane utilization |
+| `revolution` | Completed dial rotations |
+
+### Value Isolation
+
+Like `MDisruptor`, values pass through `encode` and `decode`.
+
+Objects are cloned on insertion and retrieval, using `structuredClone` when available and a JSON fallback otherwise. Functions are rejected as state values.
+
+This keeps stored state isolated from external mutations.
+
+### Why This Is Interesting
+
+The difference between a conventional epoch and a tracer particle might seem small, but the architectural implications are significant.
+
+Traditional expiration mechanisms require a separate concept of time. They need timestamps, comparisons, cleanup operations, and often some mechanism to periodically wake up and perform that work.
+
+`MTracer` takes a different approach.
+
+**Time advances because the data structure is being used.**
+
+The lanes already know when they are full. The dial already knows when to advance. The revolution counter already knows when a complete cycle has occurred. Expiration becomes a consequence of ring rotation rather than a separate operation.
+
+Some of the resulting properties:
+
+- **No wall-clock dependency:** Expiration is entirely independent of system time.
+- **No background work:** Nothing needs to wake up to advance the clock.
+- **Automatic reclamation:** Old lanes are replaced wholesale rather than cleaned entry by entry.
+- **Bounded lane storage:** Each lane has a fixed capacity.
+- **Natural pressure reporting:** Lane utilization provides an immediate pressure measurement.
+- **Simple lifecycle:** Rotation and reset handle the expiration of entire generations of entries.
+
+The seven-lane configuration is simply the default. Both lane capacity and dial size are configurable.
+
+The tracer particle is a small idea, but it changes how expiration is approached entirely. Instead of maintaining a clock alongside the data structure, the data structure becomes its own clock.
+
 ## `N2` — Number
 
 Numeric helpers return `N2I` for chaining unless otherwise indicated.
@@ -925,6 +1127,23 @@ type ALL_MAPS =
 > 3. databases: this one has layers, depending on how you use it. If using it for say... a kvdb, it can automatically provide VERY easy tables and db configurations, where users can simply change one value and it places the value in an entirely different table from one line to the next. If used within an app context, provides a namespace system where you can easily organize data. 
 > 4. router: this one, IS FUCKING HUGE... To this day, I am still fucking shocked it worked... let me put it this way, it works so well... as a router for your message queue, bus... whatever, right? I could NEVER replicate, the end result that this gives you. I don't think any one can. Even if you are a dev for 50-some odd years... it perfectly produces... zero errors, across 1000's of apps... all perfectly routed messages, without... configuring a single fucking thing. No routing tables, NOTHING. This is by far, the only thing that has saved me more time than any other.
 > 5. workspace identification
+> 6. tbc...
+
+> [!NOTE] PERFORMANCE
+>
+> This is not a strong suite of nested map fn, as it gets measly 4 mill ops per sec. I'll admit compared to a lot of other things, it actually aint that bad. BUT map and m2 both sit at 104-ish million ops per sec, so in order for us to get our cake and eat it too... We simply just cheat the system.
+>
+> Within the apps we build, our hot paths are used... atleast 80, probably closer to 95% or even high % of the time. Which drastically helps us out here by giving us a lending hand by allowing us to get away with creating a hot path cache... of the cache, for example...
+> ```tsx
+> #atoms = new M2<A, M2<A, M2<A, A>>>();
+> _atoms: M2<A, A>
+>
+> constructor() {
+>  this._atom = 
+> }
+>
+> ```
+
 
 ## `O2` — Object
 
@@ -2280,7 +2499,7 @@ return Finally(
  
 
 
- # `gate` / `reGate`
+# `gate` / `reGate`
 
 > A promise you open manually. `gate` is one-shot — you hold the `promise`, you call `open(value)` when the thing is ready. `reGate` is the resettable version — you can close it back up and reuse it for the next round.
 
@@ -2558,6 +2777,7 @@ const handlers = {
   reset: ignoreArg(clearForm),
 }
 ```
+
 # `invoke`
 
 > Wrap a function so it can be used as an event handler. The wrapped function ignores whatever argument it's called with and invokes the original.
@@ -2675,6 +2895,7 @@ const handlers = {
   reset: invoke(clearForm),
 }
 ```
+
 # `isDefined`
 
 > A type guard that answers one question: is this thing neither `null` nor `undefined`? If yes, TypeScript narrows the type to remove both.
@@ -2886,6 +3107,7 @@ function handle(x: string | null | undefined) {
 ```ts
 const invalid = rows.filter(r => isNotDefined(r.id))
 ```
+
 # `Lazy`
 
 > Deferred initialization. Wrap a factory, get a `.value` getter that runs the factory on first access and caches the result forever after. Between the first read and every read after, `.value` is a plain property access — no check, no branch, no function call.
@@ -3021,6 +3243,7 @@ return null              // never pays
 - **Synchronous.** The factory is called synchronously on the read. If the factory does async work, `.value` will be a `Promise<T>`, not `T` — `Lazy` does not unwrap promises.
 - **Not thread-safe in the traditional sense** — but JS is single-threaded, so concurrent readers can't race. Two readers in the same tick will both see the same result; whichever reads first pays the cost.
 - **No reset.** Once initialized, there's no way to clear the cache. Create a new `Lazy` if you need a new value.
+
 # `once`
 
 > Wrap a function so it only ever runs the first time it's called. Every call after returns the first call's result. Same function, same arguments — but the body executes exactly once, ever.
@@ -3293,6 +3516,7 @@ function process(input: string | null | undefined) {
   return s.toUpperCase()   // s is string, no null check needed
 }
 ```
+
 # `patchState`
 
 > Merge a partial object into React-style state via the functional updater. Never reads state from the render closure, so no stale-closure bugs. Just `{ ...prev, ...patch }`, wrapped, named, and ready to call.
@@ -4125,6 +4349,7 @@ const setAge = bind("age")
 `setKey` does only the first, with the key and value properly typed against the state shape. If you're reaching for `setPrev` with a key every time, use `setKey` instead — you get the same behavior with better types and a clearer name.
 
 Use `setPrev` when you're doing a merge (no key). Use `setKey` when you're setting exactly one field.
+
 # `setPrev` / `setPrevB`
 
 > Functional state setters for React-style `useState`. Give them a setter, give them a value, and they update based on the previous state without you having to write `setX(prev => …)` inline every time.
@@ -4269,6 +4494,7 @@ setPrev(setForm, { name: "", email: "", error: undefined })
 - **Synchronous call to the setter.** The helper builds the functional updater and calls it. React schedules the actual state update.
 - **Idempotent within a tick.** Calling `setPrev(setter, "a", "x")` twice in the same render queues two updaters, each applied to the result of the previous. Both are correct.
 - **`prev` is captured by the closure.** The updater reads `prev` at the moment React invokes it, not at the moment the helper was called. That's the whole point.
+
 # `sleep`
 
 > Wait for a number of milliseconds. Returns a promise that resolves after the delay. That's the whole thing.
@@ -4644,7 +4870,8 @@ Different jobs, same neighborhood:
 - **`MaybePromise(x)`** — returns `x` unless `x` is `undefined`, in which case it returns a resolved promise. Use when you want to *skip* the promise when the value is already there.
 
 `toPromise` is the honest, always-async version. `MaybePromise` is the chameleon that preserves sync identity when it can.
- # `tryCatch`
+
+# `tryCatch`
 
 > Run a function, get back a tuple. Either `[undefined, value]` on success or `[error, undefined]` on failure. No thrown exceptions escape. Ever.
 
@@ -4801,6 +5028,7 @@ const [e2, b] = await tryCatch(() => fetch("/x"))     // async fn
 ```
 
 No branching on which kind `fn` is. This is the same uniformity `MaybePromise` gives on the value side, applied to error capture.
+
 # `unreachable`
 
 > A never-returning function for exhaustiveness checks. Call it in the `default` branch of a discriminated union switch, and TypeScript will fail compilation if a case is ever added without being handled.
