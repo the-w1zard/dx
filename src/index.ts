@@ -3,7 +3,7 @@ import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
 import { B2BI } from "./boolean_byte";
-import { M2I } from "./map";
+import { M2I, M2I as M2 } from "./map";
 import { M2BI } from "./map_byte";
 import { A2I } from './array'
 import { D2I,  R2I, R2II } from './date'
@@ -148,7 +148,7 @@ CBORI as CBOR,
     ER2I as ER2,
     I2I as I2,
     M2BI as M2B,
-    M2I as M2,
+    M2,
     N2I as N2,
     O2I as O2,
     P2I as P2,
