@@ -4,10 +4,10 @@
 	"sideEffects": false,
 	"type": "module",
 	"main": "./dist/index.js",
-	"types": "./src/dx.d.ts",
+	"types": "./dist/dx.d.ts",
 	"exports": {
 		".": {
-			"types": "./src/dx.d.ts",
+			"types": "./dist/dx.d.ts",
 			"default": "./dist/index.js",
 			"import": "./dist/index.js"
 		},

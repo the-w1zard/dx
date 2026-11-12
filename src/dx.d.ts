@@ -23,7 +23,6 @@ import { nestedi } from './nested'
 import { WM2I } from "./weak_map";
 import { WS2I } from "./weak_set";
 import { MaybePromisei, type MaybePromise } from './index'
-import { nestedi } from './nested'
 import { callIf as callIfi} from './dlc/call_if'
 import { clamp as clampi} from './dlc/clamp'
 import { createLiveScope as createLiveScopei} from './dlc/create_live_scope'
