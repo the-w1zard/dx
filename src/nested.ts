@@ -1,5 +1,7 @@
 type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU
 
+const cache = new M2<A, M2<A, M2<K, V>>>();
+
 export class nestedi<K = A, V = A> {
     public r = 'ROOT' 
     public m = 'MASTER' 
@@ -7,7 +9,7 @@ export class nestedi<K = A, V = A> {
     public CACHE: ALL_MAPS
     public FALLBACK = new M2<A, M2<A, M2<K, V>>>();
 
-    constructor(CACHE: ALL_MAPS = null) { this.CACHE = CACHE }
+    constructor(CACHE: ALL_MAPS = cache) { this.CACHE = CACHE }
 
     public map<K, V>(s: A = 'map', m: A = this.m , r: A = this.r): Map<A, A> {
         // 1. Root Lookup via Module Cache (Fast path)

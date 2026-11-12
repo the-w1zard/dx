@@ -125,13 +125,7 @@ tsconfig.json/paths
 
 > [!NOTE] 
 >
-> Since most of the items going into this module were made exactly the same, in respect to... leaving the original api intact while at the same time applying upgrades in the form of new functionality and improved ergonomics. For that reason, I'll overview 3 of them, talk about some other items you can find within the module, while the remainder will be fn reference tables and usage examples.
->
-> In addition to expanding javascripts base fn feature set, there have been a number of items that are geared with the same end goal. Making our lives better, plain and simple.
->
-> Among javascripts classics, there are some flavoured variants that would help depending on your use case as they cover areas suchs as binary in the form of maps as disruptors, sets and objects too. 
->
-> To accompany the binary there are avro, cbor encoders, as well as a pid allocator. To wrap them up there is even a auto serializer that is able to retain types in  order to ensure that the type you encoded comes out the other end.
+> M2 extends JavaScript's native Map while preserving its core semantics. You still get keyed storage, insertion-order iteration, and familiar lookup operations, but with subscriptions, batching, derived values, history, debugging, and dependency tracking built directly into the container.
 
 
 <details><summary><strong><span style="font-size: 16px; font-family: monospace">[SOURCE CODE]</span> </strong></summary>
@@ -142,7 +136,7 @@ export const rv = <T>(v: UF<T>): T => typeof v === "function" ? (v as () => T)()
 export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 
 
-export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
+export class M2<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	// public g = this.get;
 	// public h = this.has;
 	// public d = this.delete;
@@ -154,9 +148,9 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	#strict = false;
 	#iterating = 0;
 	#batching = 0;
-	#pending?: M2I<H, M2Event<H, T>>;
-	#derived?: M2I<H, Derived<H, T>>;
-	#dependents?: M2I<H, Set<H>>;
+	#pending?: M2<H, M2Event<H, T>>;
+	#derived?: M2<H, Derived<H, T>>;
+	#dependents?: M2<H, Set<H>>;
 	#emit(e: M2Event<H, T>): V {
 		if (this.#batching > 0) {
 			const pending = this.#pending!.get(e.k);
@@ -215,7 +209,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	} 
 	public batch(fn: () => V): this {//                                               [BATCH]
 		this.#batching++;
-		this.#pending ??= new M2I<H, M2Event<H, T>>();
+		this.#pending ??= new M2<H, M2Event<H, T>>();
 		try {
 			fn();
 		} finally {
@@ -268,10 +262,10 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		}
 	}
 	public dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this {//              [DERRIVED]
-		(this.#derived ??= new M2I<H, Derived<H, T>>())
+		(this.#derived ??= new M2<H, Derived<H, T>>())
     .set(k, { deps, fn, dirty: true, has: false, });
 		for (const dep of deps) {
-			(this.#dependents ??= new M2I<H, Set<H>>())
+			(this.#dependents ??= new M2<H, Set<H>>())
     .getOrM(() => new Set(), dep)
     .add(k);
 		}
@@ -322,7 +316,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		}
 		return undefined;
 	}
-	public $diff(other: M2I<H, T>) {//                                                [$DIFF]
+	public $diff(other: M2<H, T>) {//                                                [$DIFF]
 		const add: AR<[H, T]> = [];
 		const del: AR<H> = [];
 		const chg: AR<[H, T, T]> = [];
@@ -406,12 +400,12 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		return this.setIfAbsent(undefined as unknown as T, k);
 	}
 	public mapValues<G>(fn: (v: T, k: H) => G): M2<H, G> {//                      [MAPVALUES]
-		const out = new M2I<H, G>();
+		const out = new M2<H, G>();
 		for (const [k, v] of this) out.s(fn(v, k), k);
 		return out;
 	}
 	public mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T> {//                          [MAPKEYS]
-		const out = new M2I<G, T>();
+		const out = new M2<G, T>();
 		for (const [k, v] of this) out.s(v, fn(v, k));
 		return out;
 	}
@@ -423,8 +417,8 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		return this.filterKV(pred);
 	}
 	public partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>] {//           [PARTITION]
-		const yes = new M2I<H, T>();
-		const no = new M2I<H, T>();
+		const yes = new M2<H, T>();
+		const no = new M2<H, T>();
 		for (const [k, v] of this) { 	(pred(v, k) ? yes : no).s(v, k); }
 		return [yes, no];
 	}
@@ -457,12 +451,12 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		for (const [k, v] of this) fn(v, k, this);
 	}
 	public invert(): M2<T, H> {//                                                    [INVERT]
-		const out = new M2I<T, H>();
+		const out = new M2<T, H>();
 		for (const [k, v] of this) out.s(k, v);
 		return out;
 	}
 	public unique<G>(fn?: (v: T, k: H) => G): M2<G, T> {//                           [UNIQUE]
-		const out = new M2I<G, T>();
+		const out = new M2<G, T>();
 		for (const [k, v] of this) {
 			const key = (fn ? fn(v, k) : v) as unknown as G;
 			if (!out.h(key)) out.s(v, key);
@@ -470,13 +464,13 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		return out;
 	}
 	public pick(keys: Iterable<H>): M2<H, T> {//                                       [PICK]
-		const out = new M2I<H, T>();
+		const out = new M2<H, T>();
 		for (const k of keys) { if (this.h(k)) out.s(this.g(k) as T, k); }
 		return out;
 	}
 	public omit(keys: Iterable<H>): M2<H, T> {//                                       [EMIT]
 		const omitted = new Set(keys);
-		const out = new M2I<H, T>();
+		const out = new M2<H, T>();
 		for (const [k, v] of this) { if (!omitted.has(k)) out.s(v, k); }
 		return out;
 	}
@@ -505,14 +499,14 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	public toKeys(): A2I<H> { return A2.from(this.keys()); }//                       [TOKEYS]
 	public toArray(): A2I<[H, T]> { return A2.from(this.entries()); }//             [TOARRAY]
 	public group<G>(fn: (v: T, k: H) => G): M2<G, A2<T>> {//                          [GROUP]
-		const out = new M2I<G, A2<T>>();
+		const out = new M2<G, A2<T>>();
 		for (const [k, v] of this) out.getOrM(() => new A2<T>(), fn(v, k)).push(v);
 		return out;
 	}
 	public clone(): this {//                                                          [CLONE]
-		return new M2I(this) as this;
+		return new M2(this) as this;
 	}
-	public equals(other: M2I<H, T>): B {//                                           [EQUALS]
+	public equals(other: M2<H, T>): B {//                                           [EQUALS]
 		if (other === this) return true;
 		if (this.size !== other.size) return false;
 		for (const [k, v] of this) {
@@ -520,14 +514,14 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 		}
 		return true;
 	}
-	static fromObject<X extends Record<S, A>>(obj: X): M2I<S, X[keyof X]> {//      [FROMOBBJ]
-		return new M2I(Object.entries(obj) as AR<[S, X[keyof X]]>);
+	static fromObject<X extends Record<S, A>>(obj: X): M2<S, X[keyof X]> {//      [FROMOBBJ]
+		return new M2(Object.entries(obj) as AR<[S, X[keyof X]]>);
 	}
-	static fromEntries<H, T>(entries: I<readonly [H, T]>): M2I<H, T> {//        [FROMENTIRES]
-		return new M2I(entries);
+	static fromEntries<H, T>(entries: I<readonly [H, T]>): M2<H, T> {//        [FROMENTIRES]
+		return new M2(entries);
 	}
-	static from<H, T>(map: RM<H, T>): M2I<H, T> {//                                    [FROM]
-		return new M2I(map);
+	static from<H, T>(map: RM<H, T>): M2<H, T> {//                                    [FROM]
+		return new M2(map);
 	}
 }
 ```
@@ -588,7 +582,7 @@ persist(user);
 M2 version:
 
 ```tsx
-const users = new M2I();
+const users = new M2();
 
 users.on((e) => {
   if (e.k === id) refreshUserRow(e.k);
@@ -679,7 +673,1349 @@ HITS:  1,000,000
  --- Benchmarks Complete ---
  ```
 
- 
+### Reference Table — `M2` (and supporting pieces)
+
+| Command | Description |
+|---|---|
+| `rv(v)` | Resolves a value-or-thunk: if `v` is a function it's called and the result returned, otherwise `v` is returned as-is. Used internally so `s`, `update`, `getOrI`, etc. accept either a value or a factory. |
+| `sameValue(a, b)` | Equality helper: `Object.is(a, b)` OR both are `Date` with equal timestamps. Used by `equals` and derived recompute to decide whether to emit an event. |
+| `new M2(iterable?)` | Extends `Map<H, T>` and implements `M2`. Sets up optional subsystems (subs, history, derived). Constructor accepts anything `Map` does. |
+| `M2#emit(e)` (private) | Dispatches an `M2Event`. If batching, coalesces into `#pending` (last write per key wins, `prev` from the first event, `batch: true`). Otherwise records to history and fans out to subscribers, catching per-sub errors as `process.emitWarning`. |
+| `M2#record(e)` (private) | Pushes an event into history if enabled; trims to `#histLimit` from the front. |
+| `M2#invalidate(k)` (private) | Marks every derived entry depending on `k` as `dirty` and emits a `dirty` event for each. |
+| `M2#computeDerived(k, d)` (private) | Recomputes a derived value from its deps (`g` of each), updates `value`/`has`/`dirty`, emits `set` or `upd` if the value changed (by `sameValue`). Returns the computed value. |
+| `M2#assertNotIterating(op)` (private) | Throws if `$strict()` is on and iteration is in progress; otherwise no-op. Guards mutators. |
+| `M2[Symbol.iterator]()` | Delegates to `entries()`. |
+| `.f` (public field) | Alias for `this.forEach` bound at construction. |
+| `.on(fn)` | Subscribes to events. Returns an unsubscribe function. |
+| `.off(fn)` | Removes a subscription. |
+| `.batch(fn)` | Runs `fn` with event coalescing on; on outermost exit flushes coalesced events (records + notifies). Returns `this`. |
+| `.s(v, k)` | Set. Resolves thunk `v` via `rv`, records `prev`/`has`, calls `super.set`, invalidates derived dependents of `k`, emits `set`. Returns `this`. |
+| `.mutate(k, fn)` | If `k` exists, calls `fn(old, true)` and sets the result. Returns the new value or `undefined` if absent. |
+| `.d(k)` | Delete. Returns `false` if absent; otherwise calls `super.delete`, invalidates, emits `del`. |
+| `.c()` | Clear. Snapshots entries, clears the map, then invalidates + emits `del` per key. |
+| `.dv(k, deps, fn)` | Declares a derived entry: `fn` over the values of `deps`. Registers reverse dependency edges. Returns `this`. |
+| `.dirty(...keys)` | Marks derived entries as dirty and emits `dirty`. Returns `this`. |
+| `.g(k)` | Get. If `k` is derived, recomputes when dirty/absent, else returns cached value. Otherwise `super.get`. |
+| `.h(k)` | Has. For derived keys, ensures a computed value (recompute if dirty) and returns `true`; otherwise `super.has`. |
+| `.$debug(limit?)` | Enables history with the given cap (default 256). Returns `this`. |
+| `.$strict()` | Enables strict mode (mutators during iteration throw). Returns `this`. |
+| `.$history()` | Returns a shallow copy of recorded events (empty if history disabled). |
+| `.$why(k)` | Returns the most recent recorded event for `k`, scanning history backwards. |
+| `.$diff(other)` | Compares against another `M2`: returns `{ add, del, chg }` where `add`/`chg` reflect entries in `this` not in `other` (by `Object.is`), and `del` are keys in `other` not in `this`. |
+| `.entries()` (generator) | Wraps `super.entries()` while bumping `#iterating` (RAII via try/finally) so strict mode can detect iteration. |
+| `.keys()` (generator) | Same, over `super.keys()`. |
+| `.values()` (generator) | Same, over `super.values()`. |
+| `.swap(value, key)` | Sets `key` to `value` and returns the previous value, or the new value if the key didn't exist. |
+| `.take(k)` | Returns the value at `k` (computing derived if needed) then deletes it. |
+| `.peek(k)` | Returns the value at `k` if present, else `false`. |
+| `.getOrI(value, k)` | Returns the existing value, or sets and returns `rv(value)` if absent. |
+| `.getOrM(make, k)` | Returns the existing value, or calls `make()`, sets it, and returns it. |
+| `.update(k, fn, initial?)` | Computes `fn(old, has)` (with `old` = existing value, or `rv(initial)` if absent), sets and returns it. |
+| `.setIfAbsent(value, k)` | Sets only if key absent; returns whether it wrote. |
+| `.setIfPresent(value, k)` | Sets only if key present; returns whether it wrote. |
+| `.replace(value, k)` | Alias for `setIfPresent(rv(value), k)`. |
+| `.inc(key, by?)` | Increments the numeric value at `key` (default 0 base), returns the new number. |
+| `.touch(k)` | Ensures the key exists with `undefined` value; returns whether it was inserted. |
+| `.mapValues(fn)` | Returns a new `M2` with `fn(v, k)` mapped over values. |
+| `.mapKeys(fn)` | Returns a new `M2` with `fn(v, k)` mapped over keys. |
+| `.filterKV(pred)` | Deletes entries where `pred(v, k)` is falsy, in place. Returns `this`. |
+| `.filterKeys(pred)` | Alias for `filterKV`. |
+| `.partition(pred)` | Splits into `[yes, no]` maps by `pred`. |
+| `.find(pred)` | Returns `[k, v]` for the first match, else `undefined`. |
+| `.findKey(pred)` | Returns the first matching key, else `undefined`. |
+| `.findValue(pred)` | Returns the first matching value, else `undefined`. |
+| `.some(pred)` | `true` if any entry matches. |
+| `.every(pred)` | `true` if all entries match. |
+| `.reduce(fn, initial)` | Folds over entries (`fn(acc, v, k)`). |
+| `.forEachKV(fn)` | Iterates calling `fn(v, k, this)`. |
+| `.invert()` | Returns a new `M2` with keys/values swapped. |
+| `.unique(fn?)` | Returns a new `M2` keeping the first value per key `fn(v,k)` (or `v` if no `fn`). |
+| `.pick(keys)` | Returns a new `M2` containing only the given keys that exist. |
+| `.omit(keys)` | Returns a new `M2` excluding the given keys. |
+| `.merge(other)` | Sets each `[k, v]` from `other` (resolving thunks), returns `this`. |
+| `.clearAndSet(entries)` | Batches a `clear()` followed by setting every `[k, v]` from `entries`. Returns `this`. |
+| `.toObject()` | Returns a plain object from entries. |
+| `.toValues()` | Returns an `A2I` (array) of values. |
+| `.toKeys()` | Returns an `A2I` of keys. |
+| `.toArray()` | Returns an `A2I` of `[k, v]` entries. |
+| `.group(fn)` | Groups values into `M2<G, A2<T>>` by `fn(v, k)`. |
+| `.clone()` | Returns a new `M2` constructed from `this`. |
+| `.equals(other)` | Deep-ish equality: same size, same keys, values equal by `sameValue`. |
+| `M2.fromObject(obj)` (static) | Builds an `M2` from an object's entries. |
+| `M2.fromEntries(entries)` (static) | Builds an `M2` from an iterable of `[k, v]`. |
+| `M2.from(map)` (static) | Builds an `M2` from any readable map. |
+
+### Usage
+
+```ts
+// rv
+rv(5);            // 5
+rv(() => 5);      // 5
+
+// sameValue
+sameValue(1, 1);                        // true
+sameValue(new Date(0), new Date(0));    // true (equal timestamps)
+sameValue({}, {});                      // false (identity)
+
+// new M2
+const m = new M2<string, number>([["a", 1]]);
+
+// emit / record / invalidate / computeDerived / assertNotIterating
+// (private — exercised indirectly through the public API below)
+
+// Symbol.iterator
+for (const [k, v] of m) { /* ... */ }
+
+// .f (forEach alias)
+m.f((v, k) => console.log(k, v));
+
+// .on
+const off = m.on((e) => console.log(e.op, e.k));
+
+// .off
+off(); // or m.off(someFn)
+
+// .batch
+m.batch(() => { m.s(2, "a"); m.s(3, "a"); }); // emits one coalesced event for "a"
+
+// .s
+m.s(10, "b"); // set b -> 10, emits { op: "set", k: "b", v: 10, ... }
+
+// .mutate
+m.mutate("b", (old) => old + 1); // 11
+m.mutate("missing", (old) => 0); // undefined (not inserted)
+
+// .d
+m.d("b"); // true
+m.d("b"); // false
+
+// .c
+m.c(); // clears all, emits per-key del
+
+// .dv (derived)
+m.dv("sum", ["a", "b"], (a, b) => a + b);
+
+// .dirty
+m.dirty("sum"); // marks derived as dirty, emits dirty
+
+// .g
+m.g("a");   // value at "a" (or computed if derived)
+m.g("sum"); // recomputes if dirty
+
+// .h
+m.h("a");   // true / false
+
+// .$debug
+m.$debug(100); // enable history, keep last 100 events
+
+// .$strict
+m.$strict(); // mutators during iteration will throw
+
+// .$history
+m.$history(); // array of events so far
+
+// .$why
+m.$why("a"); // most recent event for "a", or undefined
+
+// .$diff
+const other = new M2<string, number>([["a", 2]]);
+m.$diff(other); // { add, del, chg }
+
+// .entries
+[...m.entries()];
+
+// .keys
+[...m.keys()];
+
+// .values
+[...m.values()];
+
+// .swap
+m.swap(20, "a"); // sets a -> 20, returns previous value (or 20 if it was absent)
+
+// .take
+m.take("a"); // returns value and deletes it
+
+// .peek
+m.peek("a"); // value or false
+
+// .getOrI
+m.getOrI(42, "a"); // existing or sets 42
+
+// .getOrM
+m.getOrM(() => [], "a"); // existing or inserts []
+
+// .update
+m.update("a", (old, has) => (has ? old + 1 : 0), 0);
+
+// .setIfAbsent
+m.setIfAbsent(1, "a"); // true if inserted
+
+// .setIfPresent
+m.setIfPresent(2, "a"); // true if written
+
+// .replace
+m.replace(3, "a"); // same as setIfPresent(rv(3), "a")
+
+// .inc
+m.inc("counter");    // increments by 1 (creates at 0 first)
+m.inc("counter", 5); // increments by 5
+
+// .touch
+m.touch("a"); // creates key with undefined if absent
+
+// .mapValues
+m.mapValues((v, k) => v * 2); // new M2
+
+// .mapKeys
+m.mapKeys((v, k) => k.toUpperCase()); // new M2
+
+// .filterKV
+m.filterKV((v) => v > 0); // deletes entries failing the predicate, in place
+
+// .filterKeys
+m.filterKeys((v, k) => k !== "skip"); // alias
+
+// .partition
+const [pos, nonPos] = m.partition((v) => v > 0);
+
+// .find
+m.find((v) => v > 5); // [k, v] | undefined
+
+// .findKey
+m.findKey((v) => v > 5); // k | undefined
+
+// .findValue
+m.findValue((v) => v > 5); // v | undefined
+
+// .some
+m.some((v) => v > 100); // boolean
+
+// .every
+m.every((v) => v >= 0); // boolean
+
+// .reduce
+m.reduce((acc, v) => acc + v, 0); // number
+
+// .forEachKV
+m.forEachKV((v, k, self) => { /* ... */ });
+
+// .invert
+m.invert(); // M2<T, H>
+
+// .unique
+m.unique(); // dedupe by value
+m.unique((v) => v % 2); // dedupe by derived key
+
+// .pick
+m.pick(["a", "b"]); // new M2 with those keys if present
+
+// .omit
+m.omit(["a"]); // new M2 without "a"
+
+// .merge
+m.merge([["x", 1], ["y", 2]]); // sets each, returns this
+
+// .clearAndSet
+m.clearAndSet([["a", 1], ["b", 2]]); // batched clear + set
+
+// .toObject
+m.toObject(); // { a: 1, ... }
+
+// .toValues
+m.toValues(); // A2I<T>
+
+// .toKeys
+m.toKeys(); // A2I<H>
+
+// .toArray
+m.toArray(); // A2I<[H, T]>
+
+// .group
+m.group((v) => v % 2); // M2<number, A2<number>>
+
+// .clone
+m.clone(); // new M2, same entries
+
+// .equals
+m.equals(other); // true if same size/keys/values
+
+// M2.fromObject
+M2.fromObject({ a: 1, b: 2 });
+
+// M2.fromEntries
+M2.fromEntries([["a", 1], ["b", 2]]);
+
+// M2.from
+M2.from(new Map([["a", 1]]));
+```
+## `D2` — Date
+
+Date gives you a timestamp. D2 gives you a date you can actually work with.
+
+
+It turns JavaScript’s worst native API into something that reads like the domain: dates become values you can safely move, compare, format, and reason about—without the usual Date landmines. Native Date is mutable, uses zero-based months, and has notoriously inconsistent parsing; those are exactly the pains this removes.
+
+With native Date, the code is always fighting the API:
+```tsx
+const d = new Date(2026, 10, 12); // November? Yes. Obviously.
+d.setDate(d.getDate() + 1);       // mutates d
+const next = new Date(d);          // hope you remembered to clone
+```
+
+With D2, the intent is on the surface:
+```tsx
+const next = D2I.from("2026-11-12").addDays(1);
+```
+No month arithmetic, no accidental mutation, no “wait, is this UTC or local?” guessing at the call site.
+
+The core win is that every operation returns a new D2. You never have to remember whether setMonth, setDate, or setHours just destroyed a date shared by three other parts of the app. Native Date setters mutate in place; libraries such as date-fns are explicitly built around returning new instances for that reason.
+
+So this:
+
+```tsx
+const later = date.addMonths(1);
+const meeting = date.at(14, 30);
+const week = date.startOfWeek();
+```
+is safer and clearer than:
+```tsx
+const later = new Date(date);
+later.setMonth(later.getMonth() + 1);
+
+const meeting = new Date(date);
+meeting.setHours(14, 30);
+
+const week = new Date(date);
+week.setDate(week.getDate() - week.getDay());
+```
+
+The first version says what you mean. The second version is a clone-and-mutate ritual.
+
+It fixes the month trap
+
+D2I.fromParts(2026, 11, 12) means November 12, because it should. Native Date makes January 0 and December 11, while days remain one-based—an inconsistency that produces off-by-one-month bugs constantly.
+
+That alone justifies the wrapper:
+
+```tsx
+D2I.fromParts(2026, 11, 12); // November 12
+```
+
+versus:
+```tsx
+new Date(2026, 10, 12); // also November 12, somehow
+```
+It makes time ranges real. R2 is the part that makes this feel like a complete date system rather than a bag of helpers:
+
+```tsx
+const range = D2I.from("2026-11-01").to("2026-11-30");
+
+range.contains(D2I.from("2026-11-15"));
+range.overlaps(otherRange);
+range.eachDay((day) => render(day));
+```
+
+That is the language product managers and UIs already use: a range contains this date, these ranges overlap, iterate the days. You are no longer manually comparing timestamps and hoping the boundaries are right.
+
+It removes formatting ceremony. Native date formatting is verbose and easy to get subtly wrong. D2 gives you direct, predictable output:
+
+```tsx
+date.fmt("YYYY-MM-DD");
+date.fmt("MMM D, YYYY h:mm A");
+date.toInputDate();
+date.toInputDateTime();
+```
+
+And the humanized relative time is right there:
+
+```tsx
+createdAt.fromNow(); // "3 days ago"
+deadline.fromNow();  // "in 2 hours"
+```
+No importing a formatting library, no building token maps, no repeating locale options across the codebase.
+
+The killer detail: D2_CODEC
+
+This is the part that makes it feel like a first-class citizen in your system:
+
+```tsx
+D2_CODEC.enc(date); // number
+D2_CODEC.dec(ms);   // D2
+```
+
+Dates become serializable, stable, and easy to move through storage, transport, caches, and event payloads. Instead of every boundary needing its own “convert Date to ISO string, then parse it back and pray” logic, the codec gives the type one canonical wire format.
+
+Native Date makes you manage time. D2 lets you express it.
+
+### Reference Table — `D2` / `D2I` / `R2` / `R2I` (and supporting pieces)
+
+| Command | Description |
+|---|---|
+| `DATE_TAG` | Codec tag constant `0x4432` ("D2"). |
+| `D2_CODEC` | Codec object: `test` (is it a `Date`), `enc` (→ epoch ms), `dec` (ms → `D2I`). |
+| `new D2I(value?)` | Extends `Date`; accepts `Date`, epoch ms, or string. Normalizes into a `D2`-typed instance. |
+| `D2I.now()` (static) | `Date.now()` (epoch ms). |
+| `D2I.fromUnix(seconds)` (static) | Builds a `D2I` from Unix **seconds**. |
+| `D2I.fromUnixMs(ms)` (static) | Builds a `D2I` from epoch **ms**. |
+| `D2I.fromParts(y, m, d, h?, min?, sec?, ms?)` (static) | Builds a `D2I` from calendar parts (month is 1-based). |
+| `D2I.today()` (static) | Midnight today. |
+| `D2I.min(...dates)` / `D2I.max(...dates)` (static) | Earliest / latest of the given dates. |
+| `D2I.from(v)` (static) | Coerces `Date` / `number` / `string` / `[y,m,d,…]` / `{date,time}` / `{year,month,day,…}` into a `D2`. Returns invalid `D2I` (NaN) on bad input. |
+| `D2I.parseDate(s)` (static) | Parses `"YYYY-MM-DD"`. |
+| `D2I.parseDateTime(s)` (static) | Parses `"YYYY-MM-DD HH:mm:ss"`. |
+| `.toLocalString(fmt?)` | `toLocaleString("en-US", fmt)` — fmt defaults to full date+time. |
+| `.clone()` | Returns a copy as `D2`. |
+| `.isValid()` | `true` if `getTime()` is finite. |
+| `.month()` | 1-based month. |
+| `.dateOfWeek()` | `getDay()` (0=Sun). |
+| `.dayOfYear()` | 1-based day-of-year. |
+| `.quarter()` | 1–4. |
+| `.unix()` | Epoch **seconds** (floored). |
+| `.addMs / addSeconds / addMinutes / addHours / addDays / addWeeks / addMonths / addYears` | Pure adders; return new `D2`. Month/year adders clamp day to `daysInMonth()`. |
+| `.subDays / subWeeks / subMonths / subYears` | Negations of the adders. |
+| `.startOfDay / endOfDay` | 00:00:00.000 / 23:59:59.999. |
+| `.startOfWeek(weekStartsOn?) / endOfWeek(weekStartsOn?)` | Week boundaries (default Sunday). |
+| `.startOfMonth / endOfMonth` | Month boundaries. |
+| `.startOfQuarter / endOfQuarter` | Quarter boundaries. |
+| `.startOfYear / endOfYear` | Year boundaries. |
+| `.daysInMonth()` | Days in this month. |
+| `.daysInYear()` | 365 or 366. |
+| `.isLeapYear()` | Gregorian leap-year check. |
+| `.isWeekend()` / `.isWeekday()` | Sat/Sun vs Mon–Fri. |
+| `.isBefore / isAfter / isEqual / isBetween` | Comparisons against another `Date`. |
+| `.diffMs / diffSeconds / diffMinutes / diffHours / diffDays` | `this - other` in the given unit. |
+| `.sameDay / sameMonth / sameYear` | Structural equality checks. |
+| `.toUnixMs()` / `.toUnix()` | Epoch ms / seconds. |
+| `.toD2()` | Returns a clone. |
+| `.ago()` | Alias for `fromNow()`. |
+| `.fromNow()` | Relative string to now (`"3 days ago"`, `"in 2 hours"`, `"just now"`). |
+| `.from(other)` | Relative string of `this` vs `other`. |
+| `.toInputDate / toInputTime / toInputDateTime / toInputTimeWithSeconds` | HTML input-ready strings (`YYYY-MM-DD`, `HH:mm`, `YYYY-MM-DDTHH:mm`, `HH:mm:ss`). |
+| `.next(unit)` | Next occurrence of `day`/`week`/`month`/`quarter`/`year` or a weekday name. |
+| `.prev(unit)` | Previous occurrence of the same units. |
+| `.nextWeek / prevWeek / nextMonth / prevMonth / nextQuarter / prevQuarter / nextYear / prevYear` | Shorthands. |
+| `.at(hour, minute?, second?, ms?)` | Sets time-of-day on a clone. |
+| `.atNoon()` | 12:00. |
+| `.midnight()` | `startOfDay()`. |
+| `.addBusinessDays(n) / nextBusinessDay() / prevBusinessDay()` | Skips weekends. `n` may be negative. |
+| `.isBusinessDay()` | `isWeekday()`. |
+| `.calendarDays(other)` | Whole calendar-day distance. |
+| `.businessDays(other)` | Weekday count strictly between `this` and `other`. |
+| `.diffHuman(other?)` | Compact `"3d"`, `"2h"`, `"500ms"` etc. |
+| `.fmt(format)` | Token formatter: `YYYY, YY, MMMM, MMM, MM, M, DD, D, dddd, ddd, HH, H, hh, h, mm, m, ss, s, SSS, A, a`. |
+| `.set(f)` | Returns a clone with `{ year, month, day, hour, minute, second, ms }` applied (day clamped). |
+| `.withDate(y, m, d)` | Shortcut for `.set({ year, month, day })`. |
+| `.sameTimeOn(other)` | Moves `this`'s time-of-day onto `other`'s date. |
+| `.to(other)` | Builds an `R2` range `[this, other]`. |
+| `.isSameOrBefore / isSameOrAfter` | Inclusive comparisons. |
+| `.clamp(min, max)` | Clamps into `[min, max]`. |
+| `.isSame(unit, other)` | Equality at `day`/`week`/`month`/`quarter`/`year` granularity. |
+| `.isToday / isTomorrow / isYesterday` | Calendar-day comparisons vs now. |
+| `.age(unit?)` | Years / months / days between now and `this`. |
+| `new R2I(start, end)` | Range object holding `start` and `end` (`D2`). |
+| `R2I#contains(d)` | `d` is within `[start, end]` inclusive. |
+| `R2I#overlaps(other)` | True if intervals intersect. |
+| `R2I#durationMs()` | `end - start` in ms. |
+| `R2I#days()` | Floored whole days of duration. |
+| `R2I#eachDay(fn)` | Iterates `(dayStart, index)` per calendar day while `cur < end`. |
+| `R2I#toArray()` | Returns `A2I<D2>` of `startOfDay` snapshots per day. |
+| `R2II(start, end)` | Factory: wraps `D2I` around each arg and returns an `R2`. |
+
+### Usage
+
+```ts
+// DATE_TAG / D2_CODEC
+D2_CODEC.test(new Date());     // true
+D2_CODEC.enc(new D2I(0));      // 0
+D2_CODEC.dec(0);               // D2I @ epoch
+
+// new D2I
+const d = new D2I("2024-03-15T10:30:00Z");
+new D2I(new Date());
+new D2I(1700000000000);
+
+// D2I.now / fromUnix / fromUnixMs
+D2I.now();                    // 1_7... ms
+D2I.fromUnix(1_700_000_000);  // seconds → D2
+D2I.fromUnixMs(1_700_000_000_000);
+
+// D2I.fromParts
+D2I.fromParts(2024, 3, 15);           // 2024-03-15 00:00
+D2I.fromParts(2024, 3, 15, 10, 30);   // 2024-03-15 10:30
+
+// D2I.today / min / max
+D2I.today();
+D2I.min(d, D2I.today());
+D2I.max(d, D2I.today());
+
+// D2I.from
+D2I.from("2024-03-15");
+D2I.from("2024-03-15T10:30");
+D2I.from([2024, 3, 15, 10, 30]);
+D2I.from({ year: 2024, month: 3, day: 15 });
+D2I.from({ date: "2024-03-15", time: "10:30" });
+
+// D2I.parseDate / parseDateTime
+D2I.parseDate("2024-03-15");
+D2I.parseDateTime("2024-03-15 10:30:00");
+
+// Instance — formatting
+d.toLocalString();
+d.toLocalString({ year: "numeric", month: "long" });
+
+// clone / isValid
+d.clone();
+d.isValid();
+
+// calendar bits
+d.month(); d.dateOfWeek(); d.dayOfYear(); d.quarter();
+
+// epoch
+d.unix(); d.toUnix(); d.toUnixMs();
+
+// arithmetic
+d.addDays(3);
+d.addMonths(1); // clamps day if needed
+d.addYears(1);
+d.subDays(1);
+d.subMonths(1);
+d.subYears(1);
+d.addSeconds(30);
+
+// boundaries
+d.startOfDay(); d.endOfDay();
+d.startOfWeek(); d.endOfWeek(1);
+d.startOfMonth(); d.endOfMonth();
+d.startOfQuarter(); d.endOfQuarter();
+d.startOfYear(); d.endOfYear();
+
+// introspection
+d.daysInMonth(); d.daysInYear(); d.isLeapYear();
+d.isWeekend(); d.isWeekday();
+
+// comparison
+d.isBefore(other);
+d.isAfter(other);
+d.isEqual(other);
+d.isBetween(start, end);
+
+// diffs
+d.diffMs(other);
+d.diffHours(other);
+d.diffDays(other);
+
+// same-ness
+d.sameDay(other); d.sameMonth(other); d.sameYear(other);
+
+// relative
+d.ago();        // "3 days ago"
+d.fromNow();
+d.from(other);  // "in 2 hours"
+
+// toD2 / clone
+d.toD2();
+
+// input value helpers
+d.toInputDate();          // "2024-03-15"
+d.toInputTime();          // "10:30"
+d.toInputDateTime();      // "2024-03-15T10:30"
+d.toInputTimeWithSeconds();
+
+// next / prev
+d.next("monday");
+d.next("month");
+d.prev("week");
+d.nextWeek(); d.prevWeek();
+d.nextMonth(); d.prevMonth();
+d.nextQuarter(); d.prevQuarter();
+d.nextYear(); d.prevYear();
+
+// time-of-day
+d.at(9, 30);
+d.atNoon();
+d.midnight();
+
+// business days
+d.addBusinessDays(3);
+d.addBusinessDays(-2);
+d.nextBusinessDay();
+d.prevBusinessDay();
+d.isBusinessDay();
+
+// calendars / diffs
+d.calendarDays(other);
+d.businessDays(other);
+d.diffHuman();          // "3d" / "2h" / "500ms"
+d.diffHuman(other);
+
+// custom format
+d.fmt("YYYY-MM-DD HH:mm:ss.SSS");
+d.fmt("dddd, MMMM D, YYYY");
+
+// set / withDate / sameTimeOn
+d.set({ hour: 9, minute: 0 });
+d.withDate(2025, 1, 1);
+d.sameTimeOn(other);
+
+// ranges
+const r = d.to(other);      // R2
+d.isSameOrBefore(other);
+d.isSameOrAfter(other);
+d.clamp(minDate, maxDate);
+
+// isSame(unit, other)
+d.isSame("day", other);
+d.isSame("month", other);
+d.isSame("quarter", other);
+
+// today-checks / age
+d.isToday(); d.isTomorrow(); d.isYesterday();
+d.age("years");
+d.age("months");
+d.age("days");
+
+// R2I
+const range = new R2I(D2I.from("2024-01-01"), D2I.from("2024-01-31"));
+range.contains(D2I.from("2024-01-15"));  // true
+range.overlaps(otherRange);              // true/false
+range.durationMs();
+range.days();
+range.eachDay((day, i) => { /* ... */ });
+range.toArray();
+
+// R2II
+R2II("2024-01-01", "2024-01-31"); // convenience factory → R2
+```
+## `nested` — Nested Map Storage
+
+<details><summary><strong><span style="font-size: 16px; font-family: monospace">[SOURCE]</span> </strong></summary>
+
+```tsx
+type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU
+
+const cache = new M2<A, M2<A, M2<K, V>>>();
+
+export class nestedi<K = A, V = A> {
+    public r = 'ROOT' 
+    public m = 'MASTER' 
+    public s = 'SLAVE' 
+    public CACHE: ALL_MAPS
+    public FALLBACK = new M2<A, M2<A, M2<K, V>>>();
+
+    constructor(CACHE: ALL_MAPS = cache) { this.CACHE = CACHE }
+
+    public map<K, V>(s: A = 'map', m: A = this.m , r: A = this.r): Map<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new Map<A, Map<A, Map<A, A>>>();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new Map<A, Map<A, A>>();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new Map<A, A>();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public m2<K, V>(s: A = 'm2', m: A = this.m , r: A = this.r): M2<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new M2<A, Map<A, Map<A, A>>>();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2<A, Map<A, A>>();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2<A, A>();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public m2b<K, V>(s: A = 'm2b', m: A = this.m , r: A = this.r): M2B<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new M2B();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2B();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2B();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public m2bin<K, V>(s: A = 'm2bin', m: A = this.m , r: A = this.r): M2BIN<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new M2BIN<A, Map<A, Map<A, A>>>();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2BIN<A, Map<A, A>>();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2BIN<A, A>();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public m2d<K, V>(s: A = 'm2d', m: A = this.m , r: A = this.r): M2D<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new M2D<A, Map<A, Map<A, A>>>();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2D<A, Map<A, A>>();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2D<A, A>();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public m2r<K>(s: A = 'm2r', m: A = this.m , r: A = this.r): M2R<A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = (globalThis as A)[r] 
+        if (!root) {
+            root = new M2R();
+			(globalThis as A)[r] = root;
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2R();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2R();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+    public cache<K, V>(s: A = 'cache', m: A = this.m , r: A = this.r): M2<A, A> {
+        // 1. Root Lookup via Module Cache (Fast path)
+        let root = this.CACHE ? this.CACHE.get(r) : this.FALLBACK.get(r)
+        if (!root) {
+            root = new M2<A, M2<A, M2<A, A>>>();
+			this.CACHE ? this.CACHE.set(r, root) : this.FALLBACK.set(r, root)
+        }
+        // 2. Master Map Lookup
+        let masterMap = root.get(m);
+        if (!masterMap) {
+            masterMap = new M2<A, M2<A, A>>();
+            root.set(m, masterMap);
+        }
+        // 3. Slave Map Lookup
+        let slaveMap = masterMap.get(s);
+        if (!slaveMap) {
+            slaveMap = new M2<A, A>();
+            masterMap.set(s, slaveMap);
+        }
+        return slaveMap;
+    }
+}
+
+export const nested = new nestedi();
+```
+
+```tsx
+const rootRegistry = new M2<A, M2<A, M2<A, A>>>();
+
+export class WAR_ROOOM {
+	public r: A = "THE_WIZARD_ROOT_REG";
+	public m: A = "SAURON_MASTER_REG";
+	public s: A = "SAURON_SLAVE_REG";
+	public k: A = "__SAURON__";
+	private raven: DEATH_STAR;
+	//                                                                                                                  MAIN CACHES
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	#META = new M2<A, M2<A, M2<A, A>>>();
+	_meta: MTracer<A, A>;
+	#SIGNALS = new M2<A, M2<A, M2<A, A>>>();
+	_signals: M2<A, A>;
+	#NAKED_SIGNALS = new M2<A, M2<A, M2<A, A>>>();
+	_naked_signals: M2<A, A>;
+	#CONTEXT = new M2<A, M2<A, M2<A, A>>>();
+	_context: MTracer<A, A>;
+	#ATOMS = new M2<A, M2<A, M2<A, A>>>();
+	_atoms: MTracer<A, A>;
+	#SAURON = new M2<A, M2<A, M2<A, A>>>();
+	_sauron: MTracer<A, A>;
+	#BUS = new M2<A, M2<A, M2<A, A>>>();
+	_bus: MTracer<A, A>;
+	_gt: MTracer<A, A>;
+
+	COMPONENTS = new M2<S, ComponentInstance>();
+	// #endregion
+	//                                                                                                                    THE CLOUD
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	_components: MTracer<A, A>;
+	_batches: MTracer<S | SY>;
+	_batchQueue: MTracer<S | SY, A>;
+	_batchOpts: M<S | SY, { triggerRender?: B }>;
+	_sys: MTracer<S, SysEntry>;
+	_sealed: MTracer<S, SysEntry>;
+	_keyContracts: M<S, ST<S>>;
+	_conflicts: MTracer<S, ConflictPolicy>;
+	_conflictStrategies: MTracer<S, "latest" | "fail" | "accumulate">;
+	_causal: M<S, CausalEntry[]>;
+	_history: M<S | SY, HistoryEntry[]>;
+	_scopes: MTracer<S, SignalScope>;
+	_msgHandlers: M<S, ST<(p: A) => V>>;
+	_lastWriteSource: M<S, S>;
+	_mainMap: MTracer<A, S>;
+	_tupleCache: MTracer<S, S>;
+	_weakMap: MTracer<O, S>;
+	_boundaries: MTracer<O, S>;
+	_persistent: MTracer<A, A>;
+	_persistent_keys: MTracer<A, A>;
+
+	_global_subscribers: M2<S, ST<() => V>>;
+	_waiters: M2<S | SY, ST<(value: A) => V>>;
+	_listeners: M2<A, ST<(value: A) => void>>;
+	// #endregion
+	//                                                                                                                    SIGNALS
+	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+	_timeTravelMaul: MTracer<A, A>;
+	_historyMaul: MTracer<A, A>;
+
+	_subscribersMaul: M2<A, A>;
+	_listenersMaul: M2<A, A>;
+	// #endregion
+	constructor(raven: DEATH_STAR) {
+		this.raven = raven;
+		this.r = raven.r ?? "THE_WIZARD_ROOT_REG";
+		this.m = raven.m ?? "SAURON_MASTER_REG";
+
+		this.s = raven.s ?? "SAURON_SLAVE_REG";
+		this.k = raven.k ?? "THE_K_KEY";
+
+		this._meta = this.tracer("_meta", this.m, this.r, "#META");
+		this._signals = this.map("_signals", this.m, this.r, "#SIGNALS");
+		this._naked_signals = this.map("_naked_signals", this.m, this.r, "#NAKED_SIGNALS");
+		this._context = this.tracer("_context", this.m, this.r, "#CONTEXT");
+		this._atoms = this.tracer("_atoms", this.m, this.r, "#ATOMS");
+		this._sauron = this.tracer("_sauron", this.m, this.r, "#SAURON");
+		this._bus = this.tracer("_bus", this.m, this.r, "#BUS");
+		this._gt = this.tracer("_gt", this.m, this.r);
+
+		this._listeners = this.map("_listeners_raven", this.m, this.r);
+		this._global_subscribers = this.map<M<S, ST<() => V>>>("_global_subscribers_raven", this.m, this.r);
+		this._waiters = this.map<M<S | SY, ST<(value: A) => V>>>("_waiters_raven", this.m, this.r);
+
+		this._persistent_keys = this.tracer("_persistent_keys_raven", this.m, this.r);
+		this._persistent = this.tracer("_persistent_raven", this.m, this.r);
+		this._components = this.tracer("_components_raven", this.m, this.r);
+		this._batches = this.tracer("_batches_raven", this.m, this.r);
+		this._batchQueue = this.tracer("_batchQueue_raven", this.m, this.r);
+		this._batchOpts = this.map<M<S | SY, { triggerRender?: B }>>("_batchOpts_raven", this.m, this.r);
+		this._sys = this.tracer<MTracer<S, SysEntry>>("_sys_raven", this.m, this.r);
+		this._sealed = this.tracer<MTracer<S, SysEntry>>("_sealed_raven", this.m, this.r);
+		this._keyContracts = this.map<M<S, ST<S>>>("_keyContracts_raven", this.m, this.r);
+		this._conflicts = this.tracer<MTracer<S, ConflictPolicy>>("_conflicts_raven", this.m, this.r);
+		this._conflictStrategies = this.tracer<MTracer<S, "latest" | "fail" | "accumulate">>("_conflictStrategies_raven", this.m, this.r);
+		this._causal = this.map<M<S, CausalEntry[]>>("_causal_raven", this.m, this.r);
+		this._history = this.map<M<S | SY, HistoryEntry[]>>("_history_raven", this.m, this.r);
+		this._scopes = this.tracer<MTracer<S, SignalScope>>("_scopes_raven", this.m, this.r);
+		this._msgHandlers = this.map<M<S, ST<(p: A) => V>>>("_msgHandlers_raven", this.m, this.r);
+		this._lastWriteSource = this.map<M<S, S>>("_lastWriteSource_raven", this.m, this.r);
+		this._mainMap = this.tracer("_mainMap_raven", this.m, this.r);
+		this._tupleCache = this.tracer<MTracer<S, S>>("_tupleCache_raven", this.m, this.r);
+		this._weakMap = this.tracer<MTracer<O, S>>("_weakMap_raven", this.m, this.r);
+		this._boundaries = this.tracer<MTracer<O, S>>("_boundaries_raven", this.m, this.r);
+
+		this._timeTravelMaul = this.tracer<MTracer<O, S>>("_timeTravel_maul", this.m, this.r, "#SIGNALS");
+		this._historyMaul = this.tracer<MTracer<O, S>>("_history_maul", this.m, this.r, "#SIGNALS");
+
+		this._subscribersMaul = this.map<M2<O, S>>(" _subscribers_maul", this.m, this.r, "#SIGNALS");
+		this._listenersMaul = this.map<M2<O, S>>(" _listeners_maul", this.m, this.r, "#SIGNALS");
+	}
+	get_root(c: S, r: S) {
+		let root;
+		switch (c) {
+			case "#CONTEXT": { root = this.#CONTEXT.get(r); break; }
+			case "#META": { root = this.#META.get(r); break; }
+			case "#SIGNALS": { root = this.#SIGNALS.get(r); break; }
+			case "#ATOMS": { root = this.#ATOMS.get(r); break; }
+			case "#SAURON": { root = this.#SAURON.get(r); break; }
+			case "#BUS": { root = this.#BUS.get(r); break; }
+			case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.get(r); break; }
+			case "gt": { root = rootRegistry.get(r); break; }
+			case "globalThis": { (globalThis as A)[r]; break; }
+		}
+		if (!root) {
+			root = new M2<A, M2<A, M2<A, A>>>();
+			switch (c) {
+				case "#CONTEXT": { root = this.#CONTEXT.set(r, root); break; }
+				case "#META": { root = this.#META.set(r, root); break; }
+				case "#SIGNALS": { root = this.#SIGNALS.set(r, root); break; }
+				case "#ATOMS": { root = this.#ATOMS.set(r, root); break; }
+				case "#SAURON": { root = this.#SAURON.set(r, root); break; }
+				case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.set(r, root); break; }
+				case "#BUS": { root = this.#BUS.set(r, root); break; }
+				case "gt": { rootRegistry.set(r, root); break; }
+				case "globalThis": { (globalThis as A)[r] = root; break; }
+			}
+		}
+		return root;
+	}
+	map<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): M2<K, V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new M2<K, V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	tracer<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): MTracer<K, V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new MTracer<K, V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	set<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): STracer<V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new STracer<V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	obj<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): OTracer<V> | K | V {
+		const root = this.get_root(c, r);
+		let masterMap = root.get(m);
+		if (!masterMap) {
+			masterMap = new M2<A, M2<A, A>>();
+			root.set(m, masterMap);
+		}
+		let slaveMap = masterMap.get(s);
+		if (!slaveMap) {
+			slaveMap = new OTracer<V>();
+			masterMap.set(s, slaveMap);
+		}
+		return slaveMap;
+	}
+	
+}
+
+```
+
+
+</details>
+
+<br />
+
+> `M2` stores state. `nested` gives every part of the app its own address in a shared state universe.
+
+Instead of every feature declaring and wiring its own store, you ask for an isolated compartment:
+
+```ts
+const cart = nested.m2("cart");
+const session = nested.m2("session");
+const featureFlags = nested.m2("flags");
+```
+
+Each one is its own map, but they all live under a predictable, addressable structure. That is the same core idea as namespaced caches and hierarchical stores: isolate concerns, prevent collisions, and make lookup cheap and predictable.
+
+## Why it punches above its weight
+
+Because it turns a giant problem—**“where does this state live, who owns it, and how do I get it?”**—into three strings:
+
+```ts
+root → master → slave
+```
+
+- **Root**: the universe or environment, e.g. app, test, worker, iframe.
+- **Master**: the subsystem, e.g. signals, components, buses, persistence.
+- **Slave**: the actual named store, e.g. `_signals`, `_listeners`, `_batchQueue`.
+
+So `_signals` is not just a field on a god object. It has an address:
+
+```ts
+THE_WIZARD_ROOT_REG
+  └── SAURON_MASTER_REG
+        └── _signals
+```
+
+That means the same conceptual store can be resolved consistently from anywhere, while remaining separated from every other store. Hierarchical namespacing is specifically used to isolate logical stores and prevent key collisions.
+
+## The real magic: lazy materialization
+
+You do not create 50 stores up front. You ask for one, and it appears if it does not already exist:
+
+```ts
+const bus = nested.m2("bus");
+```
+
+First call: creates the path.  
+Second call: returns the exact same live store.
+
+That is why it feels so powerful. It is **memoized structural state**. The registry becomes a sparse, self-healing tree: absent branches are created on demand, then reused forever.
+
+That removes an entire category of wiring pain:
+
+- No passing stores through constructors
+- No singleton imports scattered across modules
+- No manually instantiating every subsystem
+- No accidental duplicate stores for the same logical concern
+- No giant initialization function that has to know every feature
+
+A registry’s core value is exactly this: centralized lookup without forcing consumers to know how or where the underlying instance was created. 
+
+## Why `WAR_ROOOM` is the proof
+
+`WAR_ROOOM` is not just using the registry—it is **living inside it**.
+
+Look at what it resolves:
+
+```ts
+this._meta
+this._signals
+this._context
+this._atoms
+this._bus
+this._listeners
+this._waiters
+this._components
+this._batches
+this._batchQueue
+this._history
+this._scopes
+this._persistent
+```
+
+Every one of those is a named compartment in the same hierarchical universe. The class does not need to construct and manage dozens of disconnected globals; it resolves them by address.
+
+That is why it scales. You can add a new concern without redesigning the object:
+
+```ts
+this._telemetry = this.tracer("_telemetry", this.m, this.r);
+this._plugins = this.map("_plugins", this.m, this.r);
+this._featureFlags = this.map("_featureFlags", this.m, this.r);
+```
+
+The registry absorbs it. No new global, no new wiring layer, no new ownership ceremony.
+
+## The killer capability
+
+Because root, master, and slave are parameters, you can isolate entire worlds:
+
+```ts
+nested.m2("cart", "shop", "prod");
+nested.m2("cart", "shop", "test");
+
+nested.m2("signals", "editor", "worker-1");
+nested.m2("signals", "editor", "worker-2");
+```
+
+Same API. Different universes.
+
+That gives you:
+
+- Per-environment state
+- Per-test isolation
+- Per-worker state
+- Per-tenant state
+- Per-feature sandboxing
+- Parallel subsystems that do not trample each other
+
+This is why it feels like it punches above its weight: it is not merely a nested-map helper. It is a **namespacing primitive**. Namespaces are how systems separate independent concerns while still sharing one underlying storage mechanism.
+
+> **`Map` holds values.**  
+> **`M2` makes values observable.**  
+> **`nested` gives every subsystem its own observable universe.**
+
+
+**How do you address something precisely without forcing every caller to understand the whole system?** Hierarchical topic systems do this with names like `app/module/channel`; your registry does it structurally with `root → master → slave`. 
+
+## The core insight
+
+This is a way to make **addressing itself lazy**.
+
+Most systems make you choose one of two pains:
+
+- **Flat keys:** simple, but collisions and organization become a mess.
+- **Explicit hierarchies:** organized, but now you need routing tables, providers, registration code, configuration, and setup ceremony.
+
+This version gets the good half of both:
+
+```ts
+nested.m2("signals");
+```
+
+That is not “create a map.” It is:
+
+> Give me the live `signals` compartment in this universe.
+
+And if the path does not exist, the universe materializes it. If it does exist, every caller receives the same living instance. That is why it feels less like a utility and more like an operating-system-style namespace.
+
+## Why the bus becomes trivial
+
+This is the part that is genuinely beautiful:
+
+```ts
+nested.map("orders");
+nested.map("payments");
+nested.map("orders:payments");
+```
+
+You do not need to configure routes because **the address is the route**.
+
+A message published to an address lands in exactly one compartment. A subscriber attached to that compartment receives it. Want multiplexing? Use a broader compartment. Want isolation? Use a narrower one.
+
+That is the same fundamental idea behind hierarchical topics: an address describes a location in a tree, and subscriptions/routing can operate over that structure rather than requiring a separate routing table. 
+
+So the “router” is not a separate subsystem bolted onto the bus. The bus **is** the router, because its storage model already encodes topology.
+
+## Why contexts become easy
+
+This is the second huge win:
+
+```ts
+const userScope = nested.m2("user:42");
+const tenantScope = nested.m2("tenant:acme");
+const draftScope = nested.m2("draft:abc");
+```
+
+No provider tree. No context plumbing. No “lift state twelve levels” ritual. No global singleton that every feature has to carefully avoid colliding with.
+
+You get **global reach with local identity**:
+
+- Globally accessible: any part of the app can resolve it.
+- Locally scoped: it belongs to one user, tenant, workspace, draft, session, or component tree.
+- Infinitely divisible: add another scope without changing the architecture.
+- Naturally isolated: one scope cannot silently overwrite another.
+
+That is exactly the kind of structure scoped registries are designed to provide: shared lookup, but with scope-aware boundaries.
+
+## Why databases become easy
+
+For a KV-style database, the hierarchy becomes the schema:
+
+```ts
+nested.m2("users");
+nested.m2("users:42");
+nested.m2("users:42:orders");
+```
+
+One-line change moves the data into another table:
+
+```ts
+nested.m2("users:42:archive");
+```
+
+No migration ceremony for a logical namespace. No manually constructing nested objects. No “where do I put this record?” debate. The address *is* the table.
+
+And because the compartments are real maps—not string-mangled keys—you keep native operations: iteration, deletion, size, typed values, reactive events, batch updates, derived values. You are not sacrificing the data structure to get organization.
+
+## Why the performance trade is smart
+
+The 4M ops/sec number is not the real number, because the registry is not the hot path. It is the **address-resolution path**.
+
+You resolve once:
+
+```ts
+this._atoms = this.tracer("_atoms", this.m, this.r, "#ATOMS");
+```
+
+Then the hot path uses the returned store directly:
+
+```ts
+this._atoms.s(value, key);
+this._atoms.g(key);
+```
+
+So the expensive hierarchical lookup happens at construction/boundary time, while the millions-of-ops-per-second operations happen against the already-resolved `M2`. That is why the “cache of the cache” is not a hack—it is the correct placement of cost.
+
+You are paying hierarchy tax **once per compartment**, then getting `M2`’s fast path **for every operation afterward**. That is an excellent trade.
+
+
+The biggest headache in app architecture is not usually algorithms. It is **ownership and reach**:
+
+- Who owns this state?
+- Who can access it?
+- Where does it get initialized?
+- How do I avoid collisions?
+- How do I isolate tests?
+- How do I add a feature without rewiring everything?
+- How do I scope something without building a provider tree?
+
+This registry answers all of them with one move:
+
+```ts
+nested.m2("feature/subsystem/scope");
+```
+
+It gives you a place for everything, without forcing you to plan the entire universe upfront. The system grows by addressing, not by re-architecture.
+
+## The real framing
+
+This is not “nested maps.”
+
+This is:
+
+> **A lazy, hierarchical, namespaced state fabric.**
+
+- **Lazy:** compartments appear when first requested.
+- **Hierarchical:** root, master, and slave form a stable topology.
+- **Namespaced:** every concern has an isolated address.
+- **State fabric:** the same mechanism supports buses, contexts, caches, tables, scopes, routers, and workspaces.
+
+That is why it is used everywhere. It is not a feature for one problem—it is the **addressing layer** beneath every problem.
+
+
+| Command | Description |
+|---|---|
+| `ALL_MAPS` (type) | Union of map-like shapes accepted as a store: `M2<K,V>`, `Map<K,V>`, `M2B`, `M2BIN<K,V>`, `M2D<K,V>`, `M2R<K>`, or `NU` (null/undefined). |
+| `cache` (module-level) | Default `M2<A, M2<A, M2<K, V>>>` instance used as the backing store when no `CACHE` is supplied. |
+| `new nestedi(CACHE?)` | Creates the nested-map accessor. `CACHE` defaults to the module-level `cache`. Exposes `r`/`m`/`s` name defaults and a `FALLBACK` store. |
+| `.r` (field) | Default **root** namespace name (`'ROOT'`). |
+| `.m` (field) | Default **master** name (`'MASTER'`). |
+| `.s` (field) | Default **slave** name (`'SLAVE'`). |
+| `.CACHE` (field) | Backing store for `.cache()` — an `ALL_MAPS`, or falls back to `.FALLBACK` when absent. |
+| `.FALLBACK` (field) | `M2` used when `CACHE` is unavailable. |
+| `.map(s?, m?, r?)` | Returns a 3-level **native `Map`** at `root[r] → master[m] → slave[s]`, creating each level on demand. Stored on `globalThis[r]`. |
+| `.m2(s?, m?, r?)` | Same 3-level lookup, but each level is an **`M2`**. Stored on `globalThis[r]`. |
+| `.m2b(s?, m?, r?)` | Same, but each level is an **`M2B`**. Stored on `globalThis[r]`. |
+| `.m2bin(s?, m?, r?)` | Same, but each level is an **`M2BIN`**. Stored on `globalThis[r]`. |
+| `.m2d(s?, m?, r?)` | Same, but each level is an **`M2D`**. Stored on `globalThis[r]`. |
+| `.m2r(s?, m?, r?)` | Same, but each level is an **`M2R`**. Stored on `globalThis[r]`. |
+| `.cache(s?, m?, r?)` | Same 3-level lookup, but **backed by `this.CACHE`** (or `this.FALLBACK` if unset). Each level is an `M2`. |
+| `nested` (exported instance) | Pre-built `nestedi` singleton. |
+
+All accessor methods (`map`, `m2`, `m2b`, `m2bin`, `m2d`, `m2r`, `cache`) take the same argument order: `(slaveName, masterName, rootName)` — **note the reversed naming from `root → master → slave` order**: the first arg is the **innermost** (slave) map, the second is master, the third is root.
+
+### Usage
+
+```ts
+// ALL_MAPS (type-only)
+const store: ALL_MAPS = new M2<string, number>();
+const native: ALL_MAPS = new Map<string, number>();
+
+// cache (module-level default)
+import { nested } from "./nested";
+
+// new nestedi
+const n = new nestedi();                 // uses module-level `cache`
+const n2 = new nestedi(new M2());        // custom backing store
+
+// fields
+n.r;   // 'ROOT'
+n.m;   // 'MASTER'
+n.s;   // 'SLAVE'
+n.CACHE;
+n.FALLBACK;
+
+// .map — 3-level native Map
+const m = n.map("session", "auth", "app");
+m.set("u1", { id: 1 });           // writes into app → auth → session
+n.map("session", "auth", "app") === m; // true (same ref)
+
+// .m2 — 3-level M2
+const m2 = n.m2("session", "auth", "app");
+m2.s(1, "u1");                    // M2 API (s = set)
+m2.g("u1");                       // 1
+
+// .m2b — 3-level M2B
+const m2b = n.m2b("session", "auth", "app");
+m2b.set("u1", 1);
+
+// .m2bin — 3-level M2BIN
+const m2bin = n.m2bin("session", "auth", "app");
+m2bin.set("u1", 1);
+
+// .m2d — 3-level M2D
+const m2d = n.m2d("session", "auth", "app");
+m2d.set("u1", 1);
+
+// .m2r — 3-level M2R
+const m2r = n.m2r("session", "auth", "app");
+m2r.s("u1");
+
+// .cache — 3-level M2 backed by CACHE (or FALLBACK)
+const c = n.cache("session", "auth", "app");
+c.s(1, "u1");
+c.g("u1");                        // 1
+
+// cache() with no CACHE falls back to FALLBACK
+const noCache = new nestedi(undefined);
+const fc = noCache.cache("x", "y", "z");
+fc.s(1, "k");                     // stored in noCache.FALLBACK
+
+// defaults apply when args omitted
+n.map();                          // → ROOT → MASTER → map
+n.m2();                           // → ROOT → MASTER → m2
+n.m2b();
+n.m2bin();
+n.m2d();
+n.m2r();
+n.cache();                        // → ROOT → MASTER → cache
+
+// exported singleton
+import { nested } from "./nested";
+const shared = nested.map("s", "m", "r");
+```
+
 
 ## `A2` — Array
 
@@ -731,97 +2067,6 @@ Static helpers include `A2I.from()` and `A2I.of()`.
 | `clear()` | Zero every flag in place; no reallocation |
 | `flags` | The backing `Uint8Array`, indexed by PID |
 
-## `D2` — Date
-
-`D2` extends `Date` and keeps the standard `Date` API, adding immutable date arithmetic, calendar helpers, human-readable diffs, custom formatting, and locale-aware parsing. Every method returns a new `D2I`; the receiver is never mutated.
-
-Registered as a codec (`DATE_TAG = 0x4432`, `"D2"`): `enc` writes the epoch-ms as an `i64`, `dec` revives it as a `D2I`.
-
-| Method | Description |
-|---|---|
-| `set(f)` | Return a new date with the given `{ year, month, day, hour, minute, second, ms }` fields applied; unset fields are preserved, `day` is clamped to the target month |
-| `withDate(year, month, day)` | Replace the calendar date, keep the time |
-| `sameTimeOn(other)` | Keep this date's time, adopt `other`'s calendar date |
-| `at(hour, minute?, second?, ms?)` | Return a new date at the given time on this date |
-| `atNoon()` / `midnight()` | `at(12)` / `startOfDay()` |
-| `toInputDate()` / `toInputTime()` / `toInputDateTime()` / `toInputTimeWithSeconds()` | `YYYY-MM-DD`, `HH:mm`, `YYYY-MM-DDTHH:mm`, `HH:mm:ss` for form inputs |
-
-### Arithmetic
-
-| Method | Description |
-|---|---|
-| `addMs` / `addSeconds` / `addMinutes` / `addHours` / `addDays` / `addWeeks` / `addMonths` / `addYears` | Return a new date shifted by the amount |
-| `subDays` / `subWeeks` / `subMonths` / `subYears` | Negative-shift shorthand |
-| `addBusinessDays(n)` / `nextBusinessDay()` / `prevBusinessDay()` | Shift by weekdays, skipping weekends |
-| `next(unit)` / `prev(unit)` | Next/previous `day`, `week`, `month`, `quarter`, `year`, or weekday name (`"friday"`) |
-| `nextWeek` / `prevWeek` / `nextMonth` / `prevMonth` / `nextQuarter` / `prevQuarter` / `nextYear` / `prevYear` | Named shorthands |
-
-### Boundaries
-
-| Method | Description |
-|---|---|
-| `startOfDay` / `endOfDay` | Local day boundaries |
-| `startOfWeek(weekStartsOn?)` / `endOfWeek(weekStartsOn?)` | Week boundaries; `weekStartsOn` defaults to `0` (Sunday) |
-| `startOfMonth` / `endOfMonth` | Month boundaries |
-| `startOfQuarter` / `endOfQuarter` | Quarter boundaries |
-| `startOfYear` / `endOfYear` | Year boundaries |
-
-### Fields and predicates
-
-| Method | Description |
-|---|---|
-| `month()` | 1-based month |
-| `dateOfWeek()` / `dayOfYear()` / `quarter()` | Calendar fields |
-| `daysInMonth()` / `daysInYear()` / `isLeapYear()` | Calendar facts |
-| `isWeekend()` / `isWeekday()` / `isBusinessDay()` | Day-type predicates |
-| `isBefore` / `isAfter` / `isEqual` / `isBetween` / `isSameOrBefore` / `isSameOrAfter` | Instant comparison |
-| `sameDay` / `sameMonth` / `sameYear` / `isSame(unit, other)` | Calendar comparison |
-| `isToday` / `isTomorrow` / `isYesterday` | Relative-day predicates |
-| `clamp(min, max)` | Clamp into a range |
-
-### Differences
-
-| Method | Description |
-|---|---|
-| `diffMs` / `diffSeconds` / `diffMinutes` / `diffHours` / `diffDays` | Numeric difference from `other` |
-| `calendarDays(other)` | Whole calendar days between the two dates |
-| `businessDays(other)` | Weekdays between the two dates |
-| `diffHuman(other?)` | Compact human diff, e.g. `"3d"` |
-| `fromNow()` / `ago()` | Relative description, e.g. `"in 2 hours"`, `"3 minutes ago"` |
-| `from(other)` | Relative description vs. `other` |
-| `age(unit?)` | Elapsed years/months/days since this date |
-
-### Formatting and parsing
-
-| Method | Description |
-|---|---|
-| `fmt(format)` | Token substitution: `YYYY`, `YY`, `MMMM`, `MMM`, `MM`, `M`, `DD`, `D`, `dddd`, `ddd`, `HH`, `H`, `hh`, `h`, `mm`, `m`, `ss`, `s`, `SSS`, `A`, `a` |
-| `toLocalString(format?)` | `toLocaleString("en-US", format)`; `format` defaults to `FORMAT.full` |
-| `D2.from(value)` | Parse from `Date`, number (epoch ms), ISO string, `YYYY-MM-DD`, `YYYY-MM-DD HH:mm`, array `[y,m,d,h?,min?,s?,ms?]`, or object (`{ date, time }` or `{ year, month, day, … }`) |
-| `D2.parseDate("YYYY-MM-DD")` | Local midnight for that date |
-| `D2.parseDateTime("YYYY-MM-DD HH:mm")` | Local date-time |
-| `D2.fromParts(y, m, d, h?, min?, s?, ms?)` | Construct from calendar parts |
-
-### Statics
-
-| Method | Description |
-|---|---|
-| `D2.now()` / `D2.today()` | Current instant / today's `startOfDay()` |
-| `D2.fromUnix(s)` / `D2.fromUnixMs(ms)` | Construct from epoch seconds / milliseconds |
-| `D2.min(...dates)` / `D2.max(...dates)` | Earliest / latest of the inputs |
-
-### Ranges
-
-`R2I` is a half-open `[start, end)` interval.
-
-| Method | Description |
-|---|---|
-| `contains(d)` | Whether `d` falls inside the range |
-| `overlaps(other)` | Whether two ranges intersect |
-| `durationMs()` / `days()` | Length in ms / whole days |
-| `eachDay(fn)` | Iterate each calendar day in the range |
-| `toArray()` | `A2I<D2>` of days |
-| `R2(start, end)` | Build a range from any two `D2`-coercible values |
 
 ## `ER2` — Error
 
@@ -1461,329 +2706,6 @@ Numeric helpers return `N2I` for chaining unless otherwise indicated.
 | `downTo(end, step?)` | Generate a descending numeric array |
 
 
-## `nested` — Nested Map Storage
-
-`nested` provides a unified interface for creating and retrieving nested maps across multiple storage implementations. It uses a three-level addressing structure — `root`, `master`, and `slave` — to organize independently addressable map instances.
-
-The class supports native `Map`, `M2`, `M2B`, `M2BIN`, `M2D`, and `M2R`, with an optional externally supplied cache and an internal `M2` fallback.
-
-### Storage Methods
-
-| Method | Storage Type | Description |
-|---|---|---|
-| `map(s?, m?, r?)` | `Map` | Retrieves or creates a native JavaScript Map |
-| `m2(s?, m?, r?)` | `M2` | Retrieves or creates an extended Map |
-| `m2b(s?, m?, r?)` | `M2B` | Retrieves or creates a byte-backed Map |
-| `m2bin(s?, m?, r?)` | `M2BIN` | Retrieves or creates a binary Map |
-| `m2d(s?, m?, r?)` | `M2D` | Retrieves or creates a dense Map |
-| `m2r(s?, m?, r?)` | `M2R` | Retrieves or creates a row-based Map |
-| `cache(s?, m?, r?)` | `M2` | Retrieves or creates a Map through the supplied cache or internal fallback |
-
-### Addressing
-
-Each storage method accepts three address parameters:
-
-| Parameter | Default | Purpose |
-|---|---|---|
-| `s` | Storage method name | Identifies the slave map |
-| `m` | `'MASTER'` | Identifies the master namespace |
-| `r` | `'ROOT'` | Identifies the root namespace |
-
-The global storage methods use `globalThis[r]` as their root, allowing independently instantiated `nested` instances and application modules to access the same addressed storage hierarchy.
-
-The resulting structure is:
-
-```text
-globalThis[r]
-    └── master[m]
-          └── slave[s]
-                └── Map instance
-```
-
-### Cache and Fallback
-
-The constructor accepts an optional `CACHE` implementing one of the supported map types.
-
-- `CACHE` — uses the supplied map for root-level storage.
-- `FALLBACK` — uses an internal nested `M2` hierarchy when no external cache is supplied.
-
-The `cache()` method maintains its own nested addressing structure through the selected cache.
-
-### Usage
-
-```ts
-const nested = new nestedi();
-// creating an instance is not required, just simply calling it via 'nested' anywhere within the code base will grant access modules created instance. If you do not need to share the store/nested storage implementation, then this will work perfectly.
-
-
-const users = nested.map('users');
-const sessions = nested.m2('sessions');
-const records = nested.m2bin('records');
-
-const shared = nested.cache('shared', 'APP', 'ROOT');
-```
-
-### Global Access
-
-A shared instance is exported as `nested` and assigned to `nested`, making the helper accessible across application modules without requiring each module to construct its own instance.
-
-### Types
-
-`ALL_MAPS` represents the supported storage implementations:
-
-```ts
-type ALL_MAPS =
-    | M2<K, V>
-    | Map<K, V>
-    | M2B
-    | M2BIN<K, V>
-    | M2D<K, V>
-    | M2R<K>
-    | NU;
-```
-
-`nested<K = A, V = A>` provides generic typing for its fallback storage and map operations.
-
-> [!IMPORTANT] This small, insignificant, ordinary, unassuming snippet of code, doesn't look like it provides much value.
->
-> If this is your current opinion or idea of it currently, HONESTLY... this one feature, which I almost did not add, is actually the most strongest, heavy hitting feature... even when you compare the entire solution against this. I will have to write this in sections/pieces, because this will get long. It still surprises me how such a snippet like this... could be of such a huge benefit and add so much to your arsenal while at the same time, entirely eliminating... MASSIVE headaches.
->
-> This is used throughout ALL my codebases and projects, everywhere. It can, astonishingly, be used in every corner of the apps we create and work in.
-> 1. message queue / bus: used to provide a 4 tiered scoped channel system. Instantly granting multiplexing as a side effect.
-> 2. app context / state: used to grant users a very easy work surface to create an infinite amount of unique globally accessible contexts... all without the use of a provider
-> 3. databases: this one has layers, depending on how you use it. If using it for say... a kvdb, it can automatically provide VERY easy tables and db configurations, where users can simply change one value and it places the value in an entirely different table from one line to the next. If used within an app context, provides a namespace system where you can easily organize data. 
-> 4. router: this one, IS FUCKING HUGE... To this day, I am still fucking shocked it worked... let me put it this way, it works so well... as a router for your message queue, bus... whatever, right? I could NEVER replicate, the end result that this gives you. I don't think any one can. Even if you are a dev for 50-some odd years... it perfectly produces... zero errors, across 1000's of apps... all perfectly routed messages, without... configuring a single fucking thing. No routing tables, NOTHING. This is by far, the only thing that has saved me more time than any other.
-> 5. workspace identification
-> 6. tbc...
-
-> [!NOTE] PERFORMANCE
->
-> This is not a strong suite of nested map fn, as it gets measly 4 mill ops per sec. I'll admit compared to a lot of other things, it actually aint that bad. BUT map and m2 both sit at 104-ish million ops per sec, so in order for us to get our cake and eat it too... We simply just cheat the system.
->
-> Within the apps we build, our hot paths are used... atleast 80, probably closer to 95% or even high % of the time. Which drastically helps us out here by giving us a lending hand by allowing us to get away with creating a hot path cache... of the cache, for example...
-> ```tsx
-> #atoms = new M2<A, M2<A, M2<A, A>>>();
-> _atoms: M2<A, A>
->
-> constructor() {
->  this._atom = 
-> }
-> ```
->
-> Below you will find a much larger and in depth example from a project that I'm currently working on. At the time of writing not ALL of the paths that are coded in have been benched, but that will be done so shortly. I'll be sure to post the results.
-
-```tsx
-const rootRegistry = new M2<A, M2<A, M2<A, A>>>();
-
-export class WAR_ROOOM {
-	public r: A = "THE_WIZARD_ROOT_REG";
-	public m: A = "SAURON_MASTER_REG";
-	public s: A = "SAURON_SLAVE_REG";
-	public k: A = "__SAURON__";
-	private raven: DEATH_STAR;
-
- 
-	//                                                                                                                  MAIN CACHES
-	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-	#META = new M2<A, M2<A, M2<A, A>>>();
-	_meta: MTracer<A, A>;
-	#SIGNALS = new M2<A, M2<A, M2<A, A>>>();
-	_signals: M2<A, A>;
-	#NAKED_SIGNALS = new M2<A, M2<A, M2<A, A>>>();
-	_naked_signals: M2<A, A>;
-	#SIGNALS_STATE = new M2<A, M2<A, M2<A, A>>>();
-	_signals_state: M2<A, A>;
-	#CONTEXT = new M2<A, M2<A, M2<A, A>>>();
-	_context: MTracer<A, A>;
-	#ATOMS = new M2<A, M2<A, M2<A, A>>>();
-	_atoms: MTracer<A, A>;
-	#SAURON = new M2<A, M2<A, M2<A, A>>>();
-	_sauron: MTracer<A, A>;
-	#BUS = new M2<A, M2<A, M2<A, A>>>();
-	_bus: MTracer<A, A>;
-	_gt: MTracer<A, A>;
-
-	COMPONENTS = new M2<S, ComponentInstance>();
-	// #endregion
-	//                                                                                                                    THE CLOUD
-	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-	_components: MTracer<A, A>;
-	_batches: MTracer<S | SY>;
-	_batchQueue: MTracer<S | SY, A>;
-	_batchOpts: M<S | SY, { triggerRender?: B }>;
-	_sys: MTracer<S, SysEntry>;
-	_sealed: MTracer<S, SysEntry>;
-	_keyContracts: M<S, ST<S>>;
-	_conflicts: MTracer<S, ConflictPolicy>;
-	_conflictStrategies: MTracer<S, "latest" | "fail" | "accumulate">;
-	_causal: M<S, CausalEntry[]>;
-	_history: M<S | SY, HistoryEntry[]>;
-	_scopes: MTracer<S, SignalScope>;
-	_msgHandlers: M<S, ST<(p: A) => V>>;
-	_lastWriteSource: M<S, S>;
-	_mainMap: MTracer<A, S>;
-	_tupleCache: MTracer<S, S>;
-	_weakMap: MTracer<O, S>;
-	_boundaries: MTracer<O, S>;
-	_persistent: MTracer<A, A>;
-	_persistent_keys: MTracer<A, A>;
-
-	_global_subscribers: M2<S, ST<() => V>>;
-	_waiters: M2<S | SY, ST<(value: A) => V>>;
-	_listeners: M2<A, ST<(value: A) => void>>;
-	// #endregion
-	//                                                                                                                    SIGNALS
-	// #region ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-	_timeTravelMaul: MTracer<A, A>;
-	_historyMaul: MTracer<A, A>;
-
-	_subscribersMaul: M2<A, A>;
-	_listenersMaul: M2<A, A>;
-	// #endregion
-	constructor(raven: DEATH_STAR) {
-		this.raven = raven;
-		this.r = raven.r ?? "THE_WIZARD_ROOT_REG";
-		this.m = raven.m ?? "SAURON_MASTER_REG";
-
-		this.s = raven.s ?? "SAURON_SLAVE_REG";
-		this.k = raven.k ?? "THE_K_KEY";
-
-		this._signals_state = this.map("_signals_state", this.m, this.r, "#SIGNALS_STATE");
-		this._meta = this.tracer("_meta", this.m, this.r, "#META");
-		this._signals = this.map("_signals", this.m, this.r, "#SIGNALS");
-		this._naked_signals = this.map("_naked_signals", this.m, this.r, "#NAKED_SIGNALS");
-		this._context = this.tracer("_context", this.m, this.r, "#CONTEXT");
-		this._atoms = this.tracer("_atoms", this.m, this.r, "#ATOMS");
-		this._sauron = this.tracer("_sauron", this.m, this.r, "#SAURON");
-		this._bus = this.tracer("_bus", this.m, this.r, "#BUS");
-		this._gt = this.tracer("_gt", this.m, this.r);
-
-		this._listeners = this.map("_listeners_raven", this.m, this.r);
-		this._global_subscribers = this.map<M<S, ST<() => V>>>("_global_subscribers_raven", this.m, this.r);
-		this._waiters = this.map<M<S | SY, ST<(value: A) => V>>>("_waiters_raven", this.m, this.r);
-
-		this._persistent_keys = this.tracer("_persistent_keys_raven", this.m, this.r);
-		this._persistent = this.tracer("_persistent_raven", this.m, this.r);
-		this._components = this.tracer("_components_raven", this.m, this.r);
-		this._batches = this.tracer("_batches_raven", this.m, this.r);
-		this._batchQueue = this.tracer("_batchQueue_raven", this.m, this.r);
-		this._batchOpts = this.map<M<S | SY, { triggerRender?: B }>>("_batchOpts_raven", this.m, this.r);
-		this._sys = this.tracer<MTracer<S, SysEntry>>("_sys_raven", this.m, this.r);
-		this._sealed = this.tracer<MTracer<S, SysEntry>>("_sealed_raven", this.m, this.r);
-		this._keyContracts = this.map<M<S, ST<S>>>("_keyContracts_raven", this.m, this.r);
-		this._conflicts = this.tracer<MTracer<S, ConflictPolicy>>("_conflicts_raven", this.m, this.r);
-		this._conflictStrategies = this.tracer<MTracer<S, "latest" | "fail" | "accumulate">>("_conflictStrategies_raven", this.m, this.r);
-		this._causal = this.map<M<S, CausalEntry[]>>("_causal_raven", this.m, this.r);
-		this._history = this.map<M<S | SY, HistoryEntry[]>>("_history_raven", this.m, this.r);
-		this._scopes = this.tracer<MTracer<S, SignalScope>>("_scopes_raven", this.m, this.r);
-		this._msgHandlers = this.map<M<S, ST<(p: A) => V>>>("_msgHandlers_raven", this.m, this.r);
-		this._lastWriteSource = this.map<M<S, S>>("_lastWriteSource_raven", this.m, this.r);
-		this._mainMap = this.tracer("_mainMap_raven", this.m, this.r);
-		this._tupleCache = this.tracer<MTracer<S, S>>("_tupleCache_raven", this.m, this.r);
-		this._weakMap = this.tracer<MTracer<O, S>>("_weakMap_raven", this.m, this.r);
-		this._boundaries = this.tracer<MTracer<O, S>>("_boundaries_raven", this.m, this.r);
-
-		this._timeTravelMaul = this.tracer<MTracer<O, S>>("_timeTravel_maul", this.m, this.r, "#SIGNALS");
-		this._historyMaul = this.tracer<MTracer<O, S>>("_history_maul", this.m, this.r, "#SIGNALS");
-
-		this._subscribersMaul = this.map<M2<O, S>>(" _subscribers_maul", this.m, this.r, "#SIGNALS");
-		this._listenersMaul = this.map<M2<O, S>>(" _listeners_maul", this.m, this.r, "#SIGNALS");
-	}
-	get_root(c: S, r: S) {
-		let root;
-		switch (c) {
-			case "#SIGNALS_STATE": { root = this.#SIGNALS_STATE.get(r); break; }
-			case "#CONTEXT": { root = this.#CONTEXT.get(r); break; }
-			case "#META": { root = this.#META.get(r); break; }
-			case "#SIGNALS": { root = this.#SIGNALS.get(r); break; }
-			case "#ATOMS": { root = this.#ATOMS.get(r); break; }
-			case "#SAURON": { root = this.#SAURON.get(r); break; }
-			case "#BUS": { root = this.#BUS.get(r); break; }
-			case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.get(r); break; }
-			case "gt": { root = rootRegistry.get(r); break; }
-			case "globalThis": { (globalThis as A)[r]; break; }
-		}
-		if (!root) {
-			root = new M2<A, M2<A, M2<A, A>>>();
-			switch (c) {
-				case "#SIGNALS_STATE": { root = this.#SIGNALS_STATE.set(r, root); break; }
-				case "#CONTEXT": { root = this.#CONTEXT.set(r, root); break; }
-				case "#META": { root = this.#META.set(r, root); break; }
-				case "#SIGNALS": { root = this.#SIGNALS.set(r, root); break; }
-				case "#ATOMS": { root = this.#ATOMS.set(r, root); break; }
-				case "#SAURON": { root = this.#SAURON.set(r, root); break; }
-				case "#NAKED_SIGNALS": { root = this.#NAKED_SIGNALS.set(r, root); break; }
-				case "#BUS": { root = this.#BUS.set(r, root); break; }
-				case "gt": { rootRegistry.set(r, root); break; }
-				case "globalThis": { (globalThis as A)[r] = root; break; }
-			}
-			this.#CONTEXT.set(r, root);
-		}
-		return root;
-	}
-	map<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): M2<K, V> | K | V {
-		const root = this.get_root(c, r);
-		let masterMap = root.get(m);
-		if (!masterMap) {
-			masterMap = new M2<A, M2<A, A>>();
-			root.set(m, masterMap);
-		}
-		let slaveMap = masterMap.get(s);
-		if (!slaveMap) {
-			slaveMap = new M2<K, V>();
-			masterMap.set(s, slaveMap);
-		}
-		return slaveMap;
-	}
-	tracer<K = A, V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): MTracer<K, V> | K | V {
-		const root = this.get_root(c, r);
-		let masterMap = root.get(m);
-		if (!masterMap) {
-			masterMap = new M2<A, M2<A, A>>();
-			root.set(m, masterMap);
-		}
-		let slaveMap = masterMap.get(s);
-		if (!slaveMap) {
-			slaveMap = new MTracer<K, V>();
-			masterMap.set(s, slaveMap);
-		}
-		return slaveMap;
-	}
-	set<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): STracer<V> | K | V {
-		const root = this.get_root(c, r);
-		let masterMap = root.get(m);
-		if (!masterMap) {
-			masterMap = new M2<A, M2<A, A>>();
-			root.set(m, masterMap);
-		}
-		let slaveMap = masterMap.get(s);
-		if (!slaveMap) {
-			slaveMap = new STracer<V>();
-			masterMap.set(s, slaveMap);
-		}
-		return slaveMap;
-	}
-	obj<V = A>(s = this.s, m = this.m, r = this.r, c = "gt"): OTracer<V> | K | V {
-		const root = this.get_root(c, r);
-		let masterMap = root.get(m);
-		if (!masterMap) {
-			masterMap = new M2<A, M2<A, A>>();
-			root.set(m, masterMap);
-		}
-		let slaveMap = masterMap.get(s);
-		if (!slaveMap) {
-			slaveMap = new OTracer<V>();
-			masterMap.set(s, slaveMap);
-		}
-		return slaveMap;
-	}
-	
-}
-```
-
-> [!NOTE]
->
-> As you can see a mix of M2, disruptor maps, disruptor sets, SET2, as well as a disruptor obj for one item. With so many different types landing in the last spot of the nested map, I had broken up the original fn so as to keep code to a minimum due to the fact that this time around I wanted to try splitting everything up by section, rather than you one single storage format for everything.
 
 ## `O2` — Object
 
@@ -1857,7 +2779,7 @@ Provides static object inspection, nested-path access, cloning, merging, selecti
 | `Lane.reset()` | Resets the write counter and swaps in a fresh `Disruptor` — old ring is dropped for GC (not tombstoned). |
 
 
-## USAGES
+### USAGES
 
 ```ts
 // OTracer — skipEncode
