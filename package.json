@@ -6,16 +6,119 @@
 	"main": "./dist/index.js",
 	"types": "./src/dx.d.ts",
 	"exports": {
-		".": {
-			"types": "./src/dx.d.ts",
-			"default": "./dist/index.js",
-			"import": "./dist/index.js"
+		".": { "types": "./src/dx.d.ts" },
+		"./array": { "types": "./dist/array.d.ts" },
+		"./object_tracer": { "types": "./dist/object_tracer.d.ts" },
+		"./set_tracer": { "types": "./dist/set_tracer.d.ts" },
+		"./call_if": { "types": "./dist/dlc/call_if.d.ts" },
+		"./barrier": { "types": "./dist/dlc/barrier.d.ts" },
+		"./clamp": { "types": "./dist/dlc/clamp.d.ts" },
+		"./create_live_scope": { "types": "./dist/dlc/create_live_scope.d.ts" },
+		"./deferred": { "types": "./dist/dlc/deferred.d.ts" },
+		"./evaluator": { "types": "./dist/dlc/evaluator.d.ts" },
+		"./finally": { "types": "./dist/dlc/finally.d.ts" },
+		"./gate": { "types": "./dist/dlc/gate.d.ts" },
+		"./ignore_arg": { "types": "./dist/dlc/ignore_arg.d.ts" },
+		"./invoke": { "types": "./dist/dlc/invoke.d.ts" },
+		"./is_defined": { "types": "./dist/dlc/is_defined.d.ts" },
+		"./is_not_defined": { "types": "./dist/dlc/is_not_defined.d.ts" },
+		"./lazy": { "types": "./dist/dlc/lazy.d.ts" },
+		"./lww": { "types": "./dist/dlc/lww.d.ts" },
+		"./once": { "types": "./dist/dlc/once.d.ts" },
+		"./or_default": { "types": "./dist/dlc/or_default.d.ts" },
+		"./patch_state": { "types": "./dist/dlc/patch_state.d.ts" },
+		"./retry_with_backoff": { "types": "./dist/dlc/retry_with_backoff.d.ts" },
+		"./run_with_retry": { "types": "./dist/dlc/run_with_retry.d.ts" },
+		"./serial_executor": { "types": "./dist/dlc/serial_executor.d.ts" },
+		"./set_keys": { "types": "./dist/dlc/set_keys.d.ts" },
+		"./set_prev": { "types": "./dist/dlc/set_prev.d.ts" },
+		"./sleep": { "types": "./dist/dlc/sleep.d.ts" },
+		"./timed_promise": { "types": "./dist/dlc/timed_promise.d.ts" },
+		"./to_promise": { "types": "./dist/dlc/to_promise.d.ts" },
+		"./try_catch": { "types": "./dist/dlc/try_catch.d.ts" },
+		"./twx": { "types": "./dist/dlc/twx.d.ts" },
+		"./unreachable": { "types": "./dist/dlc/unreachable.d.ts" },
+		"./wait_and_promise": { "types": "./dist/dlc/wait_and_promise.d.ts" },
+		"./auto_serialize": {
+			"types": "./dist/auto_serialize.d.ts"
+		},
+		"./avro": {
+			"types": "./dist/avro.d.ts"
+		},
+		"./boolean_byte": {
+			"types": "./dist/boolean_byte.d.ts"
+		},
+		"./cbor": {
+			"types": "./dist/cbor.d.ts"
+		},
+		"./date": {
+			"types": "./dist/date.d.ts"
+		},
+		"./error": {
+			"types": "./dist/error.d.ts"
+		},
+		"./iterator": {
+			"types": "./dist/iterator.d.ts"
+		},
+		"./map_bin": {
+			"types": "./dist/map_bin.d.ts"
+		},
+		"./map_byte": {
+			"types": "./dist/map_byte.d.ts"
+		},
+		"./map_disruptor": {
+			"types": "./dist/map_disruptor.d.ts"
+		},
+		"./map_rows": {
+			"types": "./dist/map_rows.d.ts"
+		},
+		"./map_tracer": {
+			"types": "./dist/map_tracer.d.ts"
+		},
+		"./map": {
+			"types": "./dist/map.d.ts"
+		},
+		"./nested": {
+			"types": "./dist/nested.d.ts"
+		},
+		"./number": {
+			"types": "./dist/number.d.ts"
+		},
+		"./object": {
+			"types": "./dist/object.d.ts"
+		},
+		"./promise": {
+			"types": "./dist/promise.d.ts"
+		},
+		"./reg_ex": {
+			"types": "./dist/reg_ex.d.ts"
+		},
+		"./set_byte": {
+			"types": "./dist/set_byte.d.ts"
+		},
+		"./set": {
+			"types": "./dist/set.d.ts"
+		},
+		"./soa_codec": {
+			"types": "./dist/soa_codec.d.ts"
+		},
+		"./string": {
+			"types": "./dist/string.d.ts"
+		},
+		"./unit8array": {
+			"types": "./dist/unit8array.d.ts"
+		},
+		"./url_search_params": {
+			"types": "./dist/url_search_params.d.ts"
+		},
+		"./weak_map": {
+			"types": "./dist/weak_map.d.ts"
+		},
+		"./weak_set": {
+			"types": "./dist/weak_set.d.ts"
 		}
 	},
-	"files": [
-		"dist",
-		"src"
-	],
+	"files": ["dist", "src"],
 	"scripts": {
 		"1": "git add .",
 		"2": "git commit -m \"first commit\"",

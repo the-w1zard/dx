@@ -56,6 +56,8 @@ import { MDisruptor as MDisruptorI } from "./map_disruptor";
 import { MTracer as MTracerI } from "./map_tracer";
 import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI  } from "./avro";
 import { CBORI  } from "./cbor";
+import { STracer, STracer  as STracerI} from "./set_tracer";
+import { OTracer, OTracer  as OTracerI} from "./object_tracer";
 
 export type MaybePromise<R = any> = R;
 export function MaybePromisei<R = any>(v: R): MaybePromise {
@@ -125,8 +127,12 @@ globalThis.twx = twxi
 globalThis.lwwState = lwwStatei
 globalThis.ignoreArg = ignoreArgi
 globalThis.barrier = barrieri
+globalThis.STracer = STracerI
+globalThis.OTracer = OTracerI
 
 export {
+    STracer,
+    OTracer, 
     AVROWriterI as  AVROWriter,
      AVROReaderI as AVROReader,
      BINARY_AVROI as AVRO,

@@ -58,6 +58,8 @@ import { MDisruptor as MDisruptorI } from "./map_disruptor";
 import { MTracer as MTracerI } from "./map_tracer";
 import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI, IAVROWriter, IAVROReader  } from "./avro";
 import { CBORI  } from "./cbor";
+import { STracer, STracer  as STracerI} from "./set_tracer";
+import { OTracer, OTracer  as OTracerI} from "./object_tracer";
 
 export {};
 
@@ -71,7 +73,7 @@ declare global {
      it.
 	================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
 	type MaybePromise<R = any> = R;
-	var MaybePromise: MaybePromisei;
+	var MaybePromise: typeof MaybePromisei;
 	var B2B: typeof B2BI; // BOOLEAN BINARY
 
 	var M2: typeof M2I; // map
@@ -79,6 +81,8 @@ declare global {
 	var M2BIN: typeof M2BINI; // binary
 	var M2D: typeof M2DI; // dense
 	var M2R: typeof M2RI; // rows
+	var STracer: typeof STracerI; // rows
+	var OTracer: typeof OTracerI; // rows
 
 	var SET2: typeof SET2I; // set
 	var SET2B: typeof SET2BI; // set
@@ -360,6 +364,85 @@ declare global {
 		decode_msg(raw: unknown): CBORValue | null;
 	}
 	interface CBORI extends ICBORI {}
+
+	/**
+ * Public contract for STracer<V>.
+ *
+ * A bounded, rotating set of V with Set-like semantics (SameValueZero
+ * membership, no duplicates). Members are stored by reference in a ring
+ * of "lanes"; the index map records each member's { lane, seq } so
+ * membership can be re-validated against the live ring.
+ */
+interface STracerI<V = any> {
+	/** Fraction of the active lane's capacity that has been written (0..1). */
+	readonly pressure: number;
+
+	/** Number of members currently in the index (may include stale entries not yet purged). */
+	readonly size: number;
+
+	/** Add a member. No-op if already present. Returns this for chaining. */
+	add(value: V): this;
+
+	/** Remove a member. Returns true if it was present in the index. */
+	delete(value: V): boolean;
+
+	/** Remove all members, reset every lane, and reset the dial to 0. */
+	clear(): void;
+
+	/** Returns true only if the member is indexed AND its lane slot is still live. */
+	has(value: V): boolean;
+
+	/** Invoke cb for each live member (per has()). */
+	forEach(cb: (value: V) => void): void;
+
+	/** Iterate live members (per has()). */
+	[Symbol.iterator](): Iterator<V>;
+}
+interface STracer<V = any> extends STracerI<V> {}
+/** Shape of a single ring-buffer cell. */
+type Slot<P> = {
+	sequence: number;
+	key: unknown;
+	payload: P | undefined;
+	tombstone: boolean;
+};
+
+/** Location of a key within the lane ring. */
+interface IndexEntry {
+	lane: number;
+	seq: number;
+}
+
+/**
+ * Public contract for OTracer<V>.
+ *
+ * A bounded, rotating key→value store with object-style access via Proxy.
+ * Each key maps to { lane, seq } in an index; reads re-validate the slot
+ * before returning. Writes are deep-cloned unless skipEncode is set.
+ * Dangerous keys (__proto__, constructor, prototype) are blocked.
+ */
+ interface OTracerI<V = any> {
+	/** Number of dial wraps so far (increments each time a lane fills). */
+	readonly revolution: number;
+
+	/** Fraction of the active lane's capacity written (0..1). Not a declared member — exposed via Proxy get. */
+	readonly pressure: number;
+
+	/**
+	 * Proxy-backed access: `tracer.foo = value` writes, `tracer.foo` reads.
+	 * Reading a missing/expired key yields `undefined`.
+	 */
+	[key: string]: V | undefined;
+
+	/**
+	 * Non-declared surface exposed by the Proxy handler, for documentation:
+	 *  - `key in tracer`        → true iff live value exists
+	 *  - `delete tracer[key]`   → removes index entry, returns boolean
+	 *  - `Object.keys(tracer)`  → live keys only
+	 *  - `Object.getOwnPropertyDescriptor(tracer, key)` → descriptor or undefined
+	 */
+}
+interface OTracer<V = any> extends OTracerI<V> {}
 
 	// #endregion 
 	//                                                                              [R2 — REGEX, THE M2 WAY]

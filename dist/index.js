@@ -18317,7 +18317,7 @@ function set_prev_object_spread_props(target, source) {
     }
     return target;
 }
-function setPrev(setter, v, k) {
+function setPrev(setter, k, v) {
     setter(function(prev) {
         return k !== undefined ? set_prev_object_spread_props(set_prev_object_spread({}, prev), set_prev_define_property({}, k, v)) : set_prev_object_spread({}, prev, v);
     });
@@ -20437,6 +20437,732 @@ var cbor_CBORI = /*#__PURE__*/ function() {
     return CBORI;
 }();
 
+function set_tracer_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function set_tracer_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function set_tracer_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function set_tracer_class_call_check(instance, Constructor) {
+    if (!set_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function set_tracer_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function set_tracer_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) set_tracer_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) set_tracer_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function set_tracer_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function set_tracer_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function set_tracer_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function set_tracer_sliced_to_array(arr, i) {
+    return set_tracer_array_with_holes(arr) || set_tracer_iterable_to_array_limit(arr, i) || set_tracer_unsupported_iterable_to_array(arr, i) || set_tracer_non_iterable_rest();
+}
+function set_tracer_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function set_tracer_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return set_tracer_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return set_tracer_array_like_to_array(o, minLen);
+}
+var set_tracer_nextPow2 = function nextPow2(n) {
+    return 1 << Math.ceil(Math.log2(Math.max(2, n)));
+};
+var set_tracer_Disruptor = /*#__PURE__*/ function() {
+    "use strict";
+    function Disruptor(capacity) {
+        set_tracer_class_call_check(this, Disruptor);
+        set_tracer_define_property(this, "capacity", void 0);
+        set_tracer_define_property(this, "mask", void 0);
+        set_tracer_define_property(this, "buffer", void 0);
+        set_tracer_define_property(this, "cursor", void 0);
+        this.capacity = capacity;
+        this.cursor = -1;
+        var size = set_tracer_nextPow2(capacity);
+        this.mask = size - 1;
+        this.buffer = Array.from({
+            length: size
+        }, function() {
+            return {
+                sequence: -1,
+                key: undefined,
+                payload: undefined,
+                tombstone: false
+            };
+        });
+    }
+    set_tracer_create_class(Disruptor, [
+        {
+            /** The slot that WILL be claimed next — peek before you commit to it. */ key: "peekNext",
+            value: function peekNext() {
+                return this.buffer[this.cursor + 1 & this.mask];
+            }
+        },
+        {
+            key: "publish",
+            value: function publish(key, payload) {
+                var tombstone = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+                var seq = this.cursor + 1;
+                var slot = this.buffer[seq & this.mask];
+                slot.sequence = seq;
+                slot.key = key;
+                slot.payload = payload;
+                slot.tombstone = tombstone;
+                this.cursor = seq;
+                return seq;
+            }
+        },
+        {
+            key: "read",
+            value: function read(seq) {
+                if (seq < 0 || seq > this.cursor) return undefined;
+                var slot = this.buffer[seq & this.mask];
+                return slot.sequence === seq ? slot : undefined;
+            }
+        }
+    ]);
+    return Disruptor;
+}();
+function set_tracer_assertEncodable(value) {
+    if (typeof value === "function") {
+        throw new TypeError("[RAVEN] state values must be plain data — functions can't be stored here.");
+    }
+}
+function set_tracer_encode(value) {
+    set_tracer_assertEncodable(value);
+    if (value === null || (typeof value === "undefined" ? "undefined" : set_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+function set_tracer_decode(value) {
+    if (value === null || (typeof value === "undefined" ? "undefined" : set_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+var set_tracer_Lane = /*#__PURE__*/ function() {
+    "use strict";
+    function Lane(capacity) {
+        set_tracer_class_call_check(this, Lane);
+        set_tracer_define_property(this, "capacity", void 0);
+        set_tracer_define_property(this, "ring", void 0);
+        set_tracer_define_property(this, "writes", void 0);
+        this.capacity = capacity;
+        this.writes = 0;
+        this.ring = new set_tracer_Disruptor(capacity);
+    }
+    set_tracer_create_class(Lane, [
+        {
+            key: "isFull",
+            get: function get() {
+                return this.writes >= this.capacity;
+            }
+        },
+        {
+            key: "pressure",
+            get: function get() {
+                return this.writes / this.capacity;
+            }
+        },
+        {
+            key: "write",
+            value: function write(key, value) {
+                this.writes++;
+                return this.ring.publish(key, value);
+            }
+        },
+        {
+            key: "readAt",
+            value: function readAt(seq) {
+                var slot = this.ring.read(seq);
+                return slot && !slot.tombstone ? slot.payload : undefined;
+            }
+        },
+        {
+            /** Day 0 gets physically rewritten here — we don't tombstone the old
+	 *  ring, we just stop referencing it. The old Disruptor object (and
+	 *  everything it held) is garbage the moment nothing points at it. */ key: "reset",
+            value: function reset() {
+                this.writes = 0;
+                this.ring = new set_tracer_Disruptor(this.capacity);
+            }
+        }
+    ]);
+    return Lane;
+}();
+var set_tracer_STracer = /*#__PURE__*/ function() {
+    "use strict";
+    function STracer() {
+        var laneCapacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192, dialSize = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 7;
+        set_tracer_class_call_check(this, STracer);
+        set_tracer_define_property(this, "laneCapacity", void 0);
+        set_tracer_define_property(this, "dialSize", void 0);
+        set_tracer_define_property(this, "lanes", void 0);
+        set_tracer_define_property(this, "index", void 0); // member -> location, SameValueZero like native Set
+        set_tracer_define_property(this, "dial", void 0);
+        set_tracer_define_property(this, "revolution", void 0);
+        this.laneCapacity = laneCapacity;
+        this.dialSize = dialSize;
+        this.index = new Map();
+        this.dial = 0;
+        this.revolution = 0;
+        this.lanes = Array.from({
+            length: dialSize
+        }, function() {
+            return new set_tracer_Lane(laneCapacity);
+        });
+    }
+    set_tracer_create_class(STracer, [
+        {
+            key: "activeLane",
+            get: function get() {
+                return this.lanes[this.dial];
+            }
+        },
+        {
+            key: "advanceDialIfFull",
+            value: function advanceDialIfFull() {
+                if (!this.activeLane.isFull) return;
+                this.revolution++;
+                this.dial = (this.dial + 1) % this.dialSize;
+                this.lanes[this.dial].reset();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = set_tracer_sliced_to_array(_step.value, 2), member = _step_value[0], entry = _step_value[1];
+                        if (entry.lane === this.dial) this.index.delete(member);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "add",
+            value: function add(value) {
+                if (this.index.has(value)) return this; // Set semantics: no dupes, no wasted slot
+                this.advanceDialIfFull();
+                var seq = this.activeLane.write(value, true); // no encode() — member is never cloned
+                this.index.set(value, {
+                    lane: this.dial,
+                    seq: seq
+                });
+                return this;
+            }
+        },
+        {
+            key: "has",
+            value: function has(value) {
+                var entry = this.index.get(value);
+                return !!entry && this.lanes[entry.lane].readAt(entry.seq) !== undefined;
+            }
+        },
+        {
+            key: "delete",
+            value: function _delete(value) {
+                return this.index.delete(value);
+            }
+        },
+        {
+            key: "clear",
+            value: function clear() {
+                this.index.clear();
+                this.lanes.forEach(function(l) {
+                    return l.reset();
+                });
+                this.dial = 0;
+            }
+        },
+        {
+            key: "size",
+            get: function get() {
+                return this.index.size;
+            }
+        },
+        {
+            key: "forEach",
+            value: function forEach(cb) {
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index.keys()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var member = _step.value;
+                        if (this.has(member)) cb(member);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: Symbol.iterator,
+            value: function value() {
+                var live = [];
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index.keys()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var member = _step.value;
+                        if (this.has(member)) live.push(member);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+                return live[Symbol.iterator]();
+            }
+        },
+        {
+            key: "pressure",
+            get: function get() {
+                return this.activeLane.pressure;
+            }
+        }
+    ]);
+    return STracer;
+}();
+
+function object_tracer_instanceof(left, right) {
+    "@swc/helpers - instanceof";
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+function object_tracer_array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function object_tracer_array_with_holes(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+function object_tracer_array_without_holes(arr) {
+    if (Array.isArray(arr)) return object_tracer_array_like_to_array(arr);
+}
+function object_tracer_class_call_check(instance, Constructor) {
+    if (!object_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function object_tracer_defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function object_tracer_create_class(Constructor, protoProps, staticProps) {
+    if (protoProps) object_tracer_defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) object_tracer_defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function object_tracer_define_property(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else obj[key] = value;
+    return obj;
+}
+function object_tracer_iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) {
+        return Array.from(iter);
+    }
+}
+function object_tracer_iterable_to_array_limit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _s, _e;
+    try {
+        for(_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function object_tracer_non_iterable_rest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function object_tracer_non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function object_tracer_sliced_to_array(arr, i) {
+    return object_tracer_array_with_holes(arr) || object_tracer_iterable_to_array_limit(arr, i) || object_tracer_unsupported_iterable_to_array(arr, i) || object_tracer_non_iterable_rest();
+}
+function object_tracer_to_consumable_array(arr) {
+    return object_tracer_array_without_holes(arr) || object_tracer_iterable_to_array(arr) || object_tracer_unsupported_iterable_to_array(arr) || object_tracer_non_iterable_spread();
+}
+function object_tracer_type_of(obj) {
+    "@swc/helpers - typeof";
+    return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+}
+function object_tracer_unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return object_tracer_array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return object_tracer_array_like_to_array(o, minLen);
+}
+var object_tracer_nextPow2 = function nextPow2(n) {
+    return 1 << Math.ceil(Math.log2(Math.max(2, n)));
+};
+var object_tracer_Disruptor = /*#__PURE__*/ function() {
+    "use strict";
+    function Disruptor(capacity) {
+        object_tracer_class_call_check(this, Disruptor);
+        object_tracer_define_property(this, "capacity", void 0);
+        object_tracer_define_property(this, "mask", void 0);
+        object_tracer_define_property(this, "buffer", void 0);
+        object_tracer_define_property(this, "cursor", void 0);
+        this.capacity = capacity;
+        this.cursor = -1;
+        var size = object_tracer_nextPow2(capacity);
+        this.mask = size - 1;
+        this.buffer = Array.from({
+            length: size
+        }, function() {
+            return {
+                sequence: -1,
+                key: undefined,
+                payload: undefined,
+                tombstone: false
+            };
+        });
+    }
+    object_tracer_create_class(Disruptor, [
+        {
+            /** The slot that WILL be claimed next — peek before you commit to it. */ key: "peekNext",
+            value: function peekNext() {
+                return this.buffer[this.cursor + 1 & this.mask];
+            }
+        },
+        {
+            key: "publish",
+            value: function publish(key, payload) {
+                var tombstone = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+                var seq = this.cursor + 1;
+                var slot = this.buffer[seq & this.mask];
+                slot.sequence = seq;
+                slot.key = key;
+                slot.payload = payload;
+                slot.tombstone = tombstone;
+                this.cursor = seq;
+                return seq;
+            }
+        },
+        {
+            key: "read",
+            value: function read(seq) {
+                if (seq < 0 || seq > this.cursor) return undefined;
+                var slot = this.buffer[seq & this.mask];
+                return slot.sequence === seq ? slot : undefined;
+            }
+        }
+    ]);
+    return Disruptor;
+}();
+function object_tracer_assertEncodable(value) {
+    if (typeof value === "function") {
+        throw new TypeError("[RAVEN] state values must be plain data — functions can't be stored here.");
+    }
+}
+function object_tracer_encode(value) {
+    object_tracer_assertEncodable(value);
+    if (value === null || (typeof value === "undefined" ? "undefined" : object_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+function object_tracer_decode(value) {
+    if (value === null || (typeof value === "undefined" ? "undefined" : object_tracer_type_of(value)) !== "object") return value;
+    return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+var object_tracer_Lane = /*#__PURE__*/ function() {
+    "use strict";
+    function Lane(capacity) {
+        object_tracer_class_call_check(this, Lane);
+        object_tracer_define_property(this, "capacity", void 0);
+        object_tracer_define_property(this, "ring", void 0);
+        object_tracer_define_property(this, "writes", void 0);
+        this.capacity = capacity;
+        this.writes = 0;
+        this.ring = new object_tracer_Disruptor(capacity);
+    }
+    object_tracer_create_class(Lane, [
+        {
+            key: "isFull",
+            get: function get() {
+                return this.writes >= this.capacity;
+            }
+        },
+        {
+            key: "pressure",
+            get: function get() {
+                return this.writes / this.capacity;
+            }
+        },
+        {
+            key: "write",
+            value: function write(key, value) {
+                this.writes++;
+                return this.ring.publish(key, value);
+            }
+        },
+        {
+            key: "readAt",
+            value: function readAt(seq) {
+                var slot = this.ring.read(seq);
+                return slot && !slot.tombstone ? slot.payload : undefined;
+            }
+        },
+        {
+            /** Day 0 gets physically rewritten here — we don't tombstone the old
+	 *  ring, we just stop referencing it. The old Disruptor object (and
+	 *  everything it held) is garbage the moment nothing points at it. */ key: "reset",
+            value: function reset() {
+                this.writes = 0;
+                this.ring = new object_tracer_Disruptor(this.capacity);
+            }
+        }
+    ]);
+    return Lane;
+}();
+var object_tracer_OTracer = /*#__PURE__*/ function() {
+    "use strict";
+    function OTracer() {
+        var _this = this;
+        var laneCapacity = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256, dialSize = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 7, skipEncode = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+        object_tracer_class_call_check(this, OTracer);
+        object_tracer_define_property(this, "laneCapacity", void 0);
+        object_tracer_define_property(this, "dialSize", void 0);
+        object_tracer_define_property(this, "skipEncode", void 0);
+        object_tracer_define_property(this, "lanes", void 0);
+        object_tracer_define_property(this, "index", void 0);
+        object_tracer_define_property(this, "dial", void 0);
+        object_tracer_define_property(this, "revolution", void 0);
+        this.laneCapacity = laneCapacity;
+        this.dialSize = dialSize;
+        this.skipEncode = skipEncode;
+        this.index = new Map();
+        this.dial = 0;
+        this.revolution = 0;
+        this.lanes = Array.from({
+            length: dialSize
+        }, function() {
+            return new object_tracer_Lane(laneCapacity);
+        });
+        var handler = {
+            get: function get(_t, prop) {
+                if ((typeof prop === "undefined" ? "undefined" : object_tracer_type_of(prop)) === "symbol") return _this[prop];
+                if (OTracer.BLOCKED.has(prop)) return undefined;
+                return _this.readKey(prop);
+            },
+            set: function set(_t, prop, value) {
+                if ((typeof prop === "undefined" ? "undefined" : object_tracer_type_of(prop)) === "symbol") return false;
+                if (OTracer.BLOCKED.has(prop)) {
+                    throw new TypeError('[RAVEN] "'.concat(prop, '" is not a writable key on this store.'));
+                }
+                _this.writeKey(prop, value);
+                return true;
+            },
+            has: function has(_t, prop) {
+                if ((typeof prop === "undefined" ? "undefined" : object_tracer_type_of(prop)) === "symbol") return false;
+                return _this.readKey(prop) !== undefined;
+            },
+            deleteProperty: function deleteProperty(_t, prop) {
+                if ((typeof prop === "undefined" ? "undefined" : object_tracer_type_of(prop)) === "symbol") return false;
+                return _this.index.delete(prop);
+            },
+            ownKeys: function ownKeys() {
+                return object_tracer_to_consumable_array(_this.index.keys()).filter(function(k) {
+                    return _this.readKey(k) !== undefined;
+                });
+            },
+            getOwnPropertyDescriptor: function getOwnPropertyDescriptor(_t, prop) {
+                if ((typeof prop === "undefined" ? "undefined" : object_tracer_type_of(prop)) === "symbol") return undefined;
+                var value = _this.readKey(prop);
+                if (value === undefined) return undefined;
+                return {
+                    value: value,
+                    writable: true,
+                    enumerable: true,
+                    configurable: true
+                };
+            }
+        };
+        // eslint-disable-next-line no-constructor-return
+        return new Proxy(Object.create(null), handler);
+    }
+    object_tracer_create_class(OTracer, [
+        {
+            key: "activeLane",
+            get: function get() {
+                return this.lanes[this.dial];
+            }
+        },
+        {
+            key: "advanceDialIfFull",
+            value: function advanceDialIfFull() {
+                if (!this.activeLane.isFull) return;
+                this.revolution++;
+                this.dial = (this.dial + 1) % this.dialSize;
+                this.lanes[this.dial].reset();
+                var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
+                try {
+                    for(var _iterator = this.index[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
+                        var _step_value = object_tracer_sliced_to_array(_step.value, 2), key = _step_value[0], entry = _step_value[1];
+                        if (entry.lane === this.dial) this.index.delete(key);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally{
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                        }
+                    } finally{
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            key: "readKey",
+            value: function readKey(key) {
+                var entry = this.index.get(key);
+                if (!entry) return undefined;
+                var payload = this.lanes[entry.lane].readAt(entry.seq);
+                if (payload === undefined) {
+                    this.index.delete(key);
+                    return undefined;
+                }
+                return this.skipEncode ? payload : object_tracer_decode(payload);
+            }
+        },
+        {
+            key: "writeKey",
+            value: function writeKey(key, value) {
+                this.advanceDialIfFull();
+                var payload = this.skipEncode ? value : object_tracer_encode(value);
+                var seq = this.activeLane.write(key, payload);
+                this.index.set(key, {
+                    lane: this.dial,
+                    seq: seq
+                });
+            }
+        }
+    ]);
+    return OTracer;
+}();
+object_tracer_define_property(object_tracer_OTracer, "BLOCKED", new Set([
+    "__proto__",
+    "constructor",
+    "prototype"
+]));
+
+
+
 
 
 
@@ -20560,6 +21286,8 @@ globalThis.twx = twx;
 globalThis.lwwState = lwwState;
 globalThis.ignoreArg = ignore_arg_ignoreArg;
 globalThis.barrier = barrier;
+globalThis.STracer = set_tracer_STracer;
+globalThis.OTracer = object_tracer_OTracer;
 
 
-export { MaybePromisei, RECC2 as RES2, array_A2I as A2, avro_AVROReader as AVROReader, avro_AVROWriter as AVROWriter, avro_BINARY_AVRO as AVRO, boolean_byte_B2BI as B2B, cbor_CBORI as CBOR, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_disruptor_MDisruptor as MDisruptor, map_rows_M2RI as M2R, map_tracer_MTracer as MTracer, number_N2I as N2, object_O2I as O2, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };
+export { MaybePromisei, RECC2 as RES2, array_A2I as A2, avro_AVROReader as AVROReader, avro_AVROWriter as AVROWriter, avro_BINARY_AVRO as AVRO, boolean_byte_B2BI as B2B, cbor_CBORI as CBOR, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_disruptor_MDisruptor as MDisruptor, map_rows_M2RI as M2R, map_tracer_MTracer as MTracer, number_N2I as N2, object_O2I as O2, object_tracer_OTracer as OTracer, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, set_tracer_STracer as STracer, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };

@@ -48,46 +48,11 @@
 >
 > Take what is currently... lacking in the ux dept. and give it the updates they desperatly need.
 
-> [!IMPORTANT] BENCH RESULTS
->
-> Currently in the middle of throwing together another implementation and since I have already created them, I'm going to be placing them within the solution due to the fact that I don't just throw everything away. Especially when they work like this.
->
-> To give some context on the numbers, starting with the basic map. V8 has optimized maps path, really optimized when its only used with int's. Essentially, simply put, its a disruptor. Which is why the number is so high. The very next one, is 
->
-> ```txt
-> === Starting 10-Second Nested Router Benchmarks ===
-> [1. ORIGINAL RECIPE] 50,081,792 ops -> 5,008,122 ops/sec
-> [2. INTERNED] 90,097,664 ops -> 9,009,692 ops/sec
-> [3. HOT PATH IDX] 91,598,848 ops -> 9,159,753 ops/sec
-> [4. NOT NESTED, CHS CONVERTED TO BIG INT] 30,720 ops -> 2,515 ops/sec
-> [5. 3D FLAT (M2BNestedClass)] 2,272,765,952 ops -> 227,274,854 ops/sec
-> [6. True Binary + Single-Slot Memo] 1,037,336,576 ops -> 103,733,619 ops/sec
-> === Benchmarks Complete ===
-> 
-> 
-> --- Starting 10-Second Binary Store Benchmarks (Set & Get) ---
-> [Map] 478,537,728 ops in 10.00s -> 47,853,532 ops/sec
-> [getNestedMap6 vs)] 24,862,720 ops in 10.00s -> 2,486,192 ops/sec
-> [BYTEOP_MAP LG vs)] 286,138,368 ops in 10.00s -> 28,613,545 ops/sec
-> [M2B] 896,022,528 ops in 10.00s -> 89,601,992 ops/sec
-> [M2] 366,237,696 ops in 10.00s -> 36,623,606 ops/sec
-> [BYTE_MAP small vs)] 41,459,712 ops in 10.00s -> 4,145,936 ops/sec
-> [M2Bin (Hybrid Map + Int32/F64)] 35,465,216 ops in 10.00s -> 3,546,358 ops/sec
-> [M2Dense (Dense Array + Live Byte Lane)] 23,777,280 ops in 10.00s -> 2,377,641 ops/sec
-> [M2Rows (Strided Row Buffer, stride=1)] 31,150,080 ops in 10.00s -> 3,114,899 ops/sec
-> --- Benchmarks Complete ---
-> ```
+
 
 </span>
 
 
-## Built-in API Extensions
-
-Extensions to native JavaScript objects that improve developer experience by adding commonly needed operations while preserving the original APIs.
-
-The package extends native classes and exposes their implementations through `globalThis`, allowing them to be accessed without importing each class individually.
-
-## Table of Contents
 
 <ul style="list-style: none; padding-left: 0;">
   <li><a href="#a2--array">A2 — Array</a></li>
@@ -128,39 +93,527 @@ The package extends native classes and exposes their implementations through `gl
 > pnpm i -D @the-w1zard/alias_types
 > ```
 
-## Global APIs
 
-| Global | Extends | Interface | Purpose |
-|---|---|---|---|
-| `A2` | `Array` | `A2I` | Array manipulation, selection, grouping, and aggregation |
-| `B2` | — | `B2I` | Byte-based boolean operations |
-| `D2` | `Date` | `D2I` | Date arithmetic, boundaries, comparisons, and formatting |
-| `ER2` | `Error` | `ER2I` | Error normalization, cloning, serialization, and wrapping |
-| `I2` | Iterator | `I2I` | Lazy iterator pipelines and collection operations |
-| `M2` | `Map` | `M2I` | Map access helpers, transformations, grouping, and comparison |
-| `M2B` | `Map` | `M2BI` | Byte-backed map storage and operations |
-| `M2BIN` | `Map` | `M2BINI` | Binary map storage using packed PID-to-slot indexing |
-| `M2D` | `Map` | `M2DI` | Dense map storage using direct numeric indexing |
-| `M2R` | `Map` | `M2RI` | Packed fixed-width numeric row storage |
-| `N2` | `Number` | `N2I` | Numeric operations, range mapping, formatting, and validation |
-| `nested` | `class` | `nestedi` | Class exposing several nested maps fns |
-| `O2` | `Object` | `O2I` | Extended object operations |
-| `P2` | `Promise` | `P2I` | Extended promise operations |
-| `RE2` | `RegExp` | `RE2_IF` | Regex matching, collection, replacement, composition, and debugging |
-| `RES2` | — | `RE2Static` | Regex factory, builders, character classes, and presets |
-| `S2` | `String` | `S2I` | Extended string operations |
-| `SET2` | `Set` | `SET2I` | Extended set operations |
-| `SET2B` | `Set` | `SET2BI` | Binary set storage and operations |
-| `U82` | `Uint8Array` | `U82I` | Extended byte-array operations |
-| `USP2` | `URLSearchParams` | `USP2I` | Extended URL parameter operations |
-| `WM2` | `WeakMap` | `WM2I` | Extended weak-map operations |
-| `WS2` | `WeakSet` | `WS2I` | Extended weak-set operations |
+## INSTALL
 
-The global declarations provide TypeScript access to these APIs. `MaybePromise` is also declared globally as a type alias and fn.
+```tsx 
+npm i -D @the-w1zard/dx
+```
 
-## Most Recent Benches
+```tsx 
+pnpm i -D @the-w1zard/dx
+```
 
-Map and M2, just swapped places from test to test. While this test bed focused on gets, sets and a mixed bag of the two, it proves that the M2 solution is exactly as advertised. An upgraded version of the original Map solution provided with the runtime. Unfortuantly this is as far as the test can go in terms of putting the two up against one another as maps api... is basically this and only this. Meanwhile, M2... is DRASTICALLY different. 
+Once installation is done be sure to add the library to types within the tsconfig file.
+
+Here are also the imports alias to paste within your pkg.json and tsconfig files.
+
+package.json/imports
+```json
+{
+  "#dx": "@the-w1zard/dx",
+}
+```
+
+tsconfig.json/paths
+```json
+{
+  "#dx": ["@the-w1zard/dx"],
+}
+```
+## `M2` — Map
+
+> [!NOTE] 
+>
+> Since most of the items going into this module were made exactly the same, in respect to... leaving the original api intact while at the same time applying upgrades in the form of new functionality and improved ergonomics. For that reason, I'll overview 3 of them, talk about some other items you can find within the module, while the remainder will be fn reference tables and usage examples.
+>
+> In addition to expanding javascripts base fn feature set, there have been a number of items that are geared with the same end goal. Making our lives better, plain and simple.
+>
+> Among javascripts classics, there are some flavoured variants that would help depending on your use case as they cover areas suchs as binary in the form of maps as disruptors, sets and objects too. 
+>
+> To accompany the binary there are avro, cbor encoders, as well as a pid allocator. To wrap them up there is even a auto serializer that is able to retain types in  order to ensure that the type you encoded comes out the other end.
+
+
+<details><summary><strong><span style="font-size: 16px; font-family: monospace">[SOURCE CODE]</span> </strong></summary>
+
+
+```tsx
+export const rv = <T>(v: UF<T>): T => typeof v === "function" ? (v as () => T)() : v;
+export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
+
+
+export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
+	// public g = this.get;
+	// public h = this.has;
+	// public d = this.delete;
+	// public c = this.clear
+	public f = this.forEach;
+	#subs?: Set<Sub<H, T>>;
+	#hist?: AR<M2Event<H, T>>;
+	#histLimit = 0;
+	#strict = false;
+	#iterating = 0;
+	#batching = 0;
+	#pending?: M2I<H, M2Event<H, T>>;
+	#derived?: M2I<H, Derived<H, T>>;
+	#dependents?: M2I<H, Set<H>>;
+	#emit(e: M2Event<H, T>): V {
+		if (this.#batching > 0) {
+			const pending = this.#pending!.get(e.k);
+			this.#pending!.set( 	e.k, pending ? { ...e, prev: pending.prev, batch: true } : { ...e, batch: true }, );
+			return;
+		}
+		this.#record(e);
+		this.#subs?.forEach((sub) => {
+			try { sub(e); } catch (err: A) { process.emitWarning(err); }
+		});
+	}
+	#record(e: M2Event<H, T>): V {
+		if (!this.#hist) return;
+		this.#hist.push(e);
+		if (this.#hist.length > this.#histLimit) { this.#hist.splice(0, this.#hist.length - this.#histLimit); }
+	}
+	#invalidate(k: H): V {
+		const deps = this.#dependents?.get(k);
+		if (!deps) return;
+		for (const dk of deps) {
+			const d = this.#derived?.get(dk);
+			if (!d || d.dirty) continue;
+			d.dirty = true;
+			this.#emit({ op: "dirty", k: dk, has: d.has });
+		}
+	}
+	#computeDerived(k: H, d: Derived<H, T>): T {
+		const vals = d.deps.map((dep) => this.g(dep) as T);
+		const next = d.fn(...vals);
+		const had = d.has;
+		const prev = d.value;
+		d.value = next;
+		d.has = true;
+		d.dirty = false;
+		if (!had || !sameValue(prev, next)) {
+			this.#emit({
+				op: had ? "upd" : "set",
+				k,
+				v: next,
+				prev: prev as T,
+				has: true,
+			});
+		}
+		return next;
+	}
+	#assertNotIterating(op: S): V {
+		if (this.#strict && this.#iterating > 0) { throw new Error(`M2.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`); }
+	}
+	public [Symbol.iterator](): MapIterator<[H, T]> {return this.entries();	}
+	public on(fn: Sub<H, T>): () => V {//                                                [ON]
+		(this.#subs ??= new Set()).add(fn);
+		return () => this.off(fn);
+	}
+	public off(fn: Sub<H, T>): V {//                                                    [OFF]
+		this.#subs?.delete(fn);
+	} 
+	public batch(fn: () => V): this {//                                               [BATCH]
+		this.#batching++;
+		this.#pending ??= new M2I<H, M2Event<H, T>>();
+		try {
+			fn();
+		} finally {
+			this.#batching--;
+			if (this.#batching === 0) {
+				const events = [...this.#pending.values()];
+				this.#pending = undefined;
+				for (const e of events) {
+					this.#record(e);
+					this.#subs?.forEach(sub => sub(e));
+				}
+			}
+		}
+		return this;
+	}
+	public s(v: UF<T>, k: H): this {//                                                  [SET]
+		this.#assertNotIterating("s");
+		const next = rv(v);
+		const has = this.h(k);
+		const prev = has ? this.g(k) : undefined;
+		super.set(k, next);
+		this.#invalidate(k);
+		this.#emit({ op: "set", k, v: next, prev: prev as T, has });
+		return this;
+	}
+	public mutate(k: H, fn: (old: T, has: true) => T): T | UD {//                    [MUTATE]
+		this.#assertNotIterating("mutate");
+		if (!this.h(k)) return undefined;
+		const old = this.g(k) as T;
+		const next = fn(old, true);
+		this.s(next, k);
+		return next;
+	}
+	public d(k: H): B {//                                                            [DELETE]
+		this.#assertNotIterating("delete");
+		if (!this.h(k)) return false;
+		const prev = this.g(k) as T;
+		const out = super.delete(k);
+		this.#invalidate(k);
+		this.#emit({ op: "del", k, prev, has: false, });
+		return out;
+	}
+	public c(): V {//                                                                 [CLEAR]
+		this.#assertNotIterating("clear");
+		const entries = [...this.entries()];
+		super.clear();
+		for (const [k, prev] of entries) {
+			this.#invalidate(k);
+			this.#emit({ op: "del", k, prev, has: false });
+		}
+	}
+	public dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this {//              [DERRIVED]
+		(this.#derived ??= new M2I<H, Derived<H, T>>())
+    .set(k, { deps, fn, dirty: true, has: false, });
+		for (const dep of deps) {
+			(this.#dependents ??= new M2I<H, Set<H>>())
+    .getOrM(() => new Set(), dep)
+    .add(k);
+		}
+		return this;
+	}
+	public dirty(...keys: AR<H>): this {//                                            [DIRTY]
+		for (const k of keys) {
+			const d = this.#derived?.get(k);
+			if (d && !d.dirty) {
+				d.dirty = true;
+				this.#emit({ op: "dirty", k, has: d.has });
+			}
+		}
+		return this;
+	}
+	public g(k: H): T | UD {//                                                         [GET]
+		const d = this.#derived?.get(k);
+		if (d) {
+			if (d.dirty || !d.has) return this.#computeDerived(k, d);
+			return d.value;
+		}
+		return super.get(k);
+	}
+	public h(k: H): B {//                                                              [HAS]
+		const d = this.#derived?.get(k);
+		if (d) {
+			if (d.dirty || !d.has) this.#computeDerived(k, d);
+			return true;
+		}
+		return super.has(k);
+	}
+	public $debug(limit: N = 256): this {//                                          [$DEBUG]
+		this.#hist ??= [];
+		this.#histLimit = limit;
+		return this;
+	}
+	public $strict(): this {//                                                      [$STRICT]
+		this.#strict = true;
+		return this;
+	}
+	public $history(): AR<M2Event<H, T>> {//                                       [$HISTORY]
+		return this.#hist ? [...this.#hist] : [];
+	}
+	public $why(k: H): M2Event<H, T> | UD {//                                          [$WHY]
+		if (!this.#hist) return undefined;
+		for (let i = this.#hist.length - 1; i >= 0; i--) {
+			if (Object.is(this.#hist[i].k, k)) return this.#hist[i];
+		}
+		return undefined;
+	}
+	public $diff(other: M2I<H, T>) {//                                                [$DIFF]
+		const add: AR<[H, T]> = [];
+		const del: AR<H> = [];
+		const chg: AR<[H, T, T]> = [];
+		for (const [k, v] of this) {
+			if (!other.has(k)) { add.push([k, v]); }
+      else if (!Object.is(other.get(k), v)) { chg.push([k, v, other.get(k) as T]); }
+		}
+		for (const k of other.keys()) { if (!this.has(k)) del.push(k); }
+		return { add, del, chg };
+	}
+	public *entries(): MapIterator<[H, T]> {//                                     [*ENTRIES]
+		this.#iterating++;
+		try { for (const entry of super.entries()) yield entry; 	} 
+    finally { this.#iterating--; 	}
+	}
+	public *keys(): MapIterator<H> {//                                                [*KEYS]
+		this.#iterating++;
+		try { for (const k of super.keys()) yield k; 	} 
+    finally { this.#iterating--; }
+	}
+	public *values(): MapIterator<T> {//                                            [*VALUES]
+		this.#iterating++;
+		try { for (const v of super.values()) yield v; } 
+    finally { this.#iterating--; }
+	}
+	public swap(value: UF<T>, key: H): T | UD {//                                      [SWAP]
+		const next = rv(value);
+		const previous = this.has(key) ? this.get(key) : next;
+		this.s(next, key);
+		return previous as T | UD;
+	}
+	public take(k: H): T | UD {//                                                      [TAKE]
+		const value = this.g(k);
+		this.d(k);
+		return value;
+	}
+	public peek(k: H): T | false {//                                                   [PEEK]
+		return this.h(k) ? (this.g(k) as T) : false;
+	}
+	public getOrI(value:UF<T>, k: H): T {//                                          [GETORI]
+		if (this.h(k)) return this.g(k) as T;
+		const next = rv(value);
+		this.s(next, k);
+		return next;
+	}
+	public getOrM(make: () => T, k: H): T {//                                        [GETORM]
+		if (this.h(k)) return this.g(k) as T;
+		const value = make();
+		this.s(value, k);
+		return value;
+	}
+	public update(k: H, fn: (old: T, has: B) => T, initial?: UF<T>): T {//           [UPDATE]
+		const has = this.h(k);
+		const old = has ? (this.g(k) as T) 	: initial === undefined
+				? undefined as T
+				: rv(initial);
+		const next = rv(fn(old, has));
+		this.s(next, k);
+		return next;
+	}
+	public setIfAbsent(value: UF<T>, k: H): B {//                               [SETIFABSENT]
+		if (this.h(k)) return false;
+		const next = rv(value);
+		this.s(next, k);
+		return true;
+	}
+	public setIfPresent(value: UF<T>, k: H): B {//                             [SETIFPRESENT]
+		if (!this.h(k)) return false;
+		const next = rv(value);
+		this.s(next, k);
+		return true;
+	}
+	public replace(value: UF<T>, k: H): B {//                                       [REPLACE]
+		const next = rv(value);
+		return this.setIfPresent(next, k);
+	}
+	public inc(key: H, by: N = 1): N {//                                                [INC]
+		return this.update(key, (old) => (((old ?? 0) as N) + by) as unknown as T, 0 as unknown as T) as N;
+	}
+	public touch(k: H): B {//                                                     [SWTOUCHAP]
+		return this.setIfAbsent(undefined as unknown as T, k);
+	}
+	public mapValues<G>(fn: (v: T, k: H) => G): M2<H, G> {//                      [MAPVALUES]
+		const out = new M2I<H, G>();
+		for (const [k, v] of this) out.s(fn(v, k), k);
+		return out;
+	}
+	public mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T> {//                          [MAPKEYS]
+		const out = new M2I<G, T>();
+		for (const [k, v] of this) out.s(v, fn(v, k));
+		return out;
+	}
+	public filterKV(pred: (v: T, k: H) => B): this {//                             [FILTERKV]
+		for (const [k, v] of this) { if (!pred(v, k)) this.d(k); 	}
+		return this;
+	}
+	public filterKeys(pred: (v: T, k: H) => B): this {//                         [FILTERKEYS]
+		return this.filterKV(pred);
+	}
+	public partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>] {//           [PARTITION]
+		const yes = new M2I<H, T>();
+		const no = new M2I<H, T>();
+		for (const [k, v] of this) { 	(pred(v, k) ? yes : no).s(v, k); }
+		return [yes, no];
+	}
+	public find(pred: (v: T, k: H) => B): [H, T] | UD {//                              [FIND]
+		for (const [k, v] of this) { if (pred(v, k)) return [k, v]; 	}
+		return undefined;
+	}
+	public findKey(pred: (v: T, k: H) => B): H | UD {//                             [FINDKEY]
+		for (const [k, v] of this) { 	if (pred(v, k)) return k; }
+		return undefined;
+	}
+	public findValue(pred: (v: T, k: H) => B): T | UD {//                         [FINDVALUE]
+		for (const [k, v] of this) { if (pred(v, k)) return v; 	}
+		return undefined;
+	}
+	public some(pred: (v: T, k: H) => B): B {//                                        [SOME]
+		for (const [k, v] of this) { if (pred(v, k)) return true; 	}
+		return false;
+	}
+	public every(pred: (v: T, k: H) => B): B {//                                      [EVERY]
+		for (const [k, v] of this) { if (!pred(v, k)) return false; }
+		return true;
+	}
+	public reduce<G>(fn: (acc: G, v: T, k: H) => G, initial: G): G {//               [REDUCE]
+		let acc = initial;
+		for (const [k, v] of this) acc = fn(acc, v, k);
+		return acc;
+	}
+	public forEachKV(fn: (v: T, k: H, map: this) => void): void {//                 [FOREACH]
+		for (const [k, v] of this) fn(v, k, this);
+	}
+	public invert(): M2<T, H> {//                                                    [INVERT]
+		const out = new M2I<T, H>();
+		for (const [k, v] of this) out.s(k, v);
+		return out;
+	}
+	public unique<G>(fn?: (v: T, k: H) => G): M2<G, T> {//                           [UNIQUE]
+		const out = new M2I<G, T>();
+		for (const [k, v] of this) {
+			const key = (fn ? fn(v, k) : v) as unknown as G;
+			if (!out.h(key)) out.s(v, key);
+		}
+		return out;
+	}
+	public pick(keys: Iterable<H>): M2<H, T> {//                                       [PICK]
+		const out = new M2I<H, T>();
+		for (const k of keys) { if (this.h(k)) out.s(this.g(k) as T, k); }
+		return out;
+	}
+	public omit(keys: Iterable<H>): M2<H, T> {//                                       [EMIT]
+		const omitted = new Set(keys);
+		const out = new M2I<H, T>();
+		for (const [k, v] of this) { if (!omitted.has(k)) out.s(v, k); }
+		return out;
+	}
+	public merge(other: Iterable<readonly [H, T]>): this {//                          [MERGE]
+		for (const [k, v] of other){
+        const n = rv(v);
+        this.s(n, k);
+			}
+		return this;
+	}
+	public clearAndSet(entries: Iterable<readonly [H, T]>): this {//            [CLEARANDSET]
+		return this.batch(() => {
+			this.clear();
+			  for (const [k, v] of entries) {
+		    const n = rv(v);
+				this.s(n, k);
+			}
+		});
+	}
+	public toObject(): OB<T> {//                                                  [TOPOBJECT]
+		const out = {} as OB<T>;
+		for (const [k, v] of this) out[k as S] = v;
+		return out;
+	}
+	public toValues(): A2I<T> { return A2.from(this.values()); }//                 [TOVALUES]
+	public toKeys(): A2I<H> { return A2.from(this.keys()); }//                       [TOKEYS]
+	public toArray(): A2I<[H, T]> { return A2.from(this.entries()); }//             [TOARRAY]
+	public group<G>(fn: (v: T, k: H) => G): M2<G, A2<T>> {//                          [GROUP]
+		const out = new M2I<G, A2<T>>();
+		for (const [k, v] of this) out.getOrM(() => new A2<T>(), fn(v, k)).push(v);
+		return out;
+	}
+	public clone(): this {//                                                          [CLONE]
+		return new M2I(this) as this;
+	}
+	public equals(other: M2I<H, T>): B {//                                           [EQUALS]
+		if (other === this) return true;
+		if (this.size !== other.size) return false;
+		for (const [k, v] of this) {
+			if (!other.has(k) || !sameValue(other.get(k), v)) return false;
+		}
+		return true;
+	}
+	static fromObject<X extends Record<S, A>>(obj: X): M2I<S, X[keyof X]> {//      [FROMOBBJ]
+		return new M2I(Object.entries(obj) as AR<[S, X[keyof X]]>);
+	}
+	static fromEntries<H, T>(entries: I<readonly [H, T]>): M2I<H, T> {//        [FROMENTIRES]
+		return new M2I(entries);
+	}
+	static from<H, T>(map: RM<H, T>): M2I<H, T> {//                                    [FROM]
+		return new M2I(map);
+	}
+}
+```
+
+
+</details>
+<br/>
+
+A plain Map answers: what is stored right now?
+M2 answers: what is stored, what changed, what depends on it, and what should happen next? A normal Map gives you keyed storage and insertion-ordered iteration; it has no notion of change, subscribers, or derived state.
+
+Map is a container. M2 is a container that knows when it changed.
+
+That is the whole sales pitch. You keep the familiar get, set, delete, has, iteration, and insertion-order semantics, but every meaningful mutation becomes an event your app can respond to.
+
+Without M2, the moment state becomes interactive, you start writing the same plumbing everywhere:
+
+```tsx 
+users.set(id, user);
+saveUser(user);
+invalidateCache(id);
+updateUi();
+logChange();
+```
+
+Every caller has to remember every side effect. Miss one, and you get stale UI, inconsistent caches, or a bug that only appears after a particular sequence of updates. With M2, the mutation is still simple:
+
+```tsx
+users.s(user, id);
+```
+
+But the store can notify subscribers, invalidate derived values, batch a group of writes, and preserve an auditable history. You are no longer manually coordinating “data change” with “everything that cares about that data.”
+
+| Need                                      | Plain Map         | M2                      |
+| ----------------------------------------- | ----------------- | ----------------------- |
+| Store keyed values                        | Yes               | Yes                     |
+| Know that something changed               | No                | Yes, through events     |
+| Update UI after changes                   | Manual            | on() subscription       |
+| Make several changes feel like one update | Manual            | batch()                 |
+| Cache computed values                     | Manual            | dv()                    |
+| Invalidate dependents                     | Manual            | Automatic on key change |
+| Debug “why did this change?”              | Manual            | $why() / $history()     |
+| Prevent mutation during iteration         | Manual discipline | $strict()               |
+| Express common collection operations      | Write loops       | Built-in verbs          |
+
+Plain Map version:
+```tsx
+const users = new Map();
+
+users.set(id, user);
+
+refreshUserRow(id);
+invalidatePermissions(id);
+recalculateCounts();
+persist(user);
+```
+
+M2 version:
+
+```tsx
+const users = new M2I();
+
+users.on((e) => {
+  if (e.k === id) refreshUserRow(e.k);
+});
+
+users.dv("activeCount", ["users"], () =>
+  users.reduce((n, u) => n + (u.active ? 1 : 0), 0)
+);
+
+users.s(user, id);
+```
+
+This is the feature that makes it feel production-grade rather than toy-grade:
+```tsx
+users.batch(() => {
+  users.s(a, "alice");
+  users.s(b, "bob");
+  users.s(c, "carol");
+});
+```
+
+Subscribers do not fire three times for three intermediate states. They see the settled result. That prevents flicker, duplicate work, inconsistent renders, and “I updated three related things but the UI reacted halfway through” bugs. Batching multiple writes into one transaction, with reactions firing after the batch completes, is a standard benefit of reactive state systems.
+
+And we can't forget about bench metrics, M2 matches map exactly while M2B, doubles it ops per second.
+
 
 ```txt
 ========== M2 RESULTS ==========
@@ -201,6 +654,32 @@ GET:   5.79ms | 172,816,037.328 ops/sec
 MIXED: 14.91ms | 134,162,457.32 ops/sec
 HITS:  1,000,000
 ```
+
+ ```txt
+ === Starting 10-Second Nested Router Benchmarks ===
+ [1. Nested map] 50,081,792 ops -> 5,008,122 ops/sec
+ [2. INTERNED] 90,097,664 ops -> 9,009,692 ops/sec
+ [3. HOT PATH IDX] 91,598,848 ops -> 9,159,753 ops/sec
+ [4. NOT NESTED, CHS CONVERTED TO BIG INT] 30,720 ops -> 2,515 ops/sec
+ [5. 3D FLAT (M2BNestedClass)] 2,272,765,952 ops -> 227,274,854 ops/sec
+ [6. True Binary + Single-Slot Memo] 1,037,336,576 ops -> 103,733,619 ops/sec
+ === Benchmarks Complete ===
+ 
+ 
+ --- Starting 10-Second Binary Store Benchmarks (Set & Get) ---
+ [Map] 478,537,728 ops in 10.00s -> 47,853,532 ops/sec
+ [getNestedMap6 vs] 24,862,720 ops in 10.00s -> 2,486,192 ops/sec
+ [BYTEOP_MAP LG vs] 286,138,368 ops in 10.00s -> 28,613,545 ops/sec
+ [M2B] 896,022,528 ops in 10.00s -> 89,601,992 ops/sec
+ [M2] 366,237,696 ops in 10.00s -> 36,623,606 ops/sec
+ [BYTE_MAP small vs] 41,459,712 ops in 10.00s -> 4,145,936 ops/sec
+ [M2Bin (Hybrid Map + Int32/F64)] 35,465,216 ops in 10.00s -> 3,546,358 ops/sec
+ [M2Dense (Dense Array + Live Byte Lane)] 23,777,280 ops in 10.00s -> 2,377,641 ops/sec
+ [M2Rows (Strided Row Buffer, stride=1)] 31,150,080 ops in 10.00s -> 3,114,899 ops/sec
+ --- Benchmarks Complete ---
+ ```
+
+ 
 
 ## `A2` — Array
 
@@ -396,58 +875,8 @@ Registered as a codec (`DATE_TAG = 0x4432`, `"D2"`): `enc` writes the epoch-ms a
 | `clone()` | Create an iterator over a materialized copy |
 
 
-## `M2` — Map
 
-`M2` extends `Map` and retains the standard `Map` API, plus reactive subscriptions, derived values, batching, and a large set of convenience methods. Keys are arbitrary — any value `Map` accepts, `M2` accepts.
 
-| Method | Description |
-|---|---|
-| `g(key)` / `h(key)` / `d(key)` / `c()` | Aliases for `get`, `has`, `delete`, and `clear` |
-| `f` | Alias for `forEach` |
-| `s(value, key)` | Set a value; function arguments are evaluated as factories |
-| `mutate(key, fn)` | Update an existing value in place using the current value |
-| `swap(value, key)` | Replace a value and return the previous value |
-| `take(key)` | Get and delete a value |
-| `peek(key)` | Return the value or `false` if absent |
-| `getOrI(value, key)` | Get or insert a supplied value |
-| `getOrM(make, key)` | Get or lazily create a value |
-| `update(key, fn, initial?)` | Update using the current value, or an initial value if missing |
-| `setIfAbsent(value, key)` | Insert only when missing |
-| `setIfPresent(value, key)` | Set only when present |
-| `replace(value, key)` | Replace only when present |
-| `inc(key, by?)` | Increment a numeric entry |
-| `touch(key)` | Ensure a key exists |
-| `mapValues(fn)` / `mapKeys(fn)` | Transform values or keys into a new map |
-| `filterKV(pred)` / `filterKeys(pred)` | Filter in place |
-| `partition(pred)` | Split entries into matching and nonmatching maps |
-| `find(pred)` | Find the first matching entry |
-| `findKey(pred)` / `findValue(pred)` | Find a matching key or value |
-| `some(pred)` / `every(pred)` | Predicate checks |
-| `reduce(fn, initial)` | Reduce entries |
-| `forEachKV(fn)` | Iterate over value, key, and map |
-| `invert()` | Reverse keys and values |
-| `group(fn)` | Group values by computed key, into a map of `A2` buckets |
-| `unique(fn?)` | Deduplicate by computed or original value |
-| `pick(keys)` / `omit(keys)` | Select or exclude keys |
-| `merge(entries)` | Merge entries into the current map |
-| `clearAndSet(entries)` | Replace all entries as a single batch |
-| `toObject()` | Convert entries to an object |
-| `toArray()` / `toKeys()` / `toValues()` | Convert entries, keys, or values to an `A2` |
-| `clone()` | Create a shallow copy |
-| `equals(other)` | Compare keys and values by value-aware equality |
-| `on(fn)` | Subscribe to change events; returns an unsubscribe function |
-| `off(fn)` | Unsubscribe a listener |
-| `batch(fn)` | Run multiple writes, coalescing into one event per key |
-| `dv(key, deps, fn)` | Define a derived value computed from other keys |
-| `dirty(...keys)` | Mark derived values as needing recomputation |
-| `$debug(limit?)` | Enable event history tracking |
-| `$strict()` | Throw if mutated while iterating |
-| `$history()` | Return recorded change events |
-| `$why(key)` | Return the most recent event for a key |
-| `$diff(other)` | Compare against another map: added, deleted, and changed entries |
-| `fromObject(obj)` | Create a map from an object |
-| `fromEntries(entries)` | Create a map from entries |
-| `from(map)` | Create a map from another map |
 
 
 ## `M2B` — Map byte
@@ -1391,6 +1820,145 @@ Provides static object inspection, nested-path access, cloning, merging, selecti
 
 `O2` is exposed as a static utility constructor on `globalThis`.
 
+
+## `OTracer` — Object Tracer
+
+| Command | Description |
+|---|---|
+| `new OTracer(laneCapacity?, dialSize?, skipEncode?)` | Creates an `OTracer` with `dialSize` lanes (default 7) each of `laneCapacity` (default 256), and returns a `Proxy` (target `Object.create(null)`) whose traps route property access to the store. `skipEncode` bypasses `encode`/`decode` cloning. |
+| `OTracer.activeLane` (private getter) | Returns the lane at the current `dial` position. |
+| `OTracer.advanceDialIfFull()` (private) | If the active lane is full, bumps `revolution`, advances `dial`, resets the new lane, and purges index entries pointing at that lane. |
+| `OTracer.readKey(key)` (private) | Looks up the index entry, re-validates via `Lane.readAt`; on miss/expiry deletes the index entry and returns `undefined`; otherwise returns the payload (`decode`d unless `skipEncode`). |
+| `OTracer.writeKey(key, value)` (private) | Advances the dial if needed, encodes the value (unless `skipEncode`), writes to the active lane, and records `{lane, seq}` in the index. |
+| `OTracer.BLOCKED` (private static) | Set of forbidden keys (`__proto__`, `constructor`, `prototype`) rejected on get (returns `undefined`) and set (throws). |
+| Proxy `get(t, prop)` trap | Symbols forward to the underlying object; blocked keys return `undefined`; anything else returns `readKey(prop)`. |
+| Proxy `set(t, prop, value)` trap | Symbols rejected; blocked keys throw `TypeError`; otherwise `writeKey(prop, value)` and returns `true`. |
+| Proxy `has(t, prop)` trap | Symbols `false`; otherwise `readKey(prop) !== undefined`. |
+| Proxy `deleteProperty(t, prop)` trap | Symbols `false`; otherwise removes the index entry and returns whether it existed. |
+| Proxy `ownKeys(t)` trap | Returns index keys whose value is still live (`readKey !== undefined`). |
+| Proxy `getOwnPropertyDescriptor(t, prop)` trap | Symbols `undefined`; otherwise a writable/enumerable/configurable descriptor for the live value, or `undefined`. |
+| `OTracer.revolution` (public field) | Number of times the dial has wrapped (each lane fill increments it). |
+| *(intended)* `OTracer.pressure` | Not actually a member today — would need `get pressure() { return this.activeLane.pressure; }` on the class to be real. Shown in the interface for completeness. |
+| `IndexEntry` (interface) | `{ lane: number; seq: number }` — location of a key in the lane ring, used to re-validate reads. |
+| `Slot<P>` (type) | `{ sequence: number; key: unknown; payload: P \| undefined; tombstone: boolean }` — shape of a single ring-buffer cell. |
+| `nextPow2(n)` | Returns the smallest power of 2 ≥ `n` (minimum 2), used to size ring buffers so slot lookup can use a bitmask instead of modulo. |
+| `new Disruptor(capacity)` | Constructs a fixed-size ring buffer (`Slot<P>[]`) whose internal size is the next power of 2 ≥ `capacity`; tracks a monotonic `cursor` starting at -1. |
+| `Disruptor.peekNext()` | Returns the slot that *will* be claimed next (cursor + 1) without committing — lets you inspect before publishing. |
+| `Disruptor.publish(key, payload, tombstone?)` | Claims the next sequence, stamps `sequence/key/payload/tombstone` into its slot, advances `cursor`, returns the sequence number. |
+| `Disruptor.read(seq)` | Returns the slot for a sequence if still valid (in range and `slot.sequence === seq`), else `undefined` (handles wraparound/overwrite). |
+| `assertEncodable(value)` | Throws `TypeError` if value is a function; guards that stored state is plain data. |
+| `encode(value)` | Asserts encodability, then deep-clones objects (`structuredClone`, falling back to JSON round-trip); primitives pass through. |
+| `decode(value)` | Deep-clones objects (same fallback); primitives pass through. Inverse of `encode`. |
+| `new Lane(capacity)` | Creates a `Lane` wrapping a `Disruptor` of the given capacity, tracking write count for fullness/pressure. |
+| `Lane.isFull` (getter) | `true` when `writes >= capacity`. |
+| `Lane.pressure` (getter) | `writes / capacity` — fraction of the lane consumed. |
+| `Lane.write(key, value)` | Increments the write counter and publishes the value; returns the sequence number. |
+| `Lane.readAt(seq)` | Reads the payload at a sequence, returning `undefined` if the slot is missing or tombstoned. |
+| `Lane.reset()` | Resets the write counter and swaps in a fresh `Disruptor` — old ring is dropped for GC (not tombstoned). |
+
+
+## USAGES
+
+```ts
+// OTracer — skipEncode
+const raw = new OTracer<object>(256, 7, true);
+const ref = { a: 1 };
+raw.ref = ref;
+raw.ref === ref; // true (no cloning)
+
+// OTracer — has trap
+"foo" in t; // true
+"missing" in t; // false
+
+// OTracer — deleteProperty trap
+delete t.foo; // true
+"foo" in t; // false
+
+// OTracer — ownKeys trap
+t.a = 1; t.b = 2;
+Object.keys(t); // ["a", "b"] (live keys only)
+
+// OTracer — getOwnPropertyDescriptor trap
+Object.getOwnPropertyDescriptor(t, "a"); // { value: 1, writable: true, enumerable: true, configurable: true }
+
+// OTracer — blocked keys
+t.__proto__ = {};   // throws TypeError
+t.constructor;      // undefined
+
+// OTracer — revolution (public field)
+t.revolution; // 0 until a lane fills and the dial advances
+
+// OTracer — expiry on read (stale slot after lane reset)
+// after the lane holding a key is reset, reads return undefined and purge the index entry
+t.old = 1; /* ...enough writes to advance dial past its lane... */
+t.old; // undefined, and "old" is no longer in Object.keys(t)
+
+// OTracer — intended pressure (requires adding a getter to the class)
+t.pressure; // currently undefined; would be activeLane.pressure if implemented
+
+// IndexEntry (type annotation)
+const entry: IndexEntry = { lane: 0, seq: 0 };
+
+// Slot<P> (type annotation)
+const slot: Slot<string> = { sequence: 0, key: "k1", payload: "hello", tombstone: false };
+
+
+// nextPow2
+nextPow2(100); // 128
+nextPow2(2);   // 2
+
+// new Disruptor
+const d = new Disruptor<string>(4); // internal size 4, mask 3
+
+// Disruptor.peekNext
+const next = d.peekNext(); // slot at cursor+1, not yet published
+
+// Disruptor.publish
+const seq = d.publish("k1", "hello"); // 0
+
+// Disruptor.read
+d.read(0);  // { sequence: 0, key: "k1", payload: "hello", tombstone: false }
+d.read(99); // undefined (out of range)
+
+// assertEncodable
+assertEncodable({ a: 1 }); // ok
+assertEncodable(() => {}); // throws TypeError
+
+// encode
+const enc = encode({ nested: { x: 1 } }); // deep clone
+
+// decode
+const dec = decode(enc); // deep clone back
+
+// new Lane
+const lane = new Lane<string>(8);
+
+// Lane.isFull
+lane.isFull; // false
+
+// Lane.pressure
+lane.pressure; // 0
+
+// Lane.write
+const s = lane.write("m", "v"); // 0, writes -> 1
+
+// Lane.readAt
+lane.readAt(s); // "v"
+lane.readAt(999); // undefined
+
+// Lane.reset
+lane.reset(); // writes back to 0, fresh ring
+
+// new OTracer
+const t = new OTracer<number>(256, 7); // returns a Proxy
+
+// OTracer — property write / read (via Proxy set/get)
+t.foo = 42;
+t.foo; // 42 (deep-cloned on write, cloned again on read)
+
+
+```
+
 ## `P2` — Promise
 
 Extends `Promise<T>` with chaining helpers, recovery, timing controls, and result conversion.
@@ -1610,6 +2178,123 @@ Also inherits the native `String` API. `S2` is registered as a callable and cons
 | `fromObject(obj)` | Create a set from an object's values |
 | `fromEntries(entries)` | Create a set from the values of `[key, value]` pairs |
 | `from(values)` | Create a set from any iterable |
+
+
+
+## `STracer` — Set Tracer
+
+
+| Command | Description |
+|---|---|
+| `new STracer(laneCapacity?, dialSize?)` | Creates a `STracer` with `dialSize` lanes (default 7) each of `laneCapacity` (default 8192), plus an index map of member → location. |
+| `STracer.activeLane` (private getter) | Returns the lane at the current `dial` position. |
+| `STracer.advanceDialIfFull()` (private) | If the active lane is full, bumps `revolution`, advances `dial`, resets the new lane, and purges index entries pointing at that lane. |
+| `STracer.add(value)` | Set-style insert: no-op if already present; otherwise advances the dial if needed, writes to the active lane, and records `{lane, seq}` in the index. Returns `this`. |
+| `STracer.has(value)` | Returns `true` if the index entry exists and its lane slot still holds a live (non-tombstoned) value. |
+| `STracer.delete(value)` | Removes the member from the index; returns whether it was present. |
+| `STracer.clear()` | Clears the index, resets all lanes, and resets `dial` to 0. |
+| `STracer.size` (getter) | Returns the number of indexed members. |
+| `STracer.forEach(cb)` | Iterates indexed members, invoking `cb` only for those still live per `has`. |
+| `STracer[Symbol.iterator]()` | Collects live members into an array and returns its iterator. |
+| `STracer.pressure` (getter) | Returns the active lane's pressure (`writes / capacity`). |
+| `nextPow2(n)` | Returns the smallest power of 2 ≥ `n` (minimum 2), used to size the ring buffer so slot lookup can use a bitmask instead of modulo. |
+| `new Disruptor(capacity)` | Constructs a fixed-size ring buffer (`Slot<P>[]`) whose internal size is the next power of 2 ≥ `capacity`; tracks a monotonic `cursor` starting at -1. |
+| `Disruptor.peekNext()` | Returns the slot that *will* be claimed next (cursor + 1), without committing to it — lets you inspect before publishing. |
+| `Disruptor.publish(key, payload, tombstone?)` | Claims the next sequence, writes `sequence/key/payload/tombstone` into its slot, advances `cursor`, and returns the sequence number. |
+| `Disruptor.read(seq)` | Returns the slot for a given sequence if it is still valid (in range and `slot.sequence === seq`), otherwise `undefined` (handles wraparound/overwrite). |
+| `assertEncodable(value)` | Throws a `TypeError` if the value is a function; guards that state values are plain data. |
+| `encode(value)` | Asserts encodability, then deep-clones objects (`structuredClone`, falling back to JSON round-trip); primitives pass through. |
+| `decode(value)` | Deep-clones objects (same fallback strategy); primitives pass through. Inverse of `encode`. |
+| `new Lane(capacity)` | Creates a `Lane` wrapping a `Disruptor` of the given capacity, tracking write count for fullness/pressure. |
+| `Lane.isFull` (getter) | Returns `true` when `writes >= capacity`. |
+| `Lane.pressure` (getter) | Returns `writes / capacity` — fraction of the lane consumed. |
+| `Lane.write(key, value)` | Increments the write counter and publishes the value to the lane's ring; returns the sequence number. |
+| `Lane.readAt(seq)` | Reads the payload at a sequence, returning `undefined` if the slot is missing or tombstoned. |
+| `Lane.reset()` | Resets the write counter and swaps in a fresh `Disruptor` — old ring is dropped for GC (not tombstoned). |
+
+### USAGE
+
+```ts
+// new STracer
+const st = new STracer<object>(1024, 3);
+
+// STracer.add
+const obj = { id: 1 };
+st.add(obj); // returns st; duplicate add is a no-op
+
+// STracer.has
+st.has(obj); // true
+st.has({ id: 1 }); // false (different reference)
+
+// STracer.delete
+st.delete(obj); // true
+
+// STracer.clear
+st.clear();
+
+// STracer.size
+st.size; // 0
+
+// STracer.forEach
+st.add(obj);
+st.forEach((v) => console.log(v)); // logs obj
+
+// STracer[Symbol.iterator]
+for (const v of st) { /* ... */ }
+
+// STracer.pressure
+st.pressure; // fraction of active lane used
+
+
+// nextPow2
+nextPow2(100); // 128
+nextPow2(2);   // 2
+
+// new Disruptor
+const d = new Disruptor<string>(4); // internal size 4, mask 3
+
+// Disruptor.peekNext
+const next = d.peekNext(); // slot at cursor+1, not yet published
+
+// Disruptor.publish
+const seq = d.publish("k1", "hello"); // 0
+
+// Disruptor.read
+d.read(0);  // { sequence: 0, key: "k1", payload: "hello", tombstone: false }
+d.read(99); // undefined (out of range)
+
+// assertEncodable
+assertEncodable({ a: 1 });        // ok
+assertEncodable(() => {});        // throws TypeError
+
+// encode
+const enc = encode({ nested: { x: 1 } }); // deep clone
+
+// decode
+const dec = decode(enc); // deep clone back
+
+// new Lane
+const lane = new Lane<true>(8);
+
+// Lane.isFull
+lane.isFull; // false
+
+// Lane.pressure
+lane.pressure; // 0
+
+// Lane.write
+const s = lane.write("m", true); // 0, writes -> 1
+
+// Lane.readAt
+lane.readAt(s); // true
+lane.readAt(999); // undefined
+
+// Lane.reset
+lane.reset(); // writes back to 0, fresh ring
+
+```
+
+
 
 ## `SET2B` — Set Binary
 
