@@ -1,4 +1,4 @@
-import { M2I } from "./map";
+import { M2 } from "./map";
 export declare class SET2I<T = A> extends Set<T> implements SET2<T> {
     s: (value: T) => this;
     take(value: T): T | UD;
@@ -31,7 +31,7 @@ export declare class SET2I<T = A> extends Set<T> implements SET2<T> {
     swap(a: T, b: T): B;
     clone(): this;
     toArray(): T[];
-    toMap<K, R>(fn: (v: T) => readonly [K, R]): M2I<K, R>;
+    toMap<K, R>(fn: (v: T) => readonly [K, R]): M2<K, R>;
     toObject(fn?: (v: T) => S): OB<T>;
     toJSON(): T[];
     static fromArray<T>(values: T[]): SET2I<T>;

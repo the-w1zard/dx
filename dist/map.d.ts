@@ -1,6 +1,6 @@
 export declare const rv: <T>(v: UF<T>) => T;
 export declare const sameValue: (a: A, b: A) => B;
-export declare class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
+export declare class M2<H = A, T = A> extends Map<H, T> implements M2I<H, T> {
     #private;
     f: (callbackfn: (value: T, key: H, map: Map<H, T>) => void, thisArg?: any) => void;
     [Symbol.iterator](): MapIterator<[H, T]>;
@@ -19,7 +19,7 @@ export declare class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
     $strict(): this;
     $history(): AR<M2Event<H, T>>;
     $why(k: H): M2Event<H, T> | UD;
-    $diff(other: M2I<H, T>): {
+    $diff(other: M2<H, T>): {
         add: AR<[H, T]>;
         del: AR<H>;
         chg: AR<[H, T, T]>;
@@ -38,11 +38,11 @@ export declare class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
     replace(value: UF<T>, k: H): B;
     inc(key: H, by?: N): N;
     touch(k: H): B;
-    mapValues<G>(fn: (v: T, k: H) => G): M2<H, G>;
-    mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T>;
+    mapValues<G>(fn: (v: T, k: H) => G): M2I<H, G>;
+    mapKeys<G>(fn: (v: T, k: H) => G): M2I<G, T>;
     filterKV(pred: (v: T, k: H) => B): this;
     filterKeys(pred: (v: T, k: H) => B): this;
-    partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>];
+    partition(pred: (v: T, k: H) => B): [M2I<H, T>, M2I<H, T>];
     find(pred: (v: T, k: H) => B): [H, T] | UD;
     findKey(pred: (v: T, k: H) => B): H | UD;
     findValue(pred: (v: T, k: H) => B): T | UD;
@@ -50,20 +50,20 @@ export declare class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
     every(pred: (v: T, k: H) => B): B;
     reduce<G>(fn: (acc: G, v: T, k: H) => G, initial: G): G;
     forEachKV(fn: (v: T, k: H, map: this) => void): void;
-    invert(): M2<T, H>;
-    unique<G>(fn?: (v: T, k: H) => G): M2<G, T>;
-    pick(keys: Iterable<H>): M2<H, T>;
-    omit(keys: Iterable<H>): M2<H, T>;
+    invert(): M2I<T, H>;
+    unique<G>(fn?: (v: T, k: H) => G): M2I<G, T>;
+    pick(keys: Iterable<H>): M2I<H, T>;
+    omit(keys: Iterable<H>): M2I<H, T>;
     merge(other: Iterable<readonly [H, T]>): this;
     clearAndSet(entries: Iterable<readonly [H, T]>): this;
     toObject(): OB<T>;
     toValues(): A2I<T>;
     toKeys(): A2I<H>;
     toArray(): A2I<[H, T]>;
-    group<G>(fn: (v: T, k: H) => G): M2<G, A2<T>>;
+    group<G>(fn: (v: T, k: H) => G): M2I<G, A2<T>>;
     clone(): this;
-    equals(other: M2I<H, T>): B;
-    static fromObject<X extends Record<S, A>>(obj: X): M2I<S, X[keyof X]>;
-    static fromEntries<H, T>(entries: I<readonly [H, T]>): M2I<H, T>;
-    static from<H, T>(map: RM<H, T>): M2I<H, T>;
+    equals(other: M2<H, T>): B;
+    static fromObject<X extends Record<S, A>>(obj: X): M2<S, X[keyof X]>;
+    static fromEntries<H, T>(entries: I<readonly [H, T]>): M2<H, T>;
+    static from<H, T>(map: RM<H, T>): M2<H, T>;
 }

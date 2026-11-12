@@ -2,7 +2,7 @@ import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
 import { B2BI } from "./boolean_byte";
-import { M2I } from "./map";
+import { M2 as M2I } from "./map";
 import { M2BI } from "./map_byte";
 
 import { A2I } from "./array";

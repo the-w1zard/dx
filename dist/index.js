@@ -2289,13 +2289,13 @@ var map_sameValue = function sameValue(a, b) {
     return Object.is(a, b) || _instanceof1(a, Date) && _instanceof1(b, Date) && +a === +b;
 };
 var _subs = /*#__PURE__*/ new WeakMap(), _hist = /*#__PURE__*/ new WeakMap(), _histLimit = /*#__PURE__*/ new WeakMap(), _strict = /*#__PURE__*/ new WeakMap(), _iterating = /*#__PURE__*/ new WeakMap(), _batching = /*#__PURE__*/ new WeakMap(), _pending = /*#__PURE__*/ new WeakMap(), _derived = /*#__PURE__*/ new WeakMap(), _dependents = /*#__PURE__*/ new WeakMap(), _emit = /*#__PURE__*/ new WeakSet(), _record = /*#__PURE__*/ new WeakSet(), _invalidate = /*#__PURE__*/ new WeakSet(), _computeDerived = /*#__PURE__*/ new WeakSet(), _assertNotIterating = /*#__PURE__*/ new WeakSet();
-var map_M2I = /*#__PURE__*/ function(Map1) {
+var map_M2 = /*#__PURE__*/ function(Map1) {
     "use strict";
-    _inherits(M2I, Map1);
-    function M2I() {
-        map_class_call_check(this, M2I);
+    _inherits(M2, Map1);
+    function M2() {
+        map_class_call_check(this, M2);
         var _this;
-        _this = _call_super(this, M2I, arguments), map_class_private_method_init(_this, _emit), map_class_private_method_init(_this, _record), map_class_private_method_init(_this, _invalidate), map_class_private_method_init(_this, _computeDerived), map_class_private_method_init(_this, _assertNotIterating), // public h = this.has;
+        _this = _call_super(this, M2, arguments), map_class_private_method_init(_this, _emit), map_class_private_method_init(_this, _record), map_class_private_method_init(_this, _invalidate), map_class_private_method_init(_this, _computeDerived), map_class_private_method_init(_this, _assertNotIterating), // public h = this.has;
         // public d = this.delete;
         // public c = this.clear
         map_define_property(_this, "f", _this.forEach) //                                                     [FOR EACH]
@@ -2329,7 +2329,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         });
         return _this;
     }
-    map_create_class(M2I, [
+    map_create_class(M2, [
         {
             key: Symbol.iterator,
             value: function value() {
@@ -2359,7 +2359,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
             value: function batch(fn) {
                 var _$_class_private_field_get;
                 map_class_private_field_update(this, _batching).value++;
-                map_class_private_field_set(this, _pending, (_$_class_private_field_get = map_class_private_field_get(this, _pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I());
+                map_class_private_field_set(this, _pending, (_$_class_private_field_get = map_class_private_field_get(this, _pending)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2());
                 try {
                     fn();
                 } finally{
@@ -2404,7 +2404,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                 var next = map_rv(v);
                 var has = this.h(k);
                 var prev = has ? this.g(k) : undefined;
-                _get(_get_prototype_of(M2I.prototype), "set", this).call(this, k, next);
+                _get(_get_prototype_of(M2.prototype), "set", this).call(this, k, next);
                 map_class_private_method_get(this, _invalidate, invalidate).call(this, k);
                 map_class_private_method_get(this, _emit, emit).call(this, {
                     op: "set",
@@ -2433,7 +2433,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                 map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "delete");
                 if (!this.h(k)) return false;
                 var prev = this.g(k);
-                var out = _get(_get_prototype_of(M2I.prototype), "delete", this).call(this, k);
+                var out = _get(_get_prototype_of(M2.prototype), "delete", this).call(this, k);
                 map_class_private_method_get(this, _invalidate, invalidate).call(this, k);
                 map_class_private_method_get(this, _emit, emit).call(this, {
                     op: "del",
@@ -2449,7 +2449,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
             value: function c() {
                 map_class_private_method_get(this, _assertNotIterating, assertNotIterating).call(this, "clear");
                 var entries = map_to_consumable_array(this.entries());
-                _get(_get_prototype_of(M2I.prototype), "clear", this).call(this);
+                _get(_get_prototype_of(M2.prototype), "clear", this).call(this);
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -2482,7 +2482,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
             key: "dv",
             value: function dv(k, deps, fn) {
                 var _$_class_private_field_get;
-                map_class_private_field_set(this, _derived, (_$_class_private_field_get = map_class_private_field_get(this, _derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2I()).set(k, {
+                map_class_private_field_set(this, _derived, (_$_class_private_field_get = map_class_private_field_get(this, _derived)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : new M2()).set(k, {
                     deps: deps,
                     fn: fn,
                     dirty: true,
@@ -2493,7 +2493,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                     for(var _iterator = deps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
                         var dep = _step.value;
                         var _$_class_private_field_get1;
-                        map_class_private_field_set(this, _dependents, (_$_class_private_field_get1 = map_class_private_field_get(this, _dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new M2I()).getOrM(function() {
+                        map_class_private_field_set(this, _dependents, (_$_class_private_field_get1 = map_class_private_field_get(this, _dependents)) !== null && _$_class_private_field_get1 !== void 0 ? _$_class_private_field_get1 : new M2()).getOrM(function() {
                             return new Set();
                         }, dep).add(k);
                     }
@@ -2561,7 +2561,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                     if (d.dirty || !d.has) return map_class_private_method_get(this, _computeDerived, computeDerived).call(this, k, d);
                     return d.value;
                 }
-                return _get(_get_prototype_of(M2I.prototype), "get", this).call(this, k);
+                return _get(_get_prototype_of(M2.prototype), "get", this).call(this, k);
             }
         },
         {
@@ -2573,7 +2573,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                     if (d.dirty || !d.has) map_class_private_method_get(this, _computeDerived, computeDerived).call(this, k, d);
                     return true;
                 }
-                return _get(_get_prototype_of(M2I.prototype), "has", this).call(this, k);
+                return _get(_get_prototype_of(M2.prototype), "has", this).call(this, k);
             }
         },
         {
@@ -2698,7 +2698,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                                 8,
                                 9
                             ]);
-                            _iterator = _get(_get_prototype_of(M2I.prototype), "entries", this).call(this)[Symbol.iterator]();
+                            _iterator = _get(_get_prototype_of(M2.prototype), "entries", this).call(this)[Symbol.iterator]();
                             _state.label = 3;
                         case 3:
                             if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
@@ -2788,7 +2788,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                                 8,
                                 9
                             ]);
-                            _iterator = _get(_get_prototype_of(M2I.prototype), "keys", this).call(this)[Symbol.iterator]();
+                            _iterator = _get(_get_prototype_of(M2.prototype), "keys", this).call(this)[Symbol.iterator]();
                             _state.label = 3;
                         case 3:
                             if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
@@ -2878,7 +2878,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
                                 8,
                                 9
                             ]);
-                            _iterator = _get(_get_prototype_of(M2I.prototype), "values", this).call(this)[Symbol.iterator]();
+                            _iterator = _get(_get_prototype_of(M2.prototype), "values", this).call(this)[Symbol.iterator]();
                             _state.label = 3;
                         case 3:
                             if (!!(_iteratorNormalCompletion = (_step = _iterator.next()).done)) return [
@@ -3037,7 +3037,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "mapValues",
             value: function mapValues(fn) {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3064,7 +3064,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "mapKeys",
             value: function mapKeys(fn) {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3123,8 +3123,8 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "partition",
             value: function partition(pred) {
-                var yes = new M2I();
-                var no = new M2I();
+                var yes = new M2();
+                var no = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3339,7 +3339,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "invert",
             value: function invert() {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3366,7 +3366,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "unique",
             value: function unique(fn) {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3394,7 +3394,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "pick",
             value: function pick(keys) {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3422,7 +3422,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
             key: "omit",
             value: function omit(keys) {
                 var omitted = new Set(keys);
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3551,7 +3551,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "group",
             value: function group(fn) {
-                var out = new M2I();
+                var out = new M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -3580,7 +3580,7 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "clone",
             value: function clone() {
-                return new M2I(this);
+                return new M2(this);
             }
         },
         {
@@ -3615,23 +3615,23 @@ var map_M2I = /*#__PURE__*/ function(Map1) {
         {
             key: "fromObject",
             value: function fromObject(obj) {
-                return new M2I(Object.entries(obj));
+                return new M2(Object.entries(obj));
             }
         },
         {
             key: "fromEntries",
             value: function fromEntries(entries) {
-                return new M2I(entries);
+                return new M2(entries);
             }
         },
         {
             key: "from",
             value: function from(map) {
-                return new M2I(map);
+                return new M2(map);
             }
         }
     ]);
-    return M2I;
+    return M2;
 } /*  ====================================================================================================
     
     ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ (map_wrap_native_super(Map));
@@ -3722,7 +3722,7 @@ function computeDerived(k, d) {
 }
 function assertNotIterating(op) {
     if (map_class_private_field_get(this, _strict) && map_class_private_field_get(this, _iterating) > 0) {
-        throw new Error("M2.".concat(op, "() during iteration. Use filterKV(), collect keys first, or disable $strict()."));
+        throw new Error("M2I.".concat(op, "() during iteration. Use filterKV(), collect keys first, or disable $strict()."));
     }
 }
 
@@ -11435,6 +11435,7 @@ function set_wrap_native_super(Class) {
     };
     return set_wrap_native_super(Class);
 }
+
 var set_SET2I = /*#__PURE__*/ function(Set1) {
     "use strict";
     set_inherits(SET2I, Set1);
@@ -12128,7 +12129,7 @@ var set_SET2I = /*#__PURE__*/ function(Set1) {
         {
             key: "toMap",
             value: function toMap(fn) {
-                var out = new M2();
+                var out = new map_M2();
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                 try {
                     for(var _iterator = this[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
@@ -15937,10 +15938,11 @@ function nested_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
+var nested_cache = new M2();
 var nested_nestedi = /*#__PURE__*/ function() {
     "use strict";
     function nestedi() {
-        var CACHE = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
+        var CACHE = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : nested_cache;
         nested_class_call_check(this, nestedi);
         nested_define_property(this, "r", 'ROOT');
         nested_define_property(this, "m", 'MASTER');
@@ -21237,7 +21239,7 @@ globalThis.R2 = date_R2I;
 globalThis.R2FN = date_R2II;
 globalThis.ER2 = error_ER2I;
 globalThis.I2 = iterator_I2I;
-globalThis.M2 = map_M2I;
+globalThis.M2 = map_M2;
 globalThis.M2BIN = map_bin_M2BINI;
 globalThis.M2B = map_byte_M2BI;
 globalThis.M2D = map_dense_M2DI;
@@ -21290,4 +21292,4 @@ globalThis.STracer = set_tracer_STracer;
 globalThis.OTracer = object_tracer_OTracer;
 
 
-export { MaybePromisei, RECC2 as RES2, array_A2I as A2, avro_AVROReader as AVROReader, avro_AVROWriter as AVROWriter, avro_BINARY_AVRO as AVRO, boolean_byte_B2BI as B2B, cbor_CBORI as CBOR, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2I as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_disruptor_MDisruptor as MDisruptor, map_rows_M2RI as M2R, map_tracer_MTracer as MTracer, number_N2I as N2, object_O2I as O2, object_tracer_OTracer as OTracer, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, set_tracer_STracer as STracer, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };
+export { MaybePromisei, RECC2 as RES2, array_A2I as A2, avro_AVROReader as AVROReader, avro_AVROWriter as AVROWriter, avro_BINARY_AVRO as AVRO, boolean_byte_B2BI as B2B, cbor_CBORI as CBOR, date_D2I as D2, date_R2I as R2, date_R2II as R2I, error_ER2I as ER2, iterator_I2I as I2, map_M2 as M2, map_bin_M2BINI as M2BIN, map_byte_M2BI as M2B, map_dense_M2DI as M2D, map_disruptor_MDisruptor as MDisruptor, map_rows_M2RI as M2R, map_tracer_MTracer as MTracer, number_N2I as N2, object_O2I as O2, object_tracer_OTracer as OTracer, promise_P2I as P2, reg_ex_REC2 as RE2, set_SET2I as SET2, set_byte_SET2BI as SET2B, set_tracer_STracer as STracer, soa_codec_SOA_CODEC as SOA_CODEC, soa_codeci as soa_codec, string_S2I as S2, unit8array_U82I as U82, url_search_params_USP2I as USP2, weak_map_WM2I as WM2, weak_set_WS2I as WS2 };

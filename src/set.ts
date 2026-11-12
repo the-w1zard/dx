@@ -1,4 +1,4 @@
-import { M2I } from "./map";
+import { M2 } from "./map";
 
 export class SET2I<T = A> extends Set<T> implements SET2<T> {
 	public s = this.add;
@@ -161,7 +161,7 @@ export class SET2I<T = A> extends Set<T> implements SET2<T> {
 	public toArray(): T[] {
 		return [...this];
 	}
-	public toMap<K, R>(fn: (v: T) => readonly [K, R]): M2I<K, R> {
+	public toMap<K, R>(fn: (v: T) => readonly [K, R]): M2<K, R> {
 		const out = new M2<K, R>();
 		for (const value of this) {
 			const [key, result] = fn(value);

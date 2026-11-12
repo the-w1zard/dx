@@ -4,7 +4,7 @@ export declare class nestedi<K = A, V = A> {
     m: string;
     s: string;
     CACHE: ALL_MAPS;
-    FALLBACK: import("./map").M2I<any, M2<any, M2<K, V>>>;
+    FALLBACK: import("./map").M2<any, M2<any, M2<K, V>>>;
     constructor(CACHE?: ALL_MAPS);
     map<K, V>(s?: A, m?: A, r?: A): Map<A, A>;
     m2<K, V>(s?: A, m?: A, r?: A): M2<A, A>;

@@ -2,7 +2,7 @@ export const rv = <T>(v: UF<T>): T => typeof v === "function" ? (v as () => T)()
 export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 
 
-export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
+export class M2<H = A, T = A> extends Map<H, T> implements M2I<H, T> {
 	// public g = this.get;
 	// public h = this.has;
 	// public d = this.delete;
@@ -15,9 +15,9 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	#strict = false;
 	#iterating = 0;
 	#batching = 0;
-	#pending?: M2I<H, M2Event<H, T>>;
-	#derived?: M2I<H, Derived<H, T>>;
-	#dependents?: M2I<H, Set<H>>;
+	#pending?: M2<H, M2Event<H, T>>;
+	#derived?: M2<H, Derived<H, T>>;
+	#dependents?: M2<H, Set<H>>;
 	#emit(e: M2Event<H, T>): V {
 		if (this.#batching > 0) {
 			// coalesce: last write per key wins, keep prev from first event
@@ -80,7 +80,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	}
 	#assertNotIterating(op: S): V {
 		if (this.#strict && this.#iterating > 0) {
-			throw new Error(`M2.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
+			throw new Error(`M2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
 		}
 	}
 	public [Symbol.iterator](): MapIterator<[H, T]> {return this.entries();	}
@@ -93,7 +93,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	} 
 	public batch(fn: () => V): this {//                                               [BATCH]
 		this.#batching++;
-		this.#pending ??= new M2I<H, M2Event<H, T>>();
+		this.#pending ??= new M2<H, M2Event<H, T>>();
 	
 		try {
 			fn();
@@ -176,7 +176,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	}
 	public dv(k: H, deps: AR<H>, fn: (...vals: AR<T>) => T): this {//              [DERRIVED]
 		
-		(this.#derived ??= new M2I<H, Derived<H, T>>())
+		(this.#derived ??= new M2<H, Derived<H, T>>())
     .set(k, {
         deps,
         fn,
@@ -185,7 +185,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
     });
 
 		for (const dep of deps) {
-			(this.#dependents ??= new M2I<H, Set<H>>())
+			(this.#dependents ??= new M2<H, Set<H>>())
     .getOrM(() => new Set(), dep)
     .add(k);
 		}
@@ -248,7 +248,7 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return undefined;
 	}
-	public $diff(other: M2I<H, T>) {//                                                [$DIFF]
+	public $diff(other: M2<H, T>) {//                                                [$DIFF]
 		const add: AR<[H, T]> = [];
 		const del: AR<H> = [];
 		const chg: AR<[H, T, T]> = [];
@@ -356,13 +356,13 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	public touch(k: H): B {//                                                     [SWTOUCHAP]
 		return this.setIfAbsent(undefined as unknown as T, k);
 	}
-	public mapValues<G>(fn: (v: T, k: H) => G): M2<H, G> {//                      [MAPVALUES]
-		const out = new M2I<H, G>();
+	public mapValues<G>(fn: (v: T, k: H) => G): M2I<H, G> {//                      [MAPVALUES]
+		const out = new M2<H, G>();
 		for (const [k, v] of this) out.s(fn(v, k), k);
 		return out;
 	}
-	public mapKeys<G>(fn: (v: T, k: H) => G): M2<G, T> {//                          [MAPKEYS]
-		const out = new M2I<G, T>();
+	public mapKeys<G>(fn: (v: T, k: H) => G): M2I<G, T> {//                          [MAPKEYS]
+		const out = new M2<G, T>();
 		for (const [k, v] of this) out.s(v, fn(v, k));
 		return out;
 	}
@@ -375,9 +375,9 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	public filterKeys(pred: (v: T, k: H) => B): this {//                         [FILTERKEYS]
 		return this.filterKV(pred);
 	}
-	public partition(pred: (v: T, k: H) => B): [M2<H, T>, M2<H, T>] {//           [PARTITION]
-		const yes = new M2I<H, T>();
-		const no = new M2I<H, T>();
+	public partition(pred: (v: T, k: H) => B): [M2I<H, T>, M2I<H, T>] {//           [PARTITION]
+		const yes = new M2<H, T>();
+		const no = new M2<H, T>();
 
 		for (const [k, v] of this) {
 			(pred(v, k) ? yes : no).s(v, k);
@@ -423,29 +423,29 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	public forEachKV(fn: (v: T, k: H, map: this) => void): void {//                 [FOREACH]
 		for (const [k, v] of this) fn(v, k, this);
 	}
-	public invert(): M2<T, H> {//                                                    [INVERT]
-		const out = new M2I<T, H>();
+	public invert(): M2I<T, H> {//                                                    [INVERT]
+		const out = new M2<T, H>();
 		for (const [k, v] of this) out.s(k, v);
 		return out;
 	}
-	public unique<G>(fn?: (v: T, k: H) => G): M2<G, T> {//                           [UNIQUE]
-		const out = new M2I<G, T>();
+	public unique<G>(fn?: (v: T, k: H) => G): M2I<G, T> {//                           [UNIQUE]
+		const out = new M2<G, T>();
 		for (const [k, v] of this) {
 			const key = (fn ? fn(v, k) : v) as unknown as G;
 			if (!out.h(key)) out.s(v, key);
 		}
 		return out;
 	}
-	public pick(keys: Iterable<H>): M2<H, T> {//                                       [PICK]
-		const out = new M2I<H, T>();
+	public pick(keys: Iterable<H>): M2I<H, T> {//                                       [PICK]
+		const out = new M2<H, T>();
 		for (const k of keys) {
 			if (this.h(k)) out.s(this.g(k) as T, k);
 		}
 		return out;
 	}
-	public omit(keys: Iterable<H>): M2<H, T> {//                                       [EMIT]
+	public omit(keys: Iterable<H>): M2I<H, T> {//                                       [EMIT]
 		const omitted = new Set(keys);
-		const out = new M2I<H, T>();
+		const out = new M2<H, T>();
 		for (const [k, v] of this) {
 			if (!omitted.has(k)) out.s(v, k);
 		}
@@ -476,15 +476,15 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 	public toValues(): A2I<T> { return A2.from(this.values()); }//                 [TOVALUES]
 	public toKeys(): A2I<H> { return A2.from(this.keys()); }//                       [TOKEYS]
 	public toArray(): A2I<[H, T]> { return A2.from(this.entries()); }//             [TOARRAY]
-	public group<G>(fn: (v: T, k: H) => G): M2<G, A2<T>> {//                          [GROUP]
-		const out = new M2I<G, A2<T>>();
+	public group<G>(fn: (v: T, k: H) => G): M2I<G, A2<T>> {//                          [GROUP]
+		const out = new M2<G, A2<T>>();
 		for (const [k, v] of this) out.getOrM(() => new A2<T>(), fn(v, k)).push(v);
 		return out;
 	}
 	public clone(): this {//                                                          [CLONE]
-		return new M2I(this) as this;
+		return new M2(this) as this;
 	}
-	public equals(other: M2I<H, T>): B {//                                           [EQUALS]
+	public equals(other: M2<H, T>): B {//                                           [EQUALS]
 		if (other === this) return true;
 		if (this.size !== other.size) return false;
 
@@ -494,14 +494,14 @@ export class M2I<H = A, T = A> extends Map<H, T> implements M2<H, T> {
 
 		return true;
 	}
-	static fromObject<X extends Record<S, A>>(obj: X): M2I<S, X[keyof X]> {//      [FROMOBBJ]
-		return new M2I(Object.entries(obj) as AR<[S, X[keyof X]]>);
+	static fromObject<X extends Record<S, A>>(obj: X): M2<S, X[keyof X]> {//      [FROMOBBJ]
+		return new M2(Object.entries(obj) as AR<[S, X[keyof X]]>);
 	}
-	static fromEntries<H, T>(entries: I<readonly [H, T]>): M2I<H, T> {//        [FROMENTIRES]
-		return new M2I(entries);
+	static fromEntries<H, T>(entries: I<readonly [H, T]>): M2<H, T> {//        [FROMENTIRES]
+		return new M2(entries);
 	}
-	static from<H, T>(map: RM<H, T>): M2I<H, T> {//                                    [FROM]
-		return new M2I(map);
+	static from<H, T>(map: RM<H, T>): M2<H, T> {//                                    [FROM]
+		return new M2(map);
 	}
 }
 
