@@ -7,8 +7,10 @@
 	"types": "./src/dx.d.ts",
 	"exports": {
 		".": {
-			"types": "./src/dx.d.ts"
-		},
+			"types": "./src/dx.d.ts",
+			"default": "./dist/index.js",
+			"import": "./dist/index.js"
+		  },
 		"./array": {
 			"types": "./dist/array.d.ts"
 		},
