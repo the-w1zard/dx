@@ -53,3 +53,4 @@ export declare class SET2BI {
     static fromEntries(entries: I<readonly [A, N]>, maxParticles?: N): SET2BI;
     static from(pids: Iterable<N>, maxParticles?: N): SET2BI;
 }
+//# sourceMappingURL=set_byte.d.ts.map

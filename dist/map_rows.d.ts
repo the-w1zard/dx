@@ -31,3 +31,4 @@ export declare class M2RI<K = N> {
 }
 export interface M2R<K> extends M2RI {
 }
+//# sourceMappingURL=map_rows.d.ts.map

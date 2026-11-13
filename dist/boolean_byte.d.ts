@@ -10,3 +10,4 @@ export declare class B2BI {
     toggle(pid: number): boolean; /** Clear all flags instantly without reallocating memory. */
     clear(): void;
 }
+//# sourceMappingURL=boolean_byte.d.ts.map

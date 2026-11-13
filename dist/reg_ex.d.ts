@@ -1,3 +1,10 @@
+export declare function escapeRegex(str: S): S;
+export declare function escapeForClass(chars: S): S;
+export declare function toSource(input: RE2Input): S;
+export declare function isBalancedGroup(src: S): B;
+export declare function isBalancedClass(src: S): B;
+export declare function wrapForConcat(src: S): S;
+export declare function mergeFlags(base: S, parts: AR<RE2Input>): S;
 export declare class REC2 implements RE2_IF {
     #private;
     constructor(source: S, flags?: S);
@@ -69,4 +76,6 @@ export declare class REC2 implements RE2_IF {
     clone(): RE2_IF;
     static fromRegExp(re: RegExp): REC2;
 }
+export declare function explainSource(source: S): AR<S>;
 export declare const RECC2: RE2Static;
+//# sourceMappingURL=reg_ex.d.ts.map

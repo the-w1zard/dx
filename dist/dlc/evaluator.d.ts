@@ -1,1 +1,2 @@
 export declare function evaluator(v: unknown): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "URL" | "Array" | "object" | "ArrayBuffer" | "error" | "null" | "array" | "map" | "date" | "set" | "function" | "thenable" | "async-iterable" | "regexp" | "iterable" | "iterator" | "WeakMap" | "WeakSet" | "Promise" | "Buffer" | "URLSearchParams" | "plainObject" | undefined;
+//# sourceMappingURL=evaluator.d.ts.map

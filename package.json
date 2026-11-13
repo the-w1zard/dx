@@ -1,221 +1,340 @@
 {
-	"name": "@the-w1zard/dx",
-	"version": "1.0.29",
-	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js",
-			"import": "./dist/index.js"
-		},
-		"./array": {
-			"types": "./dist/array.d.ts"
-		},
-		"./object_tracer": {
-			"types": "./dist/object_tracer.d.ts"
-		},
-		"./set_tracer": {
-			"types": "./dist/set_tracer.d.ts"
-		},
-		"./call_if": {
-			"types": "./dist/dlc/call_if.d.ts"
-		},
-		"./barrier": {
-			"types": "./dist/dlc/barrier.d.ts"
-		},
-		"./clamp": {
-			"types": "./dist/dlc/clamp.d.ts"
-		},
-		"./create_live_scope": {
-			"types": "./dist/dlc/create_live_scope.d.ts"
-		},
-		"./deferred": {
-			"types": "./dist/dlc/deferred.d.ts"
-		},
-		"./evaluator": {
-			"types": "./dist/dlc/evaluator.d.ts"
-		},
-		"./finally": {
-			"types": "./dist/dlc/finally.d.ts"
-		},
-		"./gate": {
-			"types": "./dist/dlc/gate.d.ts"
-		},
-		"./ignore_arg": {
-			"types": "./dist/dlc/ignore_arg.d.ts"
-		},
-		"./invoke": {
-			"types": "./dist/dlc/invoke.d.ts"
-		},
-		"./is_defined": {
-			"types": "./dist/dlc/is_defined.d.ts"
-		},
-		"./is_not_defined": {
-			"types": "./dist/dlc/is_not_defined.d.ts"
-		},
-		"./lazy": {
-			"types": "./dist/dlc/lazy.d.ts"
-		},
-		"./lww": {
-			"types": "./dist/dlc/lww.d.ts"
-		},
-		"./once": {
-			"types": "./dist/dlc/once.d.ts"
-		},
-		"./or_default": {
-			"types": "./dist/dlc/or_default.d.ts"
-		},
-		"./patch_state": {
-			"types": "./dist/dlc/patch_state.d.ts"
-		},
-		"./retry_with_backoff": {
-			"types": "./dist/dlc/retry_with_backoff.d.ts"
-		},
-		"./run_with_retry": {
-			"types": "./dist/dlc/run_with_retry.d.ts"
-		},
-		"./serial_executor": {
-			"types": "./dist/dlc/serial_executor.d.ts"
-		},
-		"./set_keys": {
-			"types": "./dist/dlc/set_keys.d.ts"
-		},
-		"./set_prev": {
-			"types": "./dist/dlc/set_prev.d.ts"
-		},
-		"./sleep": {
-			"types": "./dist/dlc/sleep.d.ts"
-		},
-		"./timed_promise": {
-			"types": "./dist/dlc/timed_promise.d.ts"
-		},
-		"./to_promise": {
-			"types": "./dist/dlc/to_promise.d.ts"
-		},
-		"./try_catch": {
-			"types": "./dist/dlc/try_catch.d.ts"
-		},
-		"./twx": {
-			"types": "./dist/dlc/twx.d.ts"
-		},
-		"./unreachable": {
-			"types": "./dist/dlc/unreachable.d.ts"
-		},
-		"./wait_and_promise": {
-			"types": "./dist/dlc/wait_and_promise.d.ts"
-		},
-		"./auto_serialize": {
-			"types": "./dist/auto_serialize.d.ts"
-		},
-		"./avro": {
-			"types": "./dist/avro.d.ts"
-		},
-		"./boolean_byte": {
-			"types": "./dist/boolean_byte.d.ts"
-		},
-		"./cbor": {
-			"types": "./dist/cbor.d.ts"
-		},
-		"./date": {
-			"types": "./dist/date.d.ts"
-		},
-		"./error": {
-			"types": "./dist/error.d.ts"
-		},
-		"./iterator": {
-			"types": "./dist/iterator.d.ts"
-		},
-		"./map_bin": {
-			"types": "./dist/map_bin.d.ts"
-		},
-		"./map_byte": {
-			"types": "./dist/map_byte.d.ts"
-		},
-		"./map_disruptor": {
-			"types": "./dist/map_disruptor.d.ts"
-		},
-		"./map_rows": {
-			"types": "./dist/map_rows.d.ts"
-		},
-		"./map_tracer": {
-			"types": "./dist/map_tracer.d.ts"
-		},
-		"./map": {
-			"types": "./dist/map.d.ts"
-		},
-		"./nested": {
-			"types": "./dist/nested.d.ts"
-		},
-		"./number": {
-			"types": "./dist/number.d.ts"
-		},
-		"./object": {
-			"types": "./dist/object.d.ts"
-		},
-		"./promise": {
-			"types": "./dist/promise.d.ts"
-		},
-		"./reg_ex": {
-			"types": "./dist/reg_ex.d.ts"
-		},
-		"./set_byte": {
-			"types": "./dist/set_byte.d.ts"
-		},
-		"./set": {
-			"types": "./dist/set.d.ts"
-		},
-		"./soa_codec": {
-			"types": "./dist/soa_codec.d.ts"
-		},
-		"./string": {
-			"types": "./dist/string.d.ts"
-		},
-		"./unit8array": {
-			"types": "./dist/unit8array.d.ts"
-		},
-		"./url_search_params": {
-			"types": "./dist/url_search_params.d.ts"
-		},
-		"./weak_map": {
-			"types": "./dist/weak_map.d.ts"
-		},
-		"./weak_set": {
-			"types": "./dist/weak_set.d.ts"
-		}
-	},
-	"files": [
-		"dist",
-		"src"
-	],
-	"scripts": {
-		"1": "git add .",
-		"2": "git commit -m \"first commit\"",
-		"3": "git pull",
-		"4": "git push",
-		"5": "npm version patch",
-		"6": "git push",
-		"7": "git push --tags",
-		"8": "npm publish --access public",
-		"build": "tsc --emitDeclarationOnly && rspack build",
-		"dev": "rspack serve",
-		"check": "tsc --noEmit",
-		"*": "pnpm update && npm run check && npm run build && npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
-	},
-	"devDependencies": {
-		"@rspack/cli": "^2.3.2",
-		"@rspack/core": "^2.3.2",
-		"@rspack/dev-server": "^2.2.2",
-		"@the-w1zard/alias_types": "^1.0.8",
-		"@tsconfig/node-lts": "^24.0.1",
-		"@types/node": "^24.19.2",
-		"jsrepo": "^3.8.3",
-		"typescript": "^6.0.3"
-	},
-	"dependencies": {
-		"@babel/parser": "^8.1.2",
-		"@babel/traverse": "^8.1.2",
-		"@babel/types": "^8.1.2"
-	}
+    "name": "@the-w1zard/dx",
+    "version": "1.0.29",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js",
+            "import": "./dist/index.js"
+        },
+        "./dx.d.ts": {
+            "types": "./dist/dx.d.ts"
+        },
+        "./array": {
+            "types": "./dist/array.d.ts",
+            "import": "./dist/array.js",
+            "default": "./dist/array.js"
+        },
+        "./object_tracer": {
+            "types": "./dist/object_tracer.d.ts",
+            "import": "./dist/object_tracer.js",
+            "default": "./dist/object_tracer.js"
+        },
+        "./set_tracer": {
+            "types": "./dist/set_tracer.d.ts",
+            "import": "./dist/set_tracer.js",
+            "default": "./dist/set_tracer.js"
+        },
+        "./call_if": {
+            "types": "./dist/dlc/call_if.d.ts",
+            "import": "./dist/dlc/call_if.js",
+            "default": "./dist/dlc/call_if.js"
+        },
+        "./barrier": {
+            "types": "./dist/dlc/barrier.d.ts",
+            "import": "./dist/dlc/barrier.js",
+            "default": "./dist/dlc/barrier.js"
+        },
+        "./clamp": {
+            "types": "./dist/dlc/clamp.d.ts",
+            "import": "./dist/dlc/clamp.js",
+            "default": "./dist/dlc/clamp.js"
+        },
+        "./create_live_scope": {
+            "types": "./dist/dlc/create_live_scope.d.ts",
+            "import": "./dist/dlc/create_live_scope.js",
+            "default": "./dist/dlc/create_live_scope.js"
+        },
+        "./deferred": {
+            "types": "./dist/dlc/deferred.d.ts",
+            "import": "./dist/dlc/deferred.js",
+            "default": "./dist/dlc/deferred.js"
+        },
+        "./evaluator": {
+            "types": "./dist/dlc/evaluator.d.ts",
+            "import": "./dist/dlc/evaluator.js",
+            "default": "./dist/dlc/evaluator.js"
+        },
+        "./finally": {
+            "types": "./dist/dlc/finally.d.ts",
+            "import": "./dist/dlc/finally.js",
+            "default": "./dist/dlc/finally.js"
+        },
+        "./gate": {
+            "types": "./dist/dlc/gate.d.ts",
+            "import": "./dist/dlc/gate.js",
+            "default": "./dist/dlc/gate.js"
+        },
+        "./ignore_arg": {
+            "types": "./dist/dlc/ignore_arg.d.ts",
+            "import": "./dist/dlc/ignore_arg.js",
+            "default": "./dist/dlc/ignore_arg.js"
+        },
+        "./invoke": {
+            "types": "./dist/dlc/invoke.d.ts",
+            "import": "./dist/dlc/invoke.js",
+            "default": "./dist/dlc/invoke.js"
+        },
+        "./is_defined": {
+            "types": "./dist/dlc/is_defined.d.ts",
+            "import": "./dist/dlc/is_defined.js",
+            "default": "./dist/dlc/is_defined.js"
+        },
+        "./is_not_defined": {
+            "types": "./dist/dlc/is_not_defined.d.ts",
+            "import": "./dist/dlc/is_not_defined.js",
+            "default": "./dist/dlc/is_not_defined.js"
+        },
+        "./lazy": {
+            "types": "./dist/dlc/lazy.d.ts",
+            "import": "./dist/dlc/lazy.js",
+            "default": "./dist/dlc/lazy.js"
+        },
+        "./lww": {
+            "types": "./dist/dlc/lww.d.ts",
+            "import": "./dist/dlc/lww.js",
+            "default": "./dist/dlc/lww.js"
+        },
+        "./once": {
+            "types": "./dist/dlc/once.d.ts",
+            "import": "./dist/dlc/once.js",
+            "default": "./dist/dlc/once.js"
+        },
+        "./or_default": {
+            "types": "./dist/dlc/or_default.d.ts",
+            "import": "./dist/dlc/or_default.js",
+            "default": "./dist/dlc/or_default.js"
+        },
+        "./patch_state": {
+            "types": "./dist/dlc/patch_state.d.ts",
+            "import": "./dist/dlc/patch_state.js",
+            "default": "./dist/dlc/patch_state.js"
+        },
+        "./retry_with_backoff": {
+            "types": "./dist/dlc/retry_with_backoff.d.ts",
+            "import": "./dist/dlc/retry_with_backoff.js",
+            "default": "./dist/dlc/retry_with_backoff.js"
+        },
+        "./run_with_retry": {
+            "types": "./dist/dlc/run_with_retry.d.ts",
+            "import": "./dist/dlc/run_with_retry.js",
+            "default": "./dist/dlc/run_with_retry.js"
+        },
+        "./serial_executor": {
+            "types": "./dist/dlc/serial_executor.d.ts",
+            "import": "./dist/dlc/serial_executor.js",
+            "default": "./dist/dlc/serial_executor.js"
+        },
+        "./set_keys": {
+            "types": "./dist/dlc/set_keys.d.ts",
+            "import": "./dist/dlc/set_keys.js",
+            "default": "./dist/dlc/set_keys.js"
+        },
+        "./set_prev": {
+            "types": "./dist/dlc/set_prev.d.ts",
+            "import": "./dist/dlc/set_prev.js",
+            "default": "./dist/dlc/set_prev.js"
+        },
+        "./sleep": {
+            "types": "./dist/dlc/sleep.d.ts",
+            "import": "./dist/dlc/sleep.js",
+            "default": "./dist/dlc/sleep.js"
+        },
+        "./timed_promise": {
+            "types": "./dist/dlc/timed_promise.d.ts",
+            "import": "./dist/dlc/timed_promise.js",
+            "default": "./dist/dlc/timed_promise.js"
+        },
+        "./to_promise": {
+            "types": "./dist/dlc/to_promise.d.ts",
+            "import": "./dist/dlc/to_promise.js",
+            "default": "./dist/dlc/to_promise.js"
+        },
+        "./try_catch": {
+            "types": "./dist/dlc/try_catch.d.ts",
+            "import": "./dist/dlc/try_catch.js",
+            "default": "./dist/dlc/try_catch.js"
+        },
+        "./twx": {
+            "types": "./dist/dlc/twx.d.ts",
+            "import": "./dist/dlc/twx.js",
+            "default": "./dist/dlc/twx.js"
+        },
+        "./unreachable": {
+            "types": "./dist/dlc/unreachable.d.ts",
+            "import": "./dist/dlc/unreachable.js",
+            "default": "./dist/dlc/unreachable.js"
+        },
+        "./wait_and_promise": {
+            "types": "./dist/dlc/wait_and_promise.d.ts",
+            "import": "./dist/dlc/wait_and_promise.js",
+            "default": "./dist/dlc/wait_and_promise.js"
+        },
+        "./auto_serialize": {
+            "types": "./dist/auto_serialize.d.ts",
+            "import": "./dist/auto_serialize.js",
+            "default": "./dist/auto_serialize.js"
+        },
+        "./avro": {
+            "types": "./dist/avro.d.ts",
+            "import": "./dist/avro.js",
+            "default": "./dist/avro.js"
+        },
+        "./boolean_byte": {
+            "types": "./dist/boolean_byte.d.ts",
+            "import": "./dist/boolean_byte.js",
+            "default": "./dist/boolean_byte.js"
+        },
+        "./cbor": {
+            "types": "./dist/cbor.d.ts",
+            "import": "./dist/cbor.js",
+            "default": "./dist/cbor.js"
+        },
+        "./date": {
+            "types": "./dist/date.d.ts",
+            "import": "./dist/date.js",
+            "default": "./dist/date.js"
+        },
+        "./error": {
+            "types": "./dist/error.d.ts",
+            "import": "./dist/error.js",
+            "default": "./dist/error.js"
+        },
+        "./iterator": {
+            "types": "./dist/iterator.d.ts",
+            "import": "./dist/iterator.js",
+            "default": "./dist/iterator.js"
+        },
+        "./map_bin": {
+            "types": "./dist/map_bin.d.ts",
+            "import": "./dist/map_bin.js",
+            "default": "./dist/map_bin.js"
+        },
+        "./map_byte": {
+            "types": "./dist/map_byte.d.ts",
+            "import": "./dist/map_byte.js",
+            "default": "./dist/map_byte.js"
+        },
+        "./map_disruptor": {
+            "types": "./dist/map_disruptor.d.ts",
+            "import": "./dist/map_disruptor.js",
+            "default": "./dist/map_disruptor.js"
+        },
+        "./map_rows": {
+            "types": "./dist/map_rows.d.ts",
+            "import": "./dist/map_rows.js",
+            "default": "./dist/map_rows.js"
+        },
+        "./map_tracer": {
+            "types": "./dist/map_tracer.d.ts",
+            "import": "./dist/map_tracer.js",
+            "default": "./dist/map_tracer.js"
+        },
+        "./map": {
+            "types": "./dist/map.d.ts",
+            "import": "./dist/map.js",
+            "default": "./dist/map.js"
+        },
+        "./nested": {
+            "types": "./dist/nested.d.ts",
+            "import": "./dist/nested.js",
+            "default": "./dist/nested.js"
+        },
+        "./number": {
+            "types": "./dist/number.d.ts",
+            "import": "./dist/number.js",
+            "default": "./dist/number.js"
+        },
+        "./object": {
+            "types": "./dist/object.d.ts",
+            "import": "./dist/object.js",
+            "default": "./dist/object.js"
+        },
+        "./promise": {
+            "types": "./dist/promise.d.ts",
+            "import": "./dist/promise.js",
+            "default": "./dist/promise.js"
+        },
+        "./reg_ex": {
+            "types": "./dist/reg_ex.d.ts",
+            "import": "./dist/reg_ex.js",
+            "default": "./dist/reg_ex.js"
+        },
+        "./set_byte": {
+            "types": "./dist/set_byte.d.ts",
+            "import": "./dist/set_byte.js",
+            "default": "./dist/set_byte.js"
+        },
+        "./set": {
+            "types": "./dist/set.d.ts",
+            "import": "./dist/set.js",
+            "default": "./dist/set.js"
+        },
+        "./soa_codec": {
+            "types": "./dist/soa_codec.d.ts",
+            "import": "./dist/soa_codec.js",
+            "default": "./dist/soa_codec.js"
+        },
+        "./string": {
+            "types": "./dist/string.d.ts",
+            "import": "./dist/string.js",
+            "default": "./dist/string.js"
+        },
+        "./unit8array": {
+            "types": "./dist/unit8array.d.ts",
+            "import": "./dist/unit8array.js",
+            "default": "./dist/unit8array.js"
+        },
+        "./url_search_params": {
+            "types": "./dist/url_search_params.d.ts",
+            "import": "./dist/url_search_params.js",
+            "default": "./dist/url_search_params.js"
+        },
+        "./weak_map": {
+            "types": "./dist/weak_map.d.ts",
+            "import": "./dist/weak_map.js",
+            "default": "./dist/weak_map.js"
+        },
+        "./weak_set": {
+            "types": "./dist/weak_set.d.ts",
+            "default": "./dist/weak_set.js",
+            "import": "./dist/weak_set.js"
+        }
+    },
+    "files": [
+        "dist",
+        "src/dx.d.ts"
+    ],
+    "scripts": {
+        "1": "git add .",
+        "2": "git commit -m \"first commit\"",
+        "3": "git pull",
+        "4": "git push",
+        "5": "npm version patch",
+        "6": "git push",
+        "7": "git push --tags",
+        "8": "npm publish --access public",
+        "build": "tsc",
+        "dev": "rspack serve  --emitDeclarationOnly && rspack build",
+        "check": "tsc --noEmit",
+        "*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
+    },
+    "devDependencies": {
+        "@rspack/cli": "^2.3.2",
+        "@rspack/core": "^2.3.2",
+        "@rspack/dev-server": "^2.2.2",
+        "@the-w1zard/alias_types": "^1.0.15",
+        "@tsconfig/node-lts": "^24.0.1",
+        "@types/node": "^24.19.2",
+        "jsrepo": "^3.8.3",
+        "typescript": "^6.0.3"
+    },
+    "dependencies": {
+        "@babel/parser": "^8.1.2",
+        "@babel/traverse": "^8.1.2",
+        "@babel/types": "^8.1.2"
+    }
 }

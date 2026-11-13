@@ -1,3 +1,6 @@
+export type CBORValue = UD | NU | B | N | S | U8 | CBORValue[] | {
+    [k: S]: CBORValue;
+};
 export declare class CBORI {
     private readonly encoder;
     private readonly decoder;
@@ -12,3 +15,4 @@ export declare class CBORI {
     encode_msg(msg: A): U8;
     decode_msg(raw: A): A;
 }
+//# sourceMappingURL=cbor.d.ts.map

@@ -27,3 +27,4 @@ export declare class BinaryFrameSerializer {
     static encodeFrame(topic: string, p: Uint8Array | string | Record<string, unknown>): Uint8Array;
     static decodeFrame(frameBytes: Uint8Array): A;
 }
+//# sourceMappingURL=serializer.d.ts.map

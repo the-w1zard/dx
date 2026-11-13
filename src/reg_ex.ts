@@ -1,14 +1,14 @@
-function escapeRegex(str: S): S {
+export function escapeRegex(str: S): S {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-function escapeForClass(chars: S): S {
+export function escapeForClass(chars: S): S {
 	return chars.replace(/[\]\\^-]/g, "\\$&");
 }
-function toSource(input: RE2Input): S {
+export function toSource(input: RE2Input): S {
 	if (typeof input === "string") return input;
 	return input.source;
 }
-function isBalancedGroup(src: S): B {
+export function isBalancedGroup(src: S): B {
 	if (src[0] !== "(" || src[src.length - 1] !== ")") return false;
 	let depth = 0;
 	for (let i = 0; i < src.length; i++) {
@@ -21,7 +21,7 @@ function isBalancedGroup(src: S): B {
 	}
 	return true;
 }
-function isBalancedClass(src: S): B {
+export function isBalancedClass(src: S): B {
 	if (src[0] !== "[" || src[src.length - 1] !== "]") return false;
 	for (let i = 1; i < src.length - 1; i++) {
 		if (src[i] === "\\") { i++; continue; }
@@ -29,14 +29,14 @@ function isBalancedClass(src: S): B {
 	}
 	return true;
 }
-function wrapForConcat(src: S): S {
+export function wrapForConcat(src: S): S {
 	if (src.length === 1) return src;
 	if (/^\\.$/.test(src)) return src;
 	if (/^\[.*\]$/.test(src) && isBalancedClass(src)) return src;
 	if (/^\(.*\)$/.test(src) && isBalancedGroup(src)) return src;
 	return `(?:${src})`;
 }
-function mergeFlags(base: S, parts: AR<RE2Input>): S {
+export function mergeFlags(base: S, parts: AR<RE2Input>): S {
 	const set = new Set(base.split(""));
 	for (const p of parts) {
 		if (p instanceof REC2 || p instanceof RegExp) p.flags.split("").forEach(f => set.add(f));
@@ -257,7 +257,7 @@ interface ExplainNode {
 	children?: AR<ExplainNode>;
 }
 
-function explainSource(source: S): AR<S> {
+export function explainSource(source: S): AR<S> {
 	let i = 0;
 	const n = source.length;
 	const peek = (): S => source[i];

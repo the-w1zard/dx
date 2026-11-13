@@ -10,3 +10,4 @@ export declare class SOA_CODEC {
     allocatePid(rId: number, mId: number, sId: number, kId: number): number;
 }
 export declare const soa_codeci: SOA_CODEC;
+//# sourceMappingURL=soa_codec.d.ts.map

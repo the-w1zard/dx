@@ -7,10 +7,11 @@ export declare class ER2I extends Error implements ER2 {
         stack?: string;
         cause?: unknown;
     };
-    toString(): string;
+    toString(): S;
     static is(value: unknown): value is Error;
     static isER2(value: unknown): value is ER2I;
     static from(value: unknown, fallback?: string): ER2I;
     static wrap(value: unknown, message?: string): ER2I;
     static aggregate(errors: Iterable<unknown>, message?: string): AggregateError;
 }
+//# sourceMappingURL=error.d.ts.map

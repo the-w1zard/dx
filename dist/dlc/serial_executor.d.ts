@@ -10,3 +10,4 @@ export declare function executor(): _serialExecutor;
  await serial.enqueue(() => doThing());
  await serial.exec;
  */
+//# sourceMappingURL=serial_executor.d.ts.map

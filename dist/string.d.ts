@@ -37,3 +37,4 @@ export declare class S2I extends String implements S2 {
     isWellFormed(): boolean;
     toWellFormed(): string;
 }
+//# sourceMappingURL=string.d.ts.map

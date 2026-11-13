@@ -3,3 +3,4 @@ export declare function deferred<T>(): {
     resolve: (value: T) => void;
     reject: (reason?: any) => void;
 };
+//# sourceMappingURL=deferred.d.ts.map

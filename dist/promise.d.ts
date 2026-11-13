@@ -60,3 +60,4 @@ export declare class P2I<T = A> extends Promise<T> implements P2<T> {
     $label(name: S): this;
     $debug(): this;
 }
+//# sourceMappingURL=promise.d.ts.map

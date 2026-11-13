@@ -30,3 +30,4 @@ export declare class WM2I<H extends WeakKey = A, T = A> extends WeakMap<H, T> im
     forEachTracked(fn: (value: T, key: H, map: this) => void): void;
     clearTracked(): void;
 }
+//# sourceMappingURL=weak_map.d.ts.map

@@ -17,3 +17,4 @@ export declare class STracer<V = any> {
     [Symbol.iterator](): Iterator<V>;
     get pressure(): number;
 }
+//# sourceMappingURL=set_tracer.d.ts.map

@@ -8,3 +8,4 @@ export declare function reGate<T = void>(): {
     open: (v: T | PromiseLike<T>) => void;
     reset: () => void;
 };
+//# sourceMappingURL=gate.d.ts.map

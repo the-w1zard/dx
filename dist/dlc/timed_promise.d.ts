@@ -25,3 +25,4 @@ export declare function timedPromise<T>(gate: Promise<T>, timeoutMs: number): Pr
 
 
  */
+//# sourceMappingURL=timed_promise.d.ts.map

@@ -31,3 +31,4 @@ export declare class M2DI<Key = A, V = number> {
 }
 export interface M2D<K, V> extends M2DI<K, V> {
 }
+//# sourceMappingURL=map_dense.d.ts.map

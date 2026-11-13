@@ -33,3 +33,4 @@ export declare class O2I {
     static without<T extends object, K extends keyof T>(value: T, key: K): Omit<T, K>;
     static update<T extends object, K extends keyof T>(value: T, key: K, updater: (current: T[K]) => T[K]): T;
 }
+//# sourceMappingURL=object.d.ts.map

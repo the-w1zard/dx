@@ -42,3 +42,4 @@ export declare class N2I extends Number implements N2 {
     upTo(end: N, step?: N): AR<N>;
     downTo(end: N, step?: N): AR<N>;
 }
+//# sourceMappingURL=number.d.ts.map

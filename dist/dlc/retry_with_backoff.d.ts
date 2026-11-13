@@ -20,3 +20,4 @@ export declare function retryWithBackoff<T>({ attempts, baseDelayMs, maxDelayMs,
     onAttemptFailed?: ((n: any, e: any) => void) | undefined;
     onGiveUp?: (() => void) | undefined;
 }): Promise<T | undefined>;
+//# sourceMappingURL=retry_with_backoff.d.ts.map

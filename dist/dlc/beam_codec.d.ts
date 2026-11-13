@@ -42,3 +42,4 @@ export declare class BEAM_CODEC {
     private readObject;
     private readBytes;
 }
+//# sourceMappingURL=beam_codec.d.ts.map

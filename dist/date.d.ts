@@ -144,3 +144,4 @@ if (tag === DATE_TAG) { return new D2(readI64()); }
 // existing revival paths
 }
  */
+//# sourceMappingURL=date.d.ts.map

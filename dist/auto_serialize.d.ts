@@ -57,3 +57,4 @@ const usersDecoder: CustomDecoder = (type, value, decodeChild) => {
 
 export const ser = new SERI({ date: false, string: false, set: false, array: false }, usersEncoder);
 export const deser = new DESERI({ date: false, string: false, set: false, array: false }, usersDecoder); */
+//# sourceMappingURL=auto_serialize.d.ts.map

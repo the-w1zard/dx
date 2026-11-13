@@ -49,3 +49,4 @@ export declare class I2I<T = A> implements I2<T> {
     exhaust(): void;
     clone(): I2I<T>;
 }
+//# sourceMappingURL=iterator.d.ts.map

@@ -4,3 +4,4 @@ export declare function createLiveScope(): {
     subscribe: (unsubFn: () => void) => void;
     dispose: () => void;
 };
+//# sourceMappingURL=create_live_scope.d.ts.map

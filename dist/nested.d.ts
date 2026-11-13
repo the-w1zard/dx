@@ -1,4 +1,4 @@
-type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU;
+export type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU;
 export declare class nestedi<K = A, V = A> {
     r: string;
     m: string;
@@ -15,4 +15,4 @@ export declare class nestedi<K = A, V = A> {
     cache<K, V>(s?: A, m?: A, r?: A): M2<A, A>;
 }
 export declare const nested: nestedi<any, any>;
-export {};
+//# sourceMappingURL=nested.d.ts.map

@@ -32,3 +32,4 @@ export declare class M2BINI<K = N, V = N> {
 }
 export interface M2BIN<K, V> extends M2BINI {
 }
+//# sourceMappingURL=map_bin.d.ts.map

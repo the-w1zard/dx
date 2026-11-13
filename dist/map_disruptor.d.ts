@@ -11,3 +11,4 @@ export declare class MDisruptor<K = any, V = any> {
     entries(): [K, V][];
     private growIfNeeded;
 }
+//# sourceMappingURL=map_disruptor.d.ts.map

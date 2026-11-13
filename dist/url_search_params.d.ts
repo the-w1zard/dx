@@ -28,3 +28,4 @@ export declare class USP2I extends URLSearchParams implements USP2 {
     toURLSearchParams(): URLSearchParams;
     toURL(url: S | URL): URL;
 }
+//# sourceMappingURL=url_search_params.d.ts.map

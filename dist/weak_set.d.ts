@@ -18,3 +18,4 @@ export declare class WS2I<T extends WeakKey = A> extends WeakSet<T> implements W
     forEachTracked(callback: (value: T, set: this) => void, thisArg?: A): void;
     clearTracked(): void;
 }
+//# sourceMappingURL=weak_set.d.ts.map

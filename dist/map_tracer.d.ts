@@ -21,3 +21,4 @@ export declare class MTracer<K = any, V = any> {
      *  exactly "queue depth" — except no timer instrumented it. */
     get pressure(): number;
 }
+//# sourceMappingURL=map_tracer.d.ts.map

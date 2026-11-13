@@ -67,3 +67,4 @@ export declare class M2<H = A, T = A> extends Map<H, T> implements M2I<H, T> {
     static fromEntries<H, T>(entries: I<readonly [H, T]>): M2<H, T>;
     static from<H, T>(map: RM<H, T>): M2<H, T>;
 }
+//# sourceMappingURL=map.d.ts.map

@@ -10,3 +10,4 @@ export declare class Lazy<T> implements ILazy<T> {
     get value(): T;
     constructor(factory: () => T);
 }
+//# sourceMappingURL=lazy.d.ts.map

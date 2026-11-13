@@ -89,3 +89,4 @@ export declare class M2BI {
     static from(map: RM<N, V128>, maxParticles: N, stride?: N): M2BI;
 }
 export {};
+//# sourceMappingURL=map_byte.d.ts.map

@@ -39,3 +39,4 @@ export declare class A2I<T = A> extends Array<T> implements A2<T> {
     includesAll(values: readonly T[]): B;
     intersects(values: readonly T[]): B;
 }
+//# sourceMappingURL=array.d.ts.map

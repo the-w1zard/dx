@@ -39,3 +39,4 @@ export declare class SET2I<T = A> extends Set<T> implements SET2<T> {
     static fromEntries<T>(entries: Iterable<readonly [unknown, T]>): SET2I<T>;
     static from<T>(values: Iterable<T>): SET2I<T>;
 }
+//# sourceMappingURL=set.d.ts.map

@@ -73,3 +73,4 @@ export declare class BINARY_AVRO {
     decode_msg(raw: unknown): AVROValue;
 }
 export declare const AVROI: BINARY_AVRO;
+//# sourceMappingURL=avro.d.ts.map

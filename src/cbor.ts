@@ -1,4 +1,4 @@
-type CBORValue = UD | NU | B | N | S | U8 | CBORValue[] | { [k: S]: CBORValue }
+export type CBORValue = UD | NU | B | N | S | U8 | CBORValue[] | { [k: S]: CBORValue }
 
 
 export class CBORI {

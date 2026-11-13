@@ -1,4 +1,4 @@
-
+import "./dx.d.ts"
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
@@ -12,7 +12,7 @@ import { I2I } from './iterator'
 import { N2I } from './number'
 import { O2I } from './object'
 import { P2I } from './promise'
-import { REC2, RECC2 } from './reg_ex'
+import { escapeRegex, REC2, RECC2 } from './reg_ex'
 import { SET2I } from './set'
 import { SET2BI } from './set_byte'
 import { SOA_CODEC, soa_codeci  } from './soa_codec'
@@ -21,8 +21,7 @@ import { U82I } from './unit8array'
 import { USP2I } from './url_search_params'
 import { WM2I } from './weak_map'
 import { WS2I } from './weak_set'
-import { nestedi } from './nested'
-
+import { ALL_MAPS, nestedi } from './nested'
 import { wait_and_promise as wait_and_promisei} from './dlc/wait_and_promise'
 import { twx as twxi} from './dlc/twx'
 import { lwwState as lwwStatei} from './dlc/lww'
@@ -54,8 +53,8 @@ import { tryCatch as tryCatchi} from './dlc/try_catch'
 import { unreachable as unreachablei} from './dlc/unreachable'
 import { MDisruptor as MDisruptorI } from "./map_disruptor";
 import { MTracer as MTracerI } from "./map_tracer";
-import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI  } from "./avro";
-import { CBORI  } from "./cbor";
+import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BINARY_AVROI, IAVROReader, IAVROWriter, AVROValue  } from "./avro";
+import { CBORI, CBORValue  } from "./cbor";
 import { STracer, STracer  as STracerI} from "./set_tracer";
 import { OTracer, OTracer  as OTracerI} from "./object_tracer";
 
@@ -64,6 +63,7 @@ export function MaybePromisei<R = any>(v: R): MaybePromise {
     return v !== undefined ? v as R : Promise.resolve(v) as Promise<R> 
 }
 const nestedInstace =  new nestedi()
+if (typeof globalThis !== 'undefined') {
 globalThis.MaybePromise = MaybePromisei;
 globalThis.CBOR = CBORI;
 globalThis.AVRO = BINARY_AVROI;
@@ -129,6 +129,18 @@ globalThis.ignoreArg = ignoreArgi
 globalThis.barrier = barrieri
 globalThis.STracer = STracerI
 globalThis.OTracer = OTracerI
+}
+
+
+
+
+
+
+
+
+
+
+
 
 export {
     STracer,

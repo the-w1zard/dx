@@ -134,3 +134,4 @@ export declare class ReChain<T = A> {
     then<R = T>(onFulfilled?: ((v: T) => R | PromiseLike<R>) | null, onRejected?: ((e: A) => R | PromiseLike<R>) | null): Promise<T | R>;
     done(): T;
 }
+//# sourceMappingURL=twx.d.ts.map

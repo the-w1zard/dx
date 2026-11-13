@@ -28,7 +28,7 @@ export class ER2I extends Error implements ER2 {
 		};
 	}
 
-	override toString(): string {
+	override toString(): S {
 		return `${this.name}: ${this.message}`;
 	}
 

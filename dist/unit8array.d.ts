@@ -62,3 +62,4 @@ export declare class U82I<T = A> extends Array<T> implements U82<T> {
     toSpliced(start: N, deleteCount: N, ...items: T[]): T[];
     with(index: N, value: T): T[];
 }
+//# sourceMappingURL=unit8array.d.ts.map

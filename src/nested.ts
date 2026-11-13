@@ -1,4 +1,4 @@
-type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU
+export type ALL_MAPS = M2<K, V> | Map<K, V> | M2B | M2BIN<K, V> | M2D<K, V> | M2R<K> | NU
 
 const cache = new M2<A, M2<A, M2<K, V>>>();
 

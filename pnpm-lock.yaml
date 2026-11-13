@@ -28,8 +28,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(@rspack/core@2.3.2)
       '@the-w1zard/alias_types':
-        specifier: ^1.0.8
-        version: 1.0.8
+        specifier: ^1.0.15
+        version: 1.0.15
       '@tsconfig/node-lts':
         specifier: ^24.0.1
         version: 24.0.1
@@ -344,8 +344,8 @@ packages:
       selfsigned:
         optional: true
 
-  '@the-w1zard/alias_types@1.0.8':
-    resolution: {integrity: sha512-As/MUnIclX0kxSNoWD2mVOA+nuOR8tT5l1EzbMgTlwzcAT7c8UF8FCQKSOWtYzrdFJixdgErNEEjk0BhxeqqYg==}
+  '@the-w1zard/alias_types@1.0.15':
+    resolution: {integrity: sha512-M+Owci+i1piNtzWph2dROPkks7nF4EGHrgwwSJxGYP99+TqMUq4bhYb9eXWRhxBFjpR9FkKhzk4raBd3d8INbg==}
 
   '@tsconfig/node-lts@24.0.1':
     resolution: {integrity: sha512-xo+1KtV5zVb90fyyeglG1n5cqg3cQXLlCkEpLptYlZUNk28xmwhuD5GmxoXwmrVtUTvaMyclun9kAd0TK7H+Pg==}
@@ -647,7 +647,7 @@ snapshots:
       '@rspack/core': 2.3.2
       '@rspack/dev-middleware': 2.0.6(@rspack/core@2.3.2)
 
-  '@the-w1zard/alias_types@1.0.8': {}
+  '@the-w1zard/alias_types@1.0.15': {}
 
   '@tsconfig/node-lts@24.0.1': {}
 
