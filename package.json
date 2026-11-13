@@ -1,7 +1,6 @@
 {
 	"name": "@the-w1zard/dx",
 	"version": "1.0.27",
-	"sideEffects": false,
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/dx.d.ts",
@@ -202,21 +201,21 @@
 		"build": "tsc --emitDeclarationOnly && rspack build",
 		"dev": "rspack serve",
 		"check": "tsc --noEmit",
-		"*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
+		"*": "pnpm update && npm run check && npm run build && npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
 	},
 	"devDependencies": {
-		"@rspack/cli": "^2.3.1",
-		"@rspack/core": "^2.3.1",
+		"@rspack/cli": "^2.3.2",
+		"@rspack/core": "^2.3.2",
 		"@rspack/dev-server": "^2.2.2",
-		"@the-w1zard/alias_types": "^1.0.3",
-		"@tsconfig/node-lts": "^24.0.0",
-		"@types/node": "^24.0.0",
+		"@the-w1zard/alias_types": "^1.0.8",
+		"@tsconfig/node-lts": "^24.0.1",
+		"@types/node": "^24.19.2",
 		"jsrepo": "^3.8.3",
-		"typescript": "^6.0.0"
+		"typescript": "^6.0.3"
 	},
 	"dependencies": {
-		"@babel/parser": "^8.1.0",
-		"@babel/traverse": "^8.1.0",
-		"@babel/types": "^8.1.0"
+		"@babel/parser": "^8.1.2",
+		"@babel/traverse": "^8.1.2",
+		"@babel/types": "^8.1.2"
 	}
 }

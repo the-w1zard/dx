@@ -244,7 +244,7 @@ function _unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return _array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _array_like_to_array(o, minLen);
 }
 var _vals = /*#__PURE__*/ new WeakMap(), _pidToSlot = /*#__PURE__*/ new WeakMap(), _slotToPid = /*#__PURE__*/ new WeakMap(), _size = /*#__PURE__*/ new WeakMap(), _open = /*#__PURE__*/ new WeakSet(), _grow = /*#__PURE__*/ new WeakSet();
@@ -801,7 +801,7 @@ function map_dense_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return map_dense_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_dense_array_like_to_array(o, minLen);
 }
 var map_dense_vals = /*#__PURE__*/ new WeakMap(), _live = /*#__PURE__*/ new WeakMap(), map_dense_size = /*#__PURE__*/ new WeakMap(), _odd = /*#__PURE__*/ new WeakMap(), map_dense_grow = /*#__PURE__*/ new WeakSet();
@@ -2255,7 +2255,7 @@ function map_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return map_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_array_like_to_array(o, minLen);
 }
 function map_wrap_native_super(Class) {
@@ -4028,7 +4028,7 @@ function map_byte_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return map_byte_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_byte_array_like_to_array(o, minLen);
 }
 var map_byte_sameValue128 = function sameValue128(a, b) {
@@ -5616,7 +5616,7 @@ function array_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return array_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return array_array_like_to_array(o, minLen);
 }
 function array_wrap_native_super(Class) {
@@ -6205,7 +6205,7 @@ function date_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return date_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return date_array_like_to_array(o, minLen);
 }
 function date_wrap_native_super(Class) {
@@ -9114,7 +9114,7 @@ function object_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return object_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return object_array_like_to_array(o, minLen);
 }
 var object_O2I = /*#__PURE__*/ function() {
@@ -9770,7 +9770,7 @@ function promise_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return promise_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return promise_array_like_to_array(o, minLen);
 }
 function promise_wrap_native_super(Class) {
@@ -10380,7 +10380,7 @@ function reg_ex_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return reg_ex_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return reg_ex_array_like_to_array(o, minLen);
 }
 function escapeRegex(str) {
@@ -11408,7 +11408,7 @@ function set_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return set_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return set_array_like_to_array(o, minLen);
 }
 function set_wrap_native_super(Class) {
@@ -12487,7 +12487,7 @@ function set_byte_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return set_byte_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return set_byte_array_like_to_array(o, minLen);
 }
 var set_byte_size = /*#__PURE__*/ new WeakMap();
@@ -14022,7 +14022,7 @@ function unit8array_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return unit8array_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return unit8array_array_like_to_array(o, minLen);
 }
 function unit8array_wrap_native_super(Class) {
@@ -14715,7 +14715,7 @@ function url_search_params_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return url_search_params_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return url_search_params_array_like_to_array(o, minLen);
 }
 function url_search_params_wrap_native_super(Class) {
@@ -16421,7 +16421,7 @@ function twx_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return twx_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return twx_array_like_to_array(o, minLen);
 }
 var _TWX_GLOBAL_UC;
@@ -17313,7 +17313,7 @@ function lww_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return lww_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return lww_array_like_to_array(o, minLen);
 }
 function lwwState(v) {
@@ -17640,7 +17640,7 @@ function once_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return once_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return once_array_like_to_array(o, minLen);
 }
 // alongside resolveFactory, buildCtx, createLiveSelf
@@ -18641,7 +18641,7 @@ function map_disruptor_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return map_disruptor_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_disruptor_array_like_to_array(o, minLen);
 }
 function assertEncodable(value) {
@@ -18931,7 +18931,7 @@ function map_tracer_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return map_tracer_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_tracer_array_like_to_array(o, minLen);
 }
 var map_tracer_nextPow2 = function nextPow2(n) {
@@ -20048,7 +20048,7 @@ function cbor_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return cbor_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return cbor_array_like_to_array(o, minLen);
 }
 var cbor_CBORI = /*#__PURE__*/ function() {
@@ -20520,7 +20520,7 @@ function set_tracer_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return set_tracer_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return set_tracer_array_like_to_array(o, minLen);
 }
 var set_tracer_nextPow2 = function nextPow2(n) {
@@ -20902,7 +20902,7 @@ function object_tracer_unsupported_iterable_to_array(o, minLen) {
     if (typeof o === "string") return object_tracer_array_like_to_array(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return object_tracer_array_like_to_array(o, minLen);
 }
 var object_tracer_nextPow2 = function nextPow2(n) {

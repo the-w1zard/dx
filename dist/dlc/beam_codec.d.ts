@@ -1,0 +1,44 @@
+export declare const TAG: {
+    readonly UNDEFINED: 0;
+    readonly NULL: 1;
+    readonly FALSE: 2;
+    readonly TRUE: 3;
+    readonly INT32: 4;
+    readonly FLOAT64: 5;
+    readonly STRING: 6;
+    readonly ARRAY: 7;
+    readonly OBJECT: 8;
+    readonly UINT8ARRAY: 9;
+    readonly REF: 10;
+};
+export declare class BEAM_CODEC {
+    private bytes;
+    private view;
+    private tail;
+    private strings;
+    private stringBytes;
+    private refs;
+    private nextRef;
+    constructor(initialCapacity?: number);
+    encode(value: U): U8;
+    decode(binary: U8): U;
+    private need;
+    private u8;
+    private i32;
+    private f64;
+    private writeValue;
+    private writeString;
+    private writeArray;
+    private writeBytes;
+    private writeObject;
+    private beginRef;
+    private endRef;
+    private readU8;
+    private readI32;
+    private readF64;
+    private readValue;
+    private readString;
+    private readArray;
+    private readObject;
+    private readBytes;
+}
