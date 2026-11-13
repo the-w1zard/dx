@@ -12,7 +12,7 @@
 	"isolatedModules": false,
 	"skipLibCheck": true,
     "types":[
-		"./src/dx.d.ts",
+		"./src/index.d.ts",
 		"@the-w1zard/alias_types",
 		"node",
     ],

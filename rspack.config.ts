@@ -14,6 +14,7 @@ const config: Configuration = {
     extensionAlias: { '.js': ['.ts', '.js'] },
     alias: {
       '~': r('src'),
+      '#dx': '@the-w1zard/dx',
       '#STR': '@the-w1zard/app_store',
       '#HPR': '@the-w1zard/prim_helpers',
       '#SS': '@the-w1zard/solutions',
@@ -42,6 +43,7 @@ const config: Configuration = {
                   syntax: 'typescript',
                   tsx: true,
                 },
+                target: 'es2022',
               },
             },
           },

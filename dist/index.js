@@ -1,11 +1,5 @@
 
 
-function _instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function _array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -54,7 +48,7 @@ function _class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function _class_call_check(instance, Constructor) {
-    if (!_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function _class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -143,7 +137,7 @@ function _sliced_to_array(arr, i) {
 function _ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -157,7 +151,7 @@ function _ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -567,12 +561,6 @@ function grow(need) {
 }
 Object.setPrototypeOf(map_rows_M2RI.prototype, Map.prototype);
 
-function map_dense_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_dense_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -621,7 +609,7 @@ function map_dense_class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function map_dense_class_call_check(instance, Constructor) {
-    if (!map_dense_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_dense_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -680,7 +668,7 @@ function _to_consumable_array(arr) {
 function map_dense_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -694,7 +682,7 @@ function map_dense_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -783,7 +771,7 @@ function _ts_values(o) {
     }
     if (o && typeof o.length === "number") {
         return {
-            next: function next() {
+            next: function() {
                 if (o && i >= o.length) {
                     o = void 0;
                 }
@@ -1197,12 +1185,6 @@ function src_map_dense_grow(need) {
     map_dense_class_private_field_set(this, _live, l);
 }
 
-function map_bin_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_bin_check_private_redeclaration(obj, privateCollection) {
     if (privateCollection.has(obj)) {
         throw new TypeError("Cannot initialize the same private elements twice on an object");
@@ -1243,7 +1225,7 @@ function map_bin_class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function map_bin_class_call_check(instance, Constructor) {
-    if (!map_bin_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_bin_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -1291,7 +1273,7 @@ function map_bin_create_class(Constructor, protoProps, staticProps) {
 function map_bin_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -1305,7 +1287,7 @@ function map_bin_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -1394,7 +1376,7 @@ function map_bin_ts_values(o) {
     }
     if (o && typeof o.length === "number") {
         return {
-            next: function next() {
+            next: function() {
                 if (o && i >= o.length) {
                     o = void 0;
                 }
@@ -1777,14 +1759,8 @@ function src_map_bin_grow(need) {
 }
 Object.setPrototypeOf(map_bin_M2BINI.prototype, Map.prototype);
 
-function boolean_byte_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function boolean_byte_class_call_check(instance, Constructor) {
-    if (!boolean_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function boolean_byte_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -1842,17 +1818,17 @@ function boolean_byte_define_property(obj, key, value) {
             }
         },
         {
-            key: "get",
-            value: /** Get the boolean state for a PID. O(1) time complexity. */ function get(pid) {
+            /** Get the boolean state for a PID. O(1) time complexity. */ key: "get",
+            value: function get(pid) {
                 return this.flags[pid] === 1;
             }
         },
         {
-            key: "toggle",
-            value: /** Toggle the boolean state for a PID. O(1) time complexity. */ function toggle(pid) {
+            /** Toggle the boolean state for a PID. O(1) time complexity. */ key: "toggle",
+            value: function toggle(pid) {
                 this.flags[pid] = this.flags[pid] === 1 ? 0 : 1;
                 return this.flags[pid] === 1;
-            } /** Clear all flags instantly without reallocating memory. */ 
+            }
         },
         {
             key: "clear",
@@ -1864,12 +1840,6 @@ function boolean_byte_define_property(obj, key, value) {
     return B2BI;
 }();
 
-function map_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -1887,7 +1857,7 @@ function _assert_this_initialized(self) {
 }
 function _call_super(_this, derived, args) {
     derived = _get_prototype_of(derived);
-    return _possible_constructor_return(_this, map_is_native_reflect_construct() ? Reflect.construct(derived, args || [], _get_prototype_of(_this).constructor) : derived.apply(_this, args));
+    return _possible_constructor_return(_this, _is_native_reflect_construct() ? Reflect.construct(derived, args || [], _get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function map_check_private_redeclaration(obj, privateCollection) {
     if (privateCollection.has(obj)) {
@@ -1929,7 +1899,7 @@ function map_class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function map_class_call_check(instance, Constructor) {
-    if (!map_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -1961,7 +1931,7 @@ function map_class_private_method_init(obj, privateSet) {
     privateSet.add(obj);
 }
 function _construct(Parent, args, Class) {
-    if (map_is_native_reflect_construct()) _construct = Reflect.construct;
+    if (_is_native_reflect_construct()) _construct = Reflect.construct;
     else {
         _construct = function construct(Parent, args, Class) {
             var a = [
@@ -2033,7 +2003,7 @@ function _inherits(subClass, superClass) {
     });
     if (superClass) _set_prototype_of(subClass, superClass);
 }
-function _instanceof1(left, right) {
+function _instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -2042,11 +2012,11 @@ function _instanceof1(left, right) {
 function _is_native_function(fn) {
     return Function.toString.call(fn).indexOf("[native code]") !== -1;
 }
-function map_is_native_reflect_construct() {
+function _is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (map_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -2150,7 +2120,7 @@ function map_to_consumable_array(arr) {
 function map_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -2164,7 +2134,7 @@ function map_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -2258,9 +2228,9 @@ function map_unsupported_iterable_to_array(o, minLen) {
     if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return map_array_like_to_array(o, minLen);
 }
-function map_wrap_native_super(Class) {
+function _wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    map_wrap_native_super = function _wrap_native_super(Class) {
+    _wrap_native_super = function(Class) {
         if (Class === null || !_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -2280,13 +2250,13 @@ function map_wrap_native_super(Class) {
         });
         return _set_prototype_of(Wrapper, Class);
     };
-    return map_wrap_native_super(Class);
+    return _wrap_native_super(Class);
 }
 var map_rv = function rv(v) {
     return typeof v === "function" ? v() : v;
 };
 var map_sameValue = function sameValue(a, b) {
-    return Object.is(a, b) || _instanceof1(a, Date) && _instanceof1(b, Date) && +a === +b;
+    return Object.is(a, b) || _instanceof(a, Date) && _instanceof(b, Date) && +a === +b;
 };
 var _subs = /*#__PURE__*/ new WeakMap(), _hist = /*#__PURE__*/ new WeakMap(), _histLimit = /*#__PURE__*/ new WeakMap(), _strict = /*#__PURE__*/ new WeakMap(), _iterating = /*#__PURE__*/ new WeakMap(), _batching = /*#__PURE__*/ new WeakMap(), _pending = /*#__PURE__*/ new WeakMap(), _derived = /*#__PURE__*/ new WeakMap(), _dependents = /*#__PURE__*/ new WeakMap(), _emit = /*#__PURE__*/ new WeakSet(), _record = /*#__PURE__*/ new WeakSet(), _invalidate = /*#__PURE__*/ new WeakSet(), _computeDerived = /*#__PURE__*/ new WeakSet(), _assertNotIterating = /*#__PURE__*/ new WeakSet();
 var map_M2 = /*#__PURE__*/ function(Map1) {
@@ -2295,11 +2265,11 @@ var map_M2 = /*#__PURE__*/ function(Map1) {
     function M2() {
         map_class_call_check(this, M2);
         var _this;
-        _this = _call_super(this, M2, arguments), map_class_private_method_init(_this, _emit), map_class_private_method_init(_this, _record), map_class_private_method_init(_this, _invalidate), map_class_private_method_init(_this, _computeDerived), map_class_private_method_init(_this, _assertNotIterating), // public h = this.has;
+        _this = _call_super(this, M2, arguments), map_class_private_method_init(_this, _emit), map_class_private_method_init(_this, _record), map_class_private_method_init(_this, _invalidate), map_class_private_method_init(_this, _computeDerived), map_class_private_method_init(_this, _assertNotIterating), // public g = this.get;
+        // public h = this.has;
         // public d = this.delete;
         // public c = this.clear
-        map_define_property(_this, "f", _this.forEach) //                                                     [FOR EACH]
-        , map_class_private_field_init(_this, _subs, {
+        map_define_property(_this, "f", _this.forEach), map_class_private_field_init(_this, _subs, {
             writable: true,
             value: void 0
         }), map_class_private_field_init(_this, _hist, {
@@ -2369,7 +2339,7 @@ var map_M2 = /*#__PURE__*/ function(Map1) {
                         map_class_private_field_set(this, _pending, undefined);
                         var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                         try {
-                            var _this, _loop = function _loop() {
+                            var _this, _loop = function() {
                                 var e = _step.value;
                                 var _$_class_private_field_get;
                                 map_class_private_method_get(_this, _record, record).call(_this, e);
@@ -3534,19 +3504,19 @@ var map_M2 = /*#__PURE__*/ function(Map1) {
             key: "toValues",
             value: function toValues() {
                 return A2.from(this.values());
-            } //                 [TOVALUES]
+            }
         },
         {
             key: "toKeys",
             value: function toKeys() {
                 return A2.from(this.keys());
-            } //                       [TOKEYS]
+            }
         },
         {
             key: "toArray",
             value: function toArray() {
                 return A2.from(this.entries());
-            } //             [TOARRAY]
+            }
         },
         {
             key: "group",
@@ -3634,7 +3604,7 @@ var map_M2 = /*#__PURE__*/ function(Map1) {
     return M2;
 } /*  ====================================================================================================
     
-    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ (map_wrap_native_super(Map));
+    ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [STORE] */ (_wrap_native_super(Map));
 function emit(e) {
     var _$_class_private_field_get;
     if (map_class_private_field_get(this, _batching) > 0) {
@@ -3726,12 +3696,6 @@ function assertNotIterating(op) {
     }
 }
 
-function map_byte_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_byte_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -3783,7 +3747,7 @@ function map_byte_class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function map_byte_class_call_check(instance, Constructor) {
-    if (!map_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_byte_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -3839,7 +3803,7 @@ function map_byte_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function map_byte_instanceof1(left, right) {
+function map_byte_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -3927,7 +3891,7 @@ function map_byte_to_consumable_array(arr) {
 function map_byte_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -3941,7 +3905,7 @@ function map_byte_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -4033,14 +3997,15 @@ function map_byte_unsupported_iterable_to_array(o, minLen) {
 }
 var map_byte_sameValue128 = function sameValue128(a, b) {
     if (a === b) return true;
-    if (map_byte_instanceof1(a, Float64Array) && map_byte_instanceof1(b, Float64Array)) {
+    if (map_byte_instanceof(a, Float64Array) && map_byte_instanceof(b, Float64Array)) {
         if (a.length !== b.length) return false;
         for(var i = 0; i < a.length; i++)if (!Object.is(a[i], b[i])) return false;
         return true;
     }
     return Object.is(a, b);
 };
-var map_byte_size = /*#__PURE__*/ new WeakMap(), map_byte_subs = /*#__PURE__*/ new WeakMap(), map_byte_hist = /*#__PURE__*/ new WeakMap(), map_byte_histLimit = /*#__PURE__*/ new WeakMap(), map_byte_strict = /*#__PURE__*/ new WeakMap(), map_byte_iterating = /*#__PURE__*/ new WeakMap(), map_byte_batching = /*#__PURE__*/ new WeakMap(), map_byte_pending = /*#__PURE__*/ new WeakMap(), map_byte_derived = /*#__PURE__*/ new WeakMap(), map_byte_dependents = /*#__PURE__*/ new WeakMap(), map_byte_emit = /*#__PURE__*/ new WeakSet(), map_byte_record = /*#__PURE__*/ new WeakSet(), map_byte_invalidate = /*#__PURE__*/ new WeakSet(), map_byte_computeDerived = /*#__PURE__*/ new WeakSet(), map_byte_assertNotIterating = /*#__PURE__*/ new WeakSet(), _readSlot = /*#__PURE__*/ new WeakSet(), _writeSlot = /*#__PURE__*/ new WeakSet(), _fresh = /*#__PURE__*/ new WeakSet();
+var map_byte_size = /*#__PURE__*/ new WeakMap(), map_byte_subs = /*#__PURE__*/ new WeakMap(), map_byte_hist = /*#__PURE__*/ new WeakMap(), map_byte_histLimit = /*#__PURE__*/ new WeakMap(), map_byte_strict = /*#__PURE__*/ new WeakMap(), map_byte_iterating = /*#__PURE__*/ new WeakMap(), map_byte_batching = /*#__PURE__*/ new WeakMap(), map_byte_pending = /*#__PURE__*/ new WeakMap(), map_byte_derived = /*#__PURE__*/ new WeakMap(), map_byte_dependents = /*#__PURE__*/ new WeakMap(), // ---------------------------------------------------------------- internals
+map_byte_emit = /*#__PURE__*/ new WeakSet(), map_byte_record = /*#__PURE__*/ new WeakSet(), map_byte_invalidate = /*#__PURE__*/ new WeakSet(), map_byte_computeDerived = /*#__PURE__*/ new WeakSet(), map_byte_assertNotIterating = /*#__PURE__*/ new WeakSet(), _readSlot = /*#__PURE__*/ new WeakSet(), _writeSlot = /*#__PURE__*/ new WeakSet(), _fresh = /*#__PURE__*/ new WeakSet();
 var map_byte_M2BI = /*#__PURE__*/ function() {
     "use strict";
     function M2BI() {
@@ -4053,7 +4018,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
         map_byte_class_private_method_init(this, map_byte_assertNotIterating);
         map_byte_class_private_method_init(this, _readSlot);
         map_byte_class_private_method_init(this, _writeSlot);
-        map_byte_class_private_method_init(this, _fresh); //                     [sibling-store factory]
+        map_byte_class_private_method_init(this, _fresh);
         map_byte_define_property(this, "cap", void 0);
         map_byte_define_property(this, "stride", void 0);
         map_byte_define_property(this, "pidToSlot", void 0);
@@ -4100,11 +4065,11 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             value: void 0
         });
         // ---------------------------------------------------------------- alias / has/has-not helpers
-        map_byte_define_property(this, "has", this.h); //                                                                             [has alias]
-        map_byte_define_property(this, "get", this.g); //                                                                             [get alias]
-        map_byte_define_property(this, "delete", this.d); //                                                                        [delete alias]
-        map_byte_define_property(this, "clear", this.c); //                                                                           [clear alias]
-        map_byte_define_property(this, "f", this.forEach.bind(this)); //                                                            [FOR EACH]
+        map_byte_define_property(this, "has", this.h);
+        map_byte_define_property(this, "get", this.g);
+        map_byte_define_property(this, "delete", this.d);
+        map_byte_define_property(this, "clear", this.c);
+        map_byte_define_property(this, "f", this.forEach.bind(this));
         this.cap = maxParticles;
         this.stride = stride;
         this.pidToSlot = new Int32Array(maxParticles).fill(-1);
@@ -4139,6 +4104,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- subs / batch
             key: "on",
             value: function on(fn) {
                 var _this = this;
@@ -4147,14 +4113,14 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
                 return function() {
                     return _this.off(fn);
                 };
-            } //      [ON]
+            }
         },
         {
             key: "off",
             value: function off(fn) {
                 var _$_class_private_field_get;
                 (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_subs)) === null || _$_class_private_field_get === void 0 ? void 0 : _$_class_private_field_get.delete(fn);
-            } //                                                  [OFF]
+            }
         },
         {
             key: "batch",
@@ -4171,7 +4137,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
                         map_byte_class_private_field_set(this, map_byte_pending, undefined);
                         var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                         try {
-                            var _this, _loop = function _loop() {
+                            var _this, _loop = function() {
                                 var e = _step.value;
                                 var _$_class_private_field_get;
                                 map_byte_class_private_method_get(_this, map_byte_record, src_map_byte_record).call(_this, e);
@@ -4200,6 +4166,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- core CRUD
             key: "s",
             value: function s(v, pid) {
                 map_byte_class_private_method_get(this, map_byte_assertNotIterating, src_map_byte_assertNotIterating).call(this, "s");
@@ -4378,6 +4345,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- debug
             key: "$debug",
             value: function $debug() {
                 var limit = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 256;
@@ -4385,20 +4353,20 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
                 map_byte_class_private_field_set(this, map_byte_hist, (_$_class_private_field_get = map_byte_class_private_field_get(this, map_byte_hist)) !== null && _$_class_private_field_get !== void 0 ? _$_class_private_field_get : []);
                 map_byte_class_private_field_set(this, map_byte_histLimit, limit);
                 return this;
-            } //  [$DEBUG]
+            }
         },
         {
             key: "$strict",
             value: function $strict() {
                 map_byte_class_private_field_set(this, map_byte_strict, true);
                 return this;
-            } //                                     [$STRICT]
+            }
         },
         {
             key: "$history",
             value: function $history() {
                 return map_byte_class_private_field_get(this, map_byte_hist) ? map_byte_to_consumable_array(map_byte_class_private_field_get(this, map_byte_hist)) : [];
-            } //                    [$HISTORY]
+            }
         },
         {
             key: "$why",
@@ -4471,7 +4439,8 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
         },
         {
             key: "entries",
-            value: function entries() {
+            value: // ---------------------------------------------------------------- iteration (dense slots, no hashing)
+            function entries() {
                 var i;
                 return map_byte_ts_generator(this, function(_state) {
                     switch(_state.label){
@@ -4666,6 +4635,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- sugar
             key: "swap",
             value: function swap(value, pid) {
                 var previous = this.has(pid) ? this.get(pid) : value;
@@ -4679,13 +4649,13 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
                 var value = this.g(pid);
                 this.d(pid);
                 return value;
-            } //             [TAKE]
+            }
         },
         {
             key: "peek",
             value: function peek(pid) {
                 return this.h(pid) ? this.g(pid) : false;
-            } //            [PEEK]
+            }
         },
         {
             key: "getOrI",
@@ -4734,7 +4704,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             key: "replace",
             value: function replace(value, pid) {
                 return this.setIfPresent(value, pid);
-            } //                 [REPLACE]
+            }
         },
         {
             key: "inc",
@@ -4749,9 +4719,10 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             key: "touch",
             value: function touch(pid) {
                 return this.setIfAbsent(0, pid);
-            } //                            [SWTOUCHAP]
+            }
         },
         {
+            // ---------------------------------------------------------------- transforms (produce new M2BI, same cap/stride)
             key: "mapValues",
             value: function mapValues(fn) {
                 var out = map_byte_class_private_method_get(this, _fresh, fresh).call(this);
@@ -4835,7 +4806,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             key: "filterKeys",
             value: function filterKeys(pred) {
                 return this.filterKV(pred);
-            } //          [FILTERKEYS]
+            }
         },
         {
             key: "partition",
@@ -5050,7 +5021,7 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
                         }
                     }
                 }
-            } // [FOREACH]
+            }
         },
         {
             key: "invert",
@@ -5253,19 +5224,19 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
             key: "toValues",
             value: function toValues() {
                 return map_byte_to_consumable_array(this.values());
-            } //                                       [TOVALUES]
+            }
         },
         {
             key: "toKeys",
             value: function toKeys() {
                 return map_byte_to_consumable_array(this.keys());
-            } //                                                [TOKEYS]
+            }
         },
         {
             key: "toArray",
             value: function toArray() {
                 return map_byte_to_consumable_array(this.entries());
-            } //                                   [TOARRAY]
+            }
         },
         {
             key: "group",
@@ -5333,7 +5304,8 @@ var map_byte_M2BI = /*#__PURE__*/ function() {
     ], [
         {
             key: "fromObject",
-            value: function fromObject(obj, maxParticles) {
+            value: // ---------------------------------------------------------------- statics
+            function fromObject(obj, maxParticles) {
                 var stride = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1;
                 return new M2BI(maxParticles, stride, Object.entries(obj).map(function(param) {
                     var _param = map_byte_sliced_to_array(param, 2), k = _param[0], v = _param[1];
@@ -5461,12 +5433,6 @@ function fresh() {
     return new map_byte_M2BI(this.cap, this.stride);
 }
 
-function array_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function array_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -5487,7 +5453,7 @@ function array_call_super(_this, derived, args) {
     return array_possible_constructor_return(_this, array_is_native_reflect_construct() ? Reflect.construct(derived, args || [], array_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function array_class_call_check(instance, Constructor) {
-    if (!array_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function array_construct(Parent, args, Class) {
     if (array_is_native_reflect_construct()) array_construct = Reflect.construct;
@@ -5538,7 +5504,7 @@ function array_inherits(subClass, superClass) {
     });
     if (superClass) array_set_prototype_of(subClass, superClass);
 }
-function array_instanceof1(left, right) {
+function array_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -5551,7 +5517,7 @@ function array_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (array_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (array_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -5621,7 +5587,7 @@ function array_unsupported_iterable_to_array(o, minLen) {
 }
 function array_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    array_wrap_native_super = function _wrap_native_super(Class) {
+    array_wrap_native_super = function(Class) {
         if (Class === null || !array_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -5653,7 +5619,7 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
         array_class_call_check(this, A2I);
         var _this;
         _this = array_call_super(this, A2I, array_to_consumable_array(items));
-        Object.setPrototypeOf(_this, (array_instanceof1(this, A2I) ? this.constructor : void 0).prototype);
+        Object.setPrototypeOf(_this, (array_instanceof(this, A2I) ? this.constructor : void 0).prototype);
         return _this;
     }
     array_create_class(A2I, [
@@ -6019,12 +5985,6 @@ var array_A2I = /*#__PURE__*/ function _target(Array1) {
     return A2I;
 }(array_wrap_native_super(Array));
 
-function date_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function date_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -6045,7 +6005,7 @@ function date_call_super(_this, derived, args) {
     return date_possible_constructor_return(_this, date_is_native_reflect_construct() ? Reflect.construct(derived, args || [], date_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function date_class_call_check(instance, Constructor) {
-    if (!date_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function date_construct(Parent, args, Class) {
     if (date_is_native_reflect_construct()) date_construct = Reflect.construct;
@@ -6120,7 +6080,7 @@ function date_inherits(subClass, superClass) {
     });
     if (superClass) date_set_prototype_of(subClass, superClass);
 }
-function date_instanceof1(left, right) {
+function date_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -6133,7 +6093,7 @@ function date_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (date_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (date_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -6210,7 +6170,7 @@ function date_unsupported_iterable_to_array(o, minLen) {
 }
 function date_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    date_wrap_native_super = function _wrap_native_super(Class) {
+    date_wrap_native_super = function(Class) {
         if (Class === null || !date_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -6236,7 +6196,7 @@ var DATE_TAG = 0x4432; // "D2"
 var D2_CODEC = (/* unused pure expression or super */ null && ({
     tag: DATE_TAG,
     test: function test(v) {
-        return date_instanceof1(v, Date);
+        return date_instanceof(v, Date);
     },
     enc: function enc(d) {
         return d.getTime();
@@ -6280,7 +6240,7 @@ var date_D2I = /*#__PURE__*/ function(Date1) {
     function D2I(value) {
         date_class_call_check(this, D2I);
         var _this;
-        if (date_instanceof1(value, Date)) _this = date_call_super(this, D2I, [
+        if (date_instanceof(value, Date)) _this = date_call_super(this, D2I, [
             value.getTime()
         ]);
         else if (value === undefined) _this = date_call_super(this, D2I);
@@ -7149,8 +7109,8 @@ var date_D2I = /*#__PURE__*/ function(Date1) {
         {
             key: "from",
             value: function from(v) {
-                if (date_instanceof1(v, D2I)) return v.clone();
-                if (date_instanceof1(v, Date)) return new D2I(v.getTime());
+                if (date_instanceof(v, D2I)) return v.clone();
+                if (date_instanceof(v, Date)) return new D2I(v.getTime());
                 if (typeof v === "number") return new D2I(v);
                 if (typeof v === "string") {
                     var s = v.trim();
@@ -7470,12 +7430,6 @@ if (tag === DATE_TAG) { return new D2(readI64()); }
 }
  */ 
 
-function error_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function error_assert_this_initialized(self) {
     if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self;
@@ -7485,7 +7439,7 @@ function error_call_super(_this, derived, args) {
     return error_possible_constructor_return(_this, error_is_native_reflect_construct() ? Reflect.construct(derived, args || [], error_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function error_class_call_check(instance, Constructor) {
-    if (!error_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function error_construct(Parent, args, Class) {
     if (error_is_native_reflect_construct()) error_construct = Reflect.construct;
@@ -7536,7 +7490,7 @@ function error_inherits(subClass, superClass) {
     });
     if (superClass) error_set_prototype_of(subClass, superClass);
 }
-function error_instanceof1(left, right) {
+function error_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -7549,7 +7503,7 @@ function error_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (error_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (error_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -7570,7 +7524,7 @@ function error_type_of(obj) {
 }
 function error_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    error_wrap_native_super = function _wrap_native_super(Class) {
+    error_wrap_native_super = function(Class) {
         if (Class === null || !error_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -7603,8 +7557,8 @@ var error_ER2I = /*#__PURE__*/ function _target(Error1) {
             message,
             options
         ]);
-        _this.name = (error_instanceof1(this, ER2I) ? this.constructor : void 0).name;
-        Object.setPrototypeOf(_this, (error_instanceof1(this, ER2I) ? this.constructor : void 0).prototype);
+        _this.name = (error_instanceof(this, ER2I) ? this.constructor : void 0).name;
+        Object.setPrototypeOf(_this, (error_instanceof(this, ER2I) ? this.constructor : void 0).prototype);
         return _this;
     }
     error_create_class(ER2I, [
@@ -7640,21 +7594,21 @@ var error_ER2I = /*#__PURE__*/ function _target(Error1) {
         {
             key: "is",
             value: function is(value) {
-                return error_instanceof1(value, Error);
+                return error_instanceof(value, Error);
             }
         },
         {
             key: "isER2",
             value: function isER2(value) {
-                return error_instanceof1(value, ER2I);
+                return error_instanceof(value, ER2I);
             }
         },
         {
             key: "from",
             value: function from(value) {
                 var fallback = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "An unknown error occurred";
-                if (error_instanceof1(value, ER2I)) return value;
-                if (error_instanceof1(value, Error)) {
+                if (error_instanceof(value, ER2I)) return value;
+                if (error_instanceof(value, Error)) {
                     var error = new ER2I(value.message, {
                         cause: value
                     });
@@ -7697,14 +7651,8 @@ var error_ER2I = /*#__PURE__*/ function _target(Error1) {
     return ER2I;
 }(error_wrap_native_super(Error));
 
-function iterator_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function iterator_class_call_check(instance, Constructor) {
-    if (!iterator_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function iterator_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -8545,12 +8493,6 @@ var iterator_I2I = /*#__PURE__*/ function() {
     return I2I;
 }();
 
-function number_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function number_assert_this_initialized(self) {
     if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self;
@@ -8560,7 +8502,7 @@ function number_call_super(_this, derived, args) {
     return number_possible_constructor_return(_this, number_is_native_reflect_construct() ? Reflect.construct(derived, args || [], number_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function number_class_call_check(instance, Constructor) {
-    if (!number_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function number_construct(Parent, args, Class) {
     if (number_is_native_reflect_construct()) number_construct = Reflect.construct;
@@ -8618,7 +8560,7 @@ function number_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (number_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (number_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -8639,7 +8581,7 @@ function number_type_of(obj) {
 }
 function number_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    number_wrap_native_super = function _wrap_native_super(Class) {
+    number_wrap_native_super = function(Class) {
         if (Class === null || !number_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -8989,12 +8931,6 @@ var number_N2I = /*#__PURE__*/ function(Number1) {
     return N2I;
 }(number_wrap_native_super(Number));
 
-function object_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function object_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -9004,7 +8940,7 @@ function object_array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
 function object_class_call_check(instance, Constructor) {
-    if (!object_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function object_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -9031,7 +8967,7 @@ function object_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function object_instanceof1(left, right) {
+function object_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -9522,7 +9458,7 @@ var object_O2I = /*#__PURE__*/ function() {
                 if (first === null || second === null || (typeof first === "undefined" ? "undefined" : object_type_of(first)) !== "object" || (typeof second === "undefined" ? "undefined" : object_type_of(second)) !== "object") {
                     return false;
                 }
-                if (object_instanceof1(first, Date) && object_instanceof1(second, Date)) {
+                if (object_instanceof(first, Date) && object_instanceof(second, Date)) {
                     return first.getTime() === second.getTime();
                 }
                 if (Array.isArray(first) || Array.isArray(second)) {
@@ -9599,12 +9535,6 @@ var object_O2I = /*#__PURE__*/ function() {
     return O2I;
 }();
 
-function promise_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function promise_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -9640,7 +9570,7 @@ function promise_class_apply_descriptor_set(receiver, descriptor, value) {
     }
 }
 function promise_class_call_check(instance, Constructor) {
-    if (!promise_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function promise_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -9728,7 +9658,7 @@ function promise_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (promise_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (promise_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -9775,7 +9705,7 @@ function promise_unsupported_iterable_to_array(o, minLen) {
 }
 function promise_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    promise_wrap_native_super = function _wrap_native_super(Class) {
+    promise_wrap_native_super = function(Class) {
         if (Class === null || !promise_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -10175,7 +10105,8 @@ var promise_P2I = /*#__PURE__*/ function(Promise1) {
         },
         {
             key: "sleep",
-            value: // ══════════════════════════════════════════════════════════════════════════════════════════════════════
+            value: //                                                                                [CONCURRENCY]
+            // ══════════════════════════════════════════════════════════════════════════════════════════════════════
             function sleep(ms) {
                 return new P2I(function(resolve) {
                     return setTimeout(resolve, ms);
@@ -10203,7 +10134,7 @@ var promise_P2I = /*#__PURE__*/ function(Promise1) {
                     var done = 0;
                     var failed = false;
                     var run = function run1() {
-                        var _loop = function _loop() {
+                        var _loop = function() {
                             var i = next++;
                             active++;
                             P2I.try(function() {
@@ -10247,12 +10178,6 @@ var promise_P2I = /*#__PURE__*/ function(Promise1) {
     return P2I;
 }(promise_wrap_native_super(Promise));
 
-function reg_ex_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function reg_ex_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -10283,7 +10208,7 @@ function reg_ex_class_apply_descriptor_set(receiver, descriptor, value) {
     }
 }
 function reg_ex_class_call_check(instance, Constructor) {
-    if (!reg_ex_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function reg_ex_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -10324,7 +10249,7 @@ function reg_ex_create_class(Constructor, protoProps, staticProps) {
     if (staticProps) reg_ex_defineProperties(Constructor, staticProps);
     return Constructor;
 }
-function reg_ex_instanceof1(left, right) {
+function reg_ex_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -10433,7 +10358,7 @@ function mergeFlags(base, parts) {
     try {
         for(var _iterator = parts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
             var p = _step.value;
-            if (reg_ex_instanceof1(p, reg_ex_REC2) || reg_ex_instanceof1(p, RegExp)) p.flags.split("").forEach(function(f) {
+            if (reg_ex_instanceof(p, reg_ex_REC2) || reg_ex_instanceof(p, RegExp)) p.flags.split("").forEach(function(f) {
                 return set.add(f);
             });
         }
@@ -10453,7 +10378,8 @@ function mergeFlags(base, parts) {
     }
     return reg_ex_to_consumable_array(set).join("");
 }
-var _re = /*#__PURE__*/ new WeakMap(), //                                                                                             [REPLACE]
+var _re = /*#__PURE__*/ new WeakMap(), // #endregion
+//                                                                                             [REPLACE]
 // #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
 _parseArgs = /*#__PURE__*/ new WeakSet(), _forceGlobal = /*#__PURE__*/ new WeakSet();
 var reg_ex_REC2 = /*#__PURE__*/ function() {
@@ -10472,7 +10398,8 @@ var reg_ex_REC2 = /*#__PURE__*/ function() {
     reg_ex_create_class(REC2, [
         {
             key: "source",
-            get: // #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
+            get: //                                                                                         [PASSTHROUGH]
+            // #region ══════════════════════════════════════════════════════════════════════════════════════════════════════
             function get() {
                 return reg_ex_class_private_field_get(this, _re).source;
             }
@@ -10958,7 +10885,7 @@ var reg_ex_REC2 = /*#__PURE__*/ function() {
         {
             key: "equals",
             value: function equals(other) {
-                var o = typeof other === "string" ? new RegExp(other) : reg_ex_instanceof1(other, RegExp) ? other : other; // remaining case is RE2_IF, which has .source/.flags already
+                var o = typeof other === "string" ? new RegExp(other) : reg_ex_instanceof(other, RegExp) ? other : other; // remaining case is RE2_IF, which has .source/.flags already
                 return reg_ex_class_private_field_get(this, _re).source === o.source && reg_ex_class_private_field_get(this, _re).flags === o.flags;
             }
         },
@@ -11187,7 +11114,7 @@ var RECC2 = Object.assign(function(input, flags) {
 }, {
     of: function of(input, flags) {
         if (typeof input === "string") return new reg_ex_REC2(input, flags !== null && flags !== void 0 ? flags : "");
-        if (reg_ex_instanceof1(input, RegExp)) return new reg_ex_REC2(input.source, flags !== null && flags !== void 0 ? flags : input.flags);
+        if (reg_ex_instanceof(input, RegExp)) return new reg_ex_REC2(input.source, flags !== null && flags !== void 0 ? flags : input.flags);
         // remaining case is RE2_IF
         return flags !== undefined ? input.withFlags(flags) : input.clone();
     },
@@ -11248,12 +11175,6 @@ var RECC2 = Object.assign(function(input, flags) {
     
     ============================================================= ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [REGEX] */ 
 
-function set_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function set_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -11274,7 +11195,7 @@ function set_call_super(_this, derived, args) {
     return set_possible_constructor_return(_this, set_is_native_reflect_construct() ? Reflect.construct(derived, args || [], set_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function set_class_call_check(instance, Constructor) {
-    if (!set_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function set_construct(Parent, args, Class) {
     if (set_is_native_reflect_construct()) set_construct = Reflect.construct;
@@ -11343,7 +11264,7 @@ function set_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (set_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (set_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -11413,7 +11334,7 @@ function set_unsupported_iterable_to_array(o, minLen) {
 }
 function set_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    set_wrap_native_super = function _wrap_native_super(Class) {
+    set_wrap_native_super = function(Class) {
         if (Class === null || !set_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -12237,12 +12158,6 @@ var set_SET2I = /*#__PURE__*/ function(Set1) {
     return SET2I;
 }(set_wrap_native_super(Set));
 
-function set_byte_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function set_byte_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -12294,7 +12209,7 @@ function set_byte_class_apply_descriptor_update(receiver, descriptor) {
     }
 }
 function set_byte_class_call_check(instance, Constructor) {
-    if (!set_byte_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function set_byte_class_extract_field_descriptor(receiver, privateMap, action) {
     if (!privateMap.has(receiver)) throw new TypeError("attempted to " + action + " private field on non-instance");
@@ -12386,7 +12301,7 @@ function set_byte_to_consumable_array(arr) {
 function set_byte_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -12400,7 +12315,7 @@ function set_byte_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -12497,15 +12412,15 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
         var maxParticles = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 8192, seed = arguments.length > 1 ? arguments[1] : void 0;
         set_byte_class_call_check(this, SET2BI);
         set_byte_define_property(this, "cap", void 0);
-        set_byte_define_property(this, "flags", void 0); // [pid] -> 0/1, O(1) has()
-        set_byte_define_property(this, "slots", void 0); // [idx] -> pid, dense, for iteration
-        set_byte_define_property(this, "pidToIdx", void 0); // [pid] -> idx into slots, -1 = absent
+        set_byte_define_property(this, "flags", void 0);
+        set_byte_define_property(this, "slots", void 0);
+        set_byte_define_property(this, "pidToIdx", void 0);
         set_byte_class_private_field_init(this, set_byte_size, {
             writable: true,
             value: 0
         });
         // ---------------------------------------------------------------- core
-        set_byte_define_property(this, "s", this.add.bind(this)); //                                                                    [s alias]
+        set_byte_define_property(this, "s", this.add.bind(this));
         this.cap = maxParticles;
         this.flags = new Uint8Array(maxParticles);
         this.slots = new Int32Array(maxParticles).fill(-1);
@@ -12555,7 +12470,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             key: "has",
             value: function has(pid) {
                 return this.flags[pid] === 1;
-            } //                                              [HAS]
+            }
         },
         {
             key: "delete",
@@ -12586,7 +12501,8 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
         },
         {
             key: Symbol.iterator,
-            value: function value() {
+            value: // ---------------------------------------------------------------- iteration
+            function value() {
                 var i;
                 return set_byte_ts_generator(this, function(_state) {
                     switch(_state.label){
@@ -12670,16 +12586,17 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- sugar
             key: "take",
             value: function take(pid) {
                 return this.delete(pid) ? pid : undefined;
-            } //                          [TAKE]
+            }
         },
         {
             key: "peek",
             value: function peek(pid) {
                 return this.has(pid) ? pid : false;
-            } //                              [PEEK]
+            }
         },
         {
             key: "toggle",
@@ -12696,15 +12613,16 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             key: "first",
             value: function first() {
                 return set_byte_class_private_field_get(this, set_byte_size) === 0 ? undefined : this.slots[0];
-            } //                    [FIRST]
+            }
         },
         {
             key: "last",
             value: function last() {
                 return set_byte_class_private_field_get(this, set_byte_size) === 0 ? undefined : this.slots[set_byte_class_private_field_get(this, set_byte_size) - 1];
-            } //         [LAST]
+            }
         },
         {
+            // ---------------------------------------------------------------- set algebra (-> new SET2BI, same cap)
             key: "union",
             value: function union(other) {
                 var out = new SET2BI(this.cap, this);
@@ -12922,6 +12840,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- functional
             key: "filter",
             value: function filter(fn) {
                 var out = new SET2BI(this.cap);
@@ -13190,6 +13109,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- bulk mutation
             key: "addAll",
             value: function addAll(pids) {
                 var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
@@ -13213,7 +13133,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
                     }
                 }
                 return this;
-            } //    [ADDALL]
+            }
         },
         {
             key: "deleteAll",
@@ -13273,7 +13193,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             key: "update",
             value: function update(pids) {
                 return this.addAll(pids);
-            } //                              [UPDATE]
+            }
         },
         {
             key: "replace",
@@ -13312,16 +13232,17 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             }
         },
         {
+            // ---------------------------------------------------------------- export
             key: "clone",
             value: function clone() {
                 return new SET2BI(this.cap, this);
-            } //                                     [CLONE]
+            }
         },
         {
             key: "toArray",
             value: function toArray() {
                 return set_byte_to_consumable_array(this);
-            } //                                                   [TOARRAY]
+            }
         },
         {
             key: "toMap",
@@ -13382,7 +13303,7 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
             key: "toJSON",
             value: function toJSON() {
                 return this.toArray();
-            } //                                                 [TOJSON]
+            }
         }
     ], [
         {
@@ -13437,14 +13358,8 @@ var set_byte_SET2BI = /*#__PURE__*/ function() {
     return SET2BI;
 }();
 
-function soa_codec_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function soa_codec_class_call_check(instance, Constructor) {
-    if (!soa_codec_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function soa_codec_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -13509,12 +13424,6 @@ var soa_codec_SOA_CODEC = /*#__PURE__*/ function() {
 }();
 var soa_codeci = new soa_codec_SOA_CODEC();
 
-function string_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function string_assert_this_initialized(self) {
     if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self;
@@ -13524,7 +13433,7 @@ function string_call_super(_this, derived, args) {
     return string_possible_constructor_return(_this, string_is_native_reflect_construct() ? Reflect.construct(derived, args || [], string_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function string_class_call_check(instance, Constructor) {
-    if (!string_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function string_construct(Parent, args, Class) {
     if (string_is_native_reflect_construct()) string_construct = Reflect.construct;
@@ -13582,7 +13491,7 @@ function string_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (string_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (string_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -13603,7 +13512,7 @@ function string_type_of(obj) {
 }
 function string_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    string_wrap_native_super = function _wrap_native_super(Class) {
+    string_wrap_native_super = function(Class) {
         if (Class === null || !string_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -13867,12 +13776,6 @@ var string_S2I = /*#__PURE__*/ function(String1) {
     return S2I;
 }(string_wrap_native_super(String));
 
-function unit8array_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function unit8array_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -13893,7 +13796,7 @@ function unit8array_call_super(_this, derived, args) {
     return unit8array_possible_constructor_return(_this, unit8array_is_native_reflect_construct() ? Reflect.construct(derived, args || [], unit8array_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function unit8array_class_call_check(instance, Constructor) {
-    if (!unit8array_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function unit8array_construct(Parent, args, Class) {
     if (unit8array_is_native_reflect_construct()) unit8array_construct = Reflect.construct;
@@ -13944,7 +13847,7 @@ function unit8array_inherits(subClass, superClass) {
     });
     if (superClass) unit8array_set_prototype_of(subClass, superClass);
 }
-function unit8array_instanceof1(left, right) {
+function unit8array_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -13957,7 +13860,7 @@ function unit8array_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (unit8array_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (unit8array_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -14027,7 +13930,7 @@ function unit8array_unsupported_iterable_to_array(o, minLen) {
 }
 function unit8array_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    unit8array_wrap_native_super = function _wrap_native_super(Class) {
+    unit8array_wrap_native_super = function(Class) {
         if (Class === null || !unit8array_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -14059,7 +13962,7 @@ var unit8array_U82I = /*#__PURE__*/ function _target(Array1) {
         unit8array_class_call_check(this, U82I);
         var _this;
         _this = unit8array_call_super(this, U82I, unit8array_to_consumable_array(items));
-        Object.setPrototypeOf(_this, (unit8array_instanceof1(this, U82I) ? this.constructor : void 0).prototype);
+        Object.setPrototypeOf(_this, (unit8array_instanceof(this, U82I) ? this.constructor : void 0).prototype);
         return _this;
     }
     unit8array_create_class(U82I, [
@@ -14574,12 +14477,6 @@ var unit8array_U82I = /*#__PURE__*/ function _target(Array1) {
     return U82I;
 }(unit8array_wrap_native_super(Array));
 
-function url_search_params_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function url_search_params_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -14597,7 +14494,7 @@ function url_search_params_call_super(_this, derived, args) {
     return url_search_params_possible_constructor_return(_this, url_search_params_is_native_reflect_construct() ? Reflect.construct(derived, args || [], url_search_params_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function url_search_params_class_call_check(instance, Constructor) {
-    if (!url_search_params_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function url_search_params_construct(Parent, args, Class) {
     if (url_search_params_is_native_reflect_construct()) url_search_params_construct = Reflect.construct;
@@ -14648,7 +14545,7 @@ function url_search_params_inherits(subClass, superClass) {
     });
     if (superClass) url_search_params_set_prototype_of(subClass, superClass);
 }
-function url_search_params_instanceof1(left, right) {
+function url_search_params_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -14661,7 +14558,7 @@ function url_search_params_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (url_search_params_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (url_search_params_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -14720,7 +14617,7 @@ function url_search_params_unsupported_iterable_to_array(o, minLen) {
 }
 function url_search_params_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    url_search_params_wrap_native_super = function _wrap_native_super(Class) {
+    url_search_params_wrap_native_super = function(Class) {
         if (Class === null || !url_search_params_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -14925,7 +14822,7 @@ var url_search_params_USP2I = /*#__PURE__*/ function(URLSearchParams1) {
             key: "appendAll",
             value: function appendAll(params) {
                 var _this = this;
-                if (url_search_params_instanceof1(params, URLSearchParams)) {
+                if (url_search_params_instanceof(params, URLSearchParams)) {
                     params.forEach(function(value, key) {
                         return _this.append(key, value);
                     });
@@ -14984,7 +14881,7 @@ var url_search_params_USP2I = /*#__PURE__*/ function(URLSearchParams1) {
             value: function merge(params) {
                 var _this = this;
                 var overwrite = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : true;
-                if (url_search_params_instanceof1(params, URLSearchParams)) {
+                if (url_search_params_instanceof(params, URLSearchParams)) {
                     params.forEach(function(value, key) {
                         if (overwrite || !_this.has(key)) _this.set(key, value);
                     });
@@ -15090,12 +14987,6 @@ var url_search_params_USP2I = /*#__PURE__*/ function(URLSearchParams1) {
     return USP2I;
 }(url_search_params_wrap_native_super(URLSearchParams));
 
-function weak_map_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function weak_map_assert_this_initialized(self) {
     if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self;
@@ -15105,7 +14996,7 @@ function weak_map_call_super(_this, derived, args) {
     return weak_map_possible_constructor_return(_this, weak_map_is_native_reflect_construct() ? Reflect.construct(derived, args || [], weak_map_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function weak_map_class_call_check(instance, Constructor) {
-    if (!weak_map_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function weak_map_construct(Parent, args, Class) {
     if (weak_map_is_native_reflect_construct()) weak_map_construct = Reflect.construct;
@@ -15187,7 +15078,7 @@ function weak_map_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (weak_map_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (weak_map_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -15215,7 +15106,7 @@ function weak_map_type_of(obj) {
 }
 function weak_map_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    weak_map_wrap_native_super = function _wrap_native_super(Class) {
+    weak_map_wrap_native_super = function(Class) {
         if (Class === null || !weak_map_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -15527,12 +15418,6 @@ var weak_map_WM2I = /*#__PURE__*/ function(WeakMap1) {
     return WM2I;
 }(weak_map_wrap_native_super(WeakMap));
 
-function weak_set_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function weak_set_assert_this_initialized(self) {
     if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     return self;
@@ -15542,7 +15427,7 @@ function weak_set_call_super(_this, derived, args) {
     return weak_set_possible_constructor_return(_this, weak_set_is_native_reflect_construct() ? Reflect.construct(derived, args || [], weak_set_get_prototype_of(_this).constructor) : derived.apply(_this, args));
 }
 function weak_set_class_call_check(instance, Constructor) {
-    if (!weak_set_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function weak_set_construct(Parent, args, Class) {
     if (weak_set_is_native_reflect_construct()) weak_set_construct = Reflect.construct;
@@ -15624,7 +15509,7 @@ function weak_set_is_native_reflect_construct() {
     try {
         var result = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {}));
     } catch (_) {}
-    return (weak_set_is_native_reflect_construct = function _is_native_reflect_construct() {
+    return (weak_set_is_native_reflect_construct = function() {
         return !!result;
     })();
 }
@@ -15652,7 +15537,7 @@ function weak_set_type_of(obj) {
 }
 function weak_set_wrap_native_super(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
-    weak_set_wrap_native_super = function _wrap_native_super(Class) {
+    weak_set_wrap_native_super = function(Class) {
         if (Class === null || !weak_set_is_native_function(Class)) return Class;
         if (typeof Class !== "function") throw new TypeError("Super expression must either be null or a function");
         if (typeof _cache !== "undefined") {
@@ -15904,14 +15789,8 @@ var weak_set_WS2I = /*#__PURE__*/ function(WeakSet1) {
     return WS2I;
 }(weak_set_wrap_native_super(WeakSet));
 
-function nested_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function nested_class_call_check(instance, Constructor) {
-    if (!nested_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function nested_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -16151,12 +16030,6 @@ function wait_and_promise(timeoutMs, key, isOpen, current) {
     });
 }
 
-function twx_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function twx_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -16192,7 +16065,7 @@ function _async_to_generator(fn) {
     };
 }
 function twx_class_call_check(instance, Constructor) {
-    if (!twx_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function twx_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -16219,7 +16092,7 @@ function twx_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function twx_instanceof1(left, right) {
+function twx_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -16296,7 +16169,7 @@ function twx_sliced_to_array(arr, i) {
 function twx_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -16310,7 +16183,7 @@ function twx_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -16399,7 +16272,7 @@ function twx_ts_values(o) {
     }
     if (o && typeof o.length === "number") {
         return {
-            next: function next() {
+            next: function() {
                 if (o && i >= o.length) {
                     o = void 0;
                 }
@@ -16870,7 +16743,7 @@ var twx_Chain = /*#__PURE__*/ (/* unused pure expression or super */ null && (fu
                         return twx_ts_generator(this, function(_state) {
                             switch(_state.label){
                                 case 0:
-                                    _loop = function _loop(i) {
+                                    _loop = function(i) {
                                         var _tmp, _, e;
                                         return twx_ts_generator(this, function(_state) {
                                             switch(_state.label){
@@ -16999,22 +16872,24 @@ var twx_ReChain = /*#__PURE__*/ (/* unused pure expression or super */ null && (
             }
         },
         {
+            // The ONLY place a value changes hands — a fresh chain, nothing mutated.
+            // write=true means this transformation broadcasts to the store + bus.
             key: "step",
-            value: // write=true means this transformation broadcasts to the store + bus.
-            function step(next) {
+            value: function step(next) {
                 var write = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
                 if (write) {
                     var _this__use = twx_sliced_to_array(this._use(), 2), setV = _this__use[1];
                     setV(next);
                 }
-                return twx_instanceof1(next, ReChain) ? next : new ReChain(next, this.id);
+                return twx_instanceof(next, ReChain) ? next : new ReChain(next, this.id);
             }
         },
         {
-            key: "branch",
-            value: // written (only one fires, like Chain), and each call returns a fresh
+            // when/if/switch return a branch view: then and otherwise can BOTH be
+            // written (only one fires, like Chain), and each call returns a fresh
             // ReChain — nothing mutated, order-independent.
-            function branch(passed) {
+            key: "branch",
+            value: function branch(passed) {
                 var _this = this;
                 var _this1 = this;
                 var step = function step(next) {
@@ -17161,7 +17036,7 @@ var twx_ReChain = /*#__PURE__*/ (/* unused pure expression or super */ null && (
         {
             key: "throw",
             value: function _throw(err) {
-                throw twx_instanceof1(err, Error) ? err : new Error(String(err));
+                throw twx_instanceof(err, Error) ? err : new Error(String(err));
             }
         },
         {
@@ -17219,6 +17094,7 @@ var twx_ReChain = /*#__PURE__*/ (/* unused pure expression or super */ null && (
     ]);
     return ReChain;
 } // #endregion
+ // ReChain / Chain — immutable or not, value pipeline for DRS. Difference from Chain: every step returns a NEW ReChain; no in-place mutation anywhere. Safe to hold across renders, share, or re-run.
 ()));
 
 function lww_array_like_to_array(arr, len) {
@@ -17552,14 +17428,8 @@ var is_not_defined_isNotDefined = function isNotDefined(v) {
     return v != undefined;
 };
 
-function lazy_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function lazy_class_call_check(instance, Constructor) {
-    if (!lazy_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function lazy_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -17735,7 +17605,7 @@ function retry_with_backoff_async_to_generator(fn) {
 function retry_with_backoff_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -17749,7 +17619,7 @@ function retry_with_backoff_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -17979,7 +17849,7 @@ function run_with_retry_async_to_generator(fn) {
 function run_with_retry_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -17993,7 +17863,7 @@ function run_with_retry_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -18144,14 +18014,8 @@ function runWithRetry(fn, label) {
     })();
 }
 
-function serial_executor_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function serial_executor_class_call_check(instance, Constructor) {
-    if (!serial_executor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function serial_executor_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -18416,7 +18280,7 @@ function try_catch_instanceof(left, right) {
 function try_catch_ts_generator(thisArg, body) {
     var f, y, t, _ = {
         label: 0,
-        sent: function sent() {
+        sent: function() {
             if (t[0] & 1) throw t[1];
             return t[1];
         },
@@ -18430,7 +18294,7 @@ function try_catch_ts_generator(thisArg, body) {
     }), d(g, "return", {
         value: verb(2)
     }), typeof Symbol === "function" && d(g, Symbol.iterator, {
-        value: function value() {
+        value: function() {
             return this;
         }
     }), g;
@@ -18560,12 +18424,6 @@ var unreachable_unreachable = function unreachable(value) {
     throw new Error("Unreachable value: ".concat(String(value)));
 };
 
-function map_disruptor_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_disruptor_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -18575,7 +18433,7 @@ function map_disruptor_array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
 function map_disruptor_class_call_check(instance, Constructor) {
-    if (!map_disruptor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_disruptor_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -18668,9 +18526,8 @@ var map_disruptor_Disruptor = /*#__PURE__*/ function() {
         map_disruptor_define_property(this, "capacity", void 0);
         map_disruptor_define_property(this, "mask", void 0);
         map_disruptor_define_property(this, "buffer", void 0);
-        map_disruptor_define_property(this, "cursor", void 0);
+        map_disruptor_define_property(this, "cursor", -1);
         this.capacity = capacity;
-        this.cursor = -1;
         var size = map_disruptor_nextPow2(capacity);
         this.mask = size - 1;
         this.buffer = Array.from({
@@ -18850,12 +18707,6 @@ var map_disruptor_MDisruptor = /*#__PURE__*/ function() {
     return MDisruptor;
 }();
 
-function map_tracer_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function map_tracer_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -18865,7 +18716,7 @@ function map_tracer_array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
 function map_tracer_class_call_check(instance, Constructor) {
-    if (!map_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function map_tracer_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -18944,9 +18795,8 @@ var map_tracer_Disruptor = /*#__PURE__*/ function() {
         map_tracer_define_property(this, "capacity", void 0);
         map_tracer_define_property(this, "mask", void 0);
         map_tracer_define_property(this, "buffer", void 0);
-        map_tracer_define_property(this, "cursor", void 0);
+        map_tracer_define_property(this, "cursor", -1);
         this.capacity = capacity;
-        this.cursor = -1;
         var size = map_tracer_nextPow2(capacity);
         this.mask = size - 1;
         this.buffer = Array.from({
@@ -19012,9 +18862,8 @@ var map_tracer_Lane = /*#__PURE__*/ function() {
         map_tracer_class_call_check(this, Lane);
         map_tracer_define_property(this, "capacity", void 0);
         map_tracer_define_property(this, "ring", void 0);
-        map_tracer_define_property(this, "writes", void 0);
+        map_tracer_define_property(this, "writes", 0);
         this.capacity = capacity;
-        this.writes = 0;
         this.ring = new map_tracer_Disruptor(capacity);
     }
     map_tracer_create_class(Lane, [
@@ -19064,15 +18913,12 @@ var map_tracer_MTracer = /*#__PURE__*/ function() {
         map_tracer_define_property(this, "laneCapacity", void 0);
         map_tracer_define_property(this, "dialSize", void 0);
         map_tracer_define_property(this, "lanes", void 0);
-        map_tracer_define_property(this, "index", void 0);
-        map_tracer_define_property(this, "dial", void 0);
+        map_tracer_define_property(this, "index", new Map());
+        map_tracer_define_property(this, "dial", 0);
         /** The tracer particle itself — ticks once per completed lap, forever.
-	 *  Nobody reads Date.now() anywhere in this class. */ map_tracer_define_property(this, "revolution", void 0);
+	 *  Nobody reads Date.now() anywhere in this class. */ map_tracer_define_property(this, "revolution", 0);
         this.laneCapacity = laneCapacity;
         this.dialSize = dialSize;
-        this.index = new Map();
-        this.dial = 0;
-        this.revolution = 0;
         this.lanes = Array.from({
             length: dialSize
         }, function() {
@@ -19207,19 +19053,13 @@ var map_tracer_MTracer = /*#__PURE__*/ function() {
     return MTracer;
 }();
 
-function avro_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function avro_check_private_redeclaration(obj, privateCollection) {
     if (privateCollection.has(obj)) {
         throw new TypeError("Cannot initialize the same private elements twice on an object");
     }
 }
 function avro_class_call_check(instance, Constructor) {
-    if (!avro_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function avro_class_private_method_get(receiver, privateSet, fn) {
     if (!privateSet.has(receiver)) throw new TypeError("attempted to get private field on non-instance");
@@ -19254,7 +19094,7 @@ function avro_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function avro_instanceof1(left, right) {
+function avro_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -19341,10 +19181,9 @@ var avro_AVROReader = /*#__PURE__*/ function() {
     function AVROReader(buf) {
         avro_class_call_check(this, AVROReader);
         avro_define_property(this, "buf", void 0);
-        avro_define_property(this, "pos", void 0);
+        avro_define_property(this, "pos", 0);
         avro_define_property(this, "view", void 0);
         this.buf = buf;
-        this.pos = 0;
         this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
     }
     avro_create_class(AVROReader, [
@@ -19472,7 +19311,7 @@ var avro_BINARY_AVRO = /*#__PURE__*/ function() {
         {
             key: "encode_msg",
             value: function encode_msg(msg) {
-                if (avro_instanceof1(msg, Uint8Array)) return msg;
+                if (avro_instanceof(msg, Uint8Array)) return msg;
                 try {
                     return avro_class_private_method_get(this, _encode, avro_encode).call(this, msg, 0);
                 } catch (err) {
@@ -19480,7 +19319,7 @@ var avro_BINARY_AVRO = /*#__PURE__*/ function() {
                     console.log("[AVRO_PIPE] Failed to encode outbound packet:", err);
                     return avro_class_private_method_get(this, _encode, avro_encode).call(this, {
                         type: "error",
-                        error: avro_instanceof1(err, Error) ? err.message : "Encoding failed",
+                        error: avro_instanceof(err, Error) ? err.message : "Encoding failed",
                         id: String((_ref = msg === null || msg === void 0 ? void 0 : msg.id) !== null && _ref !== void 0 ? _ref : "unknown")
                     }, 1);
                 }
@@ -19489,12 +19328,12 @@ var avro_BINARY_AVRO = /*#__PURE__*/ function() {
         {
             key: "decode_msg",
             value: function decode_msg(raw) {
-                if (!avro_instanceof1(raw, Uint8Array) && !isBuffer(raw)) {
+                if (!avro_instanceof(raw, Uint8Array) && !isBuffer(raw)) {
                     console.error("[AVRO_PIPE] Protocol violation: Expected encoded Uint8Array data stream.");
                     return null;
                 }
                 try {
-                    var bytes = avro_instanceof1(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength);
+                    var bytes = avro_instanceof(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength);
                     return avro_class_private_method_get(this, _decode, avro_decode).call(this, bytes);
                 } catch (err) {
                     console.error("[AVRO_PIPE] Failed to decode inbound packet:", err);
@@ -19602,13 +19441,13 @@ function avro_matches(schema, value) {
             return typeof value === "string";
         case "bytes":
         case "fixed":
-            return avro_instanceof1(value, Uint8Array) && (_$kind !== "fixed" || value.length === schema.size);
+            return avro_instanceof(value, Uint8Array) && (_$kind !== "fixed" || value.length === schema.size);
         case "array":
             return Array.isArray(value);
         case "map":
-            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof1(value, Uint8Array);
+            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof(value, Uint8Array);
         case "record":
-            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof1(value, Uint8Array);
+            return value !== null && (typeof value === "undefined" ? "undefined" : avro_type_of(value)) === "object" && !Array.isArray(value) && !avro_instanceof(value, Uint8Array);
         case "enum":
             return typeof value === "string" && schema.symbols.includes(value);
         default:
@@ -19697,7 +19536,7 @@ function avro_write(w, schema, value) {
             w.bytes(value);
             return;
         case "fixed":
-            if (!avro_instanceof1(value, Uint8Array) || value.length !== schema.size) throw new Error("Avro: invalid fixed value");
+            if (!avro_instanceof(value, Uint8Array) || value.length !== schema.size) throw new Error("Avro: invalid fixed value");
             w.bytes(value);
             return;
         case "enum":
@@ -19961,12 +19800,6 @@ var AVROI = new avro_BINARY_AVRO({
     ]
 });
 
-function cbor_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function cbor_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -19976,7 +19809,7 @@ function cbor_array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
 function cbor_class_call_check(instance, Constructor) {
-    if (!cbor_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function cbor_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -20003,7 +19836,7 @@ function cbor_define_property(obj, key, value) {
     } else obj[key] = value;
     return obj;
 }
-function cbor_instanceof1(left, right) {
+function cbor_instanceof(left, right) {
     "@swc/helpers - instanceof";
     if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
         return !!right[Symbol.hasInstance](left);
@@ -20217,7 +20050,7 @@ var cbor_CBORI = /*#__PURE__*/ function() {
                     out.push(encoded);
                     return;
                 }
-                if (cbor_instanceof1(v, Uint8Array)) {
+                if (cbor_instanceof(v, Uint8Array)) {
                     out.push(this.encodeUint(0x40, v.length));
                     out.push(v);
                     return;
@@ -20406,7 +20239,7 @@ var cbor_CBORI = /*#__PURE__*/ function() {
         {
             key: "encode_msg",
             value: function encode_msg(msg) {
-                if (cbor_instanceof1(msg, Uint8Array)) return msg; // If it's already an encoded Uint8Array, don't re-encode it
+                if (cbor_instanceof(msg, Uint8Array)) return msg; // If it's already an encoded Uint8Array, don't re-encode it
                 try {
                     return this.encode(msg);
                 } catch (err) {
@@ -20422,12 +20255,12 @@ var cbor_CBORI = /*#__PURE__*/ function() {
         {
             key: "decode_msg",
             value: function decode_msg(raw) {
-                if (!cbor_instanceof1(raw, Uint8Array) && !(typeof Buffer !== 'undefined' && Buffer.isBuffer(raw))) {
+                if (!cbor_instanceof(raw, Uint8Array) && !(typeof Buffer !== 'undefined' && Buffer.isBuffer(raw))) {
                     console.error("[BINARY_PIPE] Protocol violation: Expected encoded Uint8Array data stream.");
                     return null;
                 }
                 try {
-                    var uint8 = cbor_instanceof1(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.length);
+                    var uint8 = cbor_instanceof(raw, Uint8Array) ? raw : new Uint8Array(raw.buffer, raw.byteOffset, raw.length);
                     return this.decode(uint8);
                 } catch (err) {
                     console.error("[BINARY_PIPE] Failed to decode inbound packet:", err);
@@ -20439,12 +20272,6 @@ var cbor_CBORI = /*#__PURE__*/ function() {
     return CBORI;
 }();
 
-function set_tracer_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function set_tracer_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -20454,7 +20281,7 @@ function set_tracer_array_with_holes(arr) {
     if (Array.isArray(arr)) return arr;
 }
 function set_tracer_class_call_check(instance, Constructor) {
-    if (!set_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function set_tracer_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -20533,9 +20360,8 @@ var set_tracer_Disruptor = /*#__PURE__*/ function() {
         set_tracer_define_property(this, "capacity", void 0);
         set_tracer_define_property(this, "mask", void 0);
         set_tracer_define_property(this, "buffer", void 0);
-        set_tracer_define_property(this, "cursor", void 0);
+        set_tracer_define_property(this, "cursor", -1);
         this.capacity = capacity;
-        this.cursor = -1;
         var size = set_tracer_nextPow2(capacity);
         this.mask = size - 1;
         this.buffer = Array.from({
@@ -20601,9 +20427,8 @@ var set_tracer_Lane = /*#__PURE__*/ function() {
         set_tracer_class_call_check(this, Lane);
         set_tracer_define_property(this, "capacity", void 0);
         set_tracer_define_property(this, "ring", void 0);
-        set_tracer_define_property(this, "writes", void 0);
+        set_tracer_define_property(this, "writes", 0);
         this.capacity = capacity;
-        this.writes = 0;
         this.ring = new set_tracer_Disruptor(capacity);
     }
     set_tracer_create_class(Lane, [
@@ -20653,14 +20478,11 @@ var set_tracer_STracer = /*#__PURE__*/ function() {
         set_tracer_define_property(this, "laneCapacity", void 0);
         set_tracer_define_property(this, "dialSize", void 0);
         set_tracer_define_property(this, "lanes", void 0);
-        set_tracer_define_property(this, "index", void 0); // member -> location, SameValueZero like native Set
-        set_tracer_define_property(this, "dial", void 0);
-        set_tracer_define_property(this, "revolution", void 0);
+        set_tracer_define_property(this, "index", new Map());
+        set_tracer_define_property(this, "dial", 0);
+        set_tracer_define_property(this, "revolution", 0);
         this.laneCapacity = laneCapacity;
         this.dialSize = dialSize;
-        this.index = new Map();
-        this.dial = 0;
-        this.revolution = 0;
         this.lanes = Array.from({
             length: dialSize
         }, function() {
@@ -20807,12 +20629,6 @@ var set_tracer_STracer = /*#__PURE__*/ function() {
     return STracer;
 }();
 
-function object_tracer_instanceof(left, right) {
-    "@swc/helpers - instanceof";
-    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-        return !!right[Symbol.hasInstance](left);
-    } else return left instanceof right;
-}
 function object_tracer_array_like_to_array(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -20825,7 +20641,7 @@ function object_tracer_array_without_holes(arr) {
     if (Array.isArray(arr)) return object_tracer_array_like_to_array(arr);
 }
 function object_tracer_class_call_check(instance, Constructor) {
-    if (!object_tracer_instanceof(instance, Constructor)) throw new TypeError("Cannot call a class as a function");
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 function object_tracer_defineProperties(target, props) {
     for(var i = 0; i < props.length; i++){
@@ -20915,9 +20731,8 @@ var object_tracer_Disruptor = /*#__PURE__*/ function() {
         object_tracer_define_property(this, "capacity", void 0);
         object_tracer_define_property(this, "mask", void 0);
         object_tracer_define_property(this, "buffer", void 0);
-        object_tracer_define_property(this, "cursor", void 0);
+        object_tracer_define_property(this, "cursor", -1);
         this.capacity = capacity;
-        this.cursor = -1;
         var size = object_tracer_nextPow2(capacity);
         this.mask = size - 1;
         this.buffer = Array.from({
@@ -20983,9 +20798,8 @@ var object_tracer_Lane = /*#__PURE__*/ function() {
         object_tracer_class_call_check(this, Lane);
         object_tracer_define_property(this, "capacity", void 0);
         object_tracer_define_property(this, "ring", void 0);
-        object_tracer_define_property(this, "writes", void 0);
+        object_tracer_define_property(this, "writes", 0);
         this.capacity = capacity;
-        this.writes = 0;
         this.ring = new object_tracer_Disruptor(capacity);
     }
     object_tracer_create_class(Lane, [
@@ -21037,15 +20851,12 @@ var object_tracer_OTracer = /*#__PURE__*/ function() {
         object_tracer_define_property(this, "dialSize", void 0);
         object_tracer_define_property(this, "skipEncode", void 0);
         object_tracer_define_property(this, "lanes", void 0);
-        object_tracer_define_property(this, "index", void 0);
-        object_tracer_define_property(this, "dial", void 0);
-        object_tracer_define_property(this, "revolution", void 0);
+        object_tracer_define_property(this, "index", new Map());
+        object_tracer_define_property(this, "dial", 0);
+        object_tracer_define_property(this, "revolution", 0);
         this.laneCapacity = laneCapacity;
         this.dialSize = dialSize;
         this.skipEncode = skipEncode;
-        this.index = new Map();
-        this.dial = 0;
-        this.revolution = 0;
         this.lanes = Array.from({
             length: dialSize
         }, function() {

@@ -3,10 +3,10 @@
 	"version": "1.0.28",
 	"type": "module",
 	"main": "./dist/index.js",
-	"types": "./dist/dx.d.ts",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/dx.d.ts",
+			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js",
 			"import": "./dist/index.js"
 		},
