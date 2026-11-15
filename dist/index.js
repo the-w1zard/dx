@@ -1,3 +1,4 @@
+/// <reference path="./dx.d.ts" />
 import "./dx.d.ts";
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";

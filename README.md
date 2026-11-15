@@ -2017,6 +2017,123 @@ const shared = nested.map("s", "m", "r");
 ```
 
 
+## Performance
+
+> [!NOTE]
+>
+> The other benchs results are somewhere in this doc, but I don't need them since I remember the numbers but if you do NEED to see them they are lower down in the doc. 
+>
+> One tax that is worth paying for when it comes to this 4 tiered format, is performance... all things considered, it ain't THAT bad. 
+
+```txt
+----------- Starting 10-Second Binary Store Benchmarks (Set & Get) -----------
+[getNestedMap6 vs]               27,641,856 ops in 10.00s -> 2,764,058 ops/sec
+[QUAD COLD]                    767,404,032 ops in 10.00s -> 76,739,753 ops/sec
+[QUAD HOT]                  5,180,663,808 ops in 10.00s -> 518,064,505 ops/sec
+[BYTEOP_MAP LG vs]             630,345,728 ops in 10.00s -> 63,034,382 ops/sec
+[Map]                          992,200,704 ops in 10.00s -> 99,219,947 ops/sec
+[M2B]                       1,493,663,744 ops in 10.00s -> 149,366,301 ops/sec
+[M2]                           269,049,856 ops in 10.00s -> 26,904,897 ops/sec
+[BYTE_MAP small vs]              42,151,936 ops in 10.00s -> 4,215,025 ops/sec
+[M2Bin (Hybrid Map + Int32/F64)] 29,689,856 ops in 10.00s -> 2,968,948 ops/sec
+```
+> [!NOTE]
+>
+> It consistently does between 3-4 mill, it dipped a little lower in this test, but thats as much as we are going to get out of it. 
+>
+> In the hot path, and thats where I have been able to cheat this in the past by cacheing the cache, we can get a decent bump up to 105 million.
+>
+> Pretty good, as this is maps ceiling with v8.
+>
+> As you can see the second result and third results, are a tad higher... same scoped channel format.
+>
+> I have made a primitive for this, but this isn't a primitive that can simply just stay in this module, because if you are looking to take advantage of that boost in performance... it needs to be placed within your app.
+
+```tsx
+const DEF_R: S = "root";
+const DEF_M: S = "master";
+const DEF_S: S = "slave";
+type QuadSub<V> = (v: V | UD) => void;
+
+class QUAD<V = A> {
+	#root: Record<S, Record<S, Record<S, Record<S, V>>>> = Object.create(null);
+	#subRoot: Record<S, Record<S, Record<S, Record<S, Set<QuadSub<V>>>>>> = Object.create(null);
+	_bear: Record<string, V> = Object.create(null);
+	public s(v: UF<V>, k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): this {
+		const rL = (this.#root[r] ??= Object.create(null));
+		const mL = (rL[m] ??= Object.create(null));
+		const sL = (mL[s] ??= Object.create(null));
+		const next = rv(v);
+		sL[k] = next;
+		this.#emit(k, s, m, r, next);
+		return this;
+	}
+	public sl(s: S = DEF_S, m: S = DEF_M, r: S = DEF_R) {
+		const rL = (this.#root[r] ??= Object.create(null));
+		const mL = (rL[m] ??= Object.create(null));
+		const sL = (mL[s] ??= Object.create(null));
+		return sL;
+	}
+	public ks(v: UF<V>, k: S) { //                                    SET hot path
+		const sL = this._bear
+		const next = rv(v);
+		sL[k] = next;
+		this.#emit(k, DEF_S, DEF_M, DEF_R, next);
+		return this;
+	}
+	public kg(k: S): V | UD { return this._bear[k]; } //              GET hot path
+	public kh(k: S): B { return k in this._bear; } //                 HAS hot path
+	public kd(k: S): B { //                                           DELTE hot path
+		if (!(k in this._bear)) return false;
+		delete this._bear[k];
+		this.#emit(k, DEF_S, DEF_M, DEF_R, undefined);
+		return true;
+	}
+	constructor() {
+		this._bear = this.sl()
+	}
+
+	public g(k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): V | UD {
+		return this.#root[r]?.[m]?.[s]?.[k];
+	}
+
+	public h(k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): B {
+		return !!this.#root[r]?.[m]?.[s] && k in this.#root[r][m][s];
+	}
+
+	public d(k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): B {
+		const sL = this.#root[r]?.[m]?.[s];
+		if (!sL || !(k in sL)) return false;
+		delete sL[k];
+		this.#emit(k, s, m, r, undefined);
+		return true;
+	}
+
+	public on(fn: QuadSub<V>, k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): () => void {
+		const rL = (this.#subRoot[r] ??= Object.create(null));
+		const mL = (rL[m] ??= Object.create(null));
+		const sL = (mL[s] ??= Object.create(null));
+		const set: Set<QuadSub<V>> = (sL[k] ??= new Set());
+		set.add(fn);
+		return () => {
+			set.delete(fn);
+			if (!set.size) delete sL[k];
+		};
+	}
+
+	public off(fn: QuadSub<V>, k: S, s: S = DEF_S, m: S = DEF_M, r: S = DEF_R): void {
+		this.#subRoot[r]?.[m]?.[s]?.[k]?.delete(fn);
+	}
+
+	#emit(k: S, s: S, m: S, r: S, v: V | UD): void {
+		const set = this.#subRoot[r]?.[m]?.[s]?.[k];
+		if (!set) return;
+		for (const fn of set) fn(v);
+	}
+}
+const q = new QUAD()
+```
+
 ## `A2` — Array
 
 `A2I` extends `Array` and adds collection helpers. Methods returning arrays generally return `A2I` instances.

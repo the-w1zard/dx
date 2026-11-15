@@ -1030,66 +1030,118 @@ declare global {
 		// #endregion 
 		//                                                                                              [OBJECT]
 		// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-		interface O2 extends ObjectConstructor {
-			isEmpty(value: object): B;
-			isNotEmpty(value: object): B;
-			size(value: object): N;
-			isPlainObject(value: unknown): B;
-			isObject(value: unknown): B;
-		
-			get<T = unknown>(value: unknown, path: string | readonly PropertyKey[], fallback?: T): unknown | T;
-			getOr<T>(value: unknown, path: string | readonly PropertyKey[], fallback: T): T;
-			set<T extends object>(value: T, path: string | readonly PropertyKey[], next: unknown): T;
-			unset(value: object, path: string | readonly PropertyKey[]): B;
-			hasPath(value: unknown, path: string | readonly PropertyKey[]): B;
-		
-			clone<T>(value: T): T;
-			deepClone<T>(value: T): T;
-			deepMerge<T extends object, U extends object>(target: T, source: U): T & U;
-			defaults<T extends object, U extends object>(target: T, defaults: U): T & U;
-			getOrCreate<T extends object, K extends PropertyKey, X>(
-				value: T,
-				key: K,
-				create: () => X
-			): T & Record<K, X>;
-		
-			pick<T extends object, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K>;
-			omit<T extends object, K extends keyof T>(value: T, keys: readonly K[]): Omit<T, K>;
-			pickBy<T extends object>(value: T, predicate: (value: T[keyof T], key: keyof T) => B): Partial<T>;
-			omitBy<T extends object>(value: T, predicate: (value: T[keyof T], key: keyof T) => B): Partial<T>;
-		
-			mapKeys<T extends object, K extends PropertyKey>(
-				value: T,
-				mapper: (key: keyof T, value: T[keyof T]) => K
-			): Partial<Record<K, T[keyof T]>>;
-			mapValues<T extends object, X>(
-				value: T,
-				mapper: (value: T[keyof T], key: keyof T) => X
-			): { [K in keyof T]: X };
-			mapEntries<T extends object, K extends PropertyKey, X>(
-				value: T,
-				mapper: (entry: [keyof T, T[keyof T]]) => readonly [K, X]
-			): Partial<Record<K, X>>;
-			filter<T extends object>(
-				value: T,
-				predicate: (value: T[keyof T], key: keyof T) => B
-			): Partial<T>;
-		
-			isEqual(first: unknown, second: unknown): B;
-			isShallowEqual(first: object, second: object): B;
-		
-			hasAll<T extends object>(value: T, keys: readonly PropertyKey[]): B;
-			hasAny<T extends object>(value: T, keys: readonly PropertyKey[]): B;
-			assertKeys<T extends object>(value: T, keys: readonly PropertyKey[]): asserts value is T;
-		
-			with<T extends object, K extends keyof T>(value: T, key: K, next: T[K]): T;
-			without<T extends object, K extends keyof T>(value: T, key: K): Omit<T, K>;
-			update<T extends object, K extends keyof T>(
-				value: T,
-				key: K,
-				updater: (current: T[K]) => T[K]
-			): T;
-		}
+  type Sub<K extends PropertyKey, T> = (e: M2Event<K, T>) => void;
+
+
+  interface DiffResult<K extends PropertyKey, T> {
+	add: AR<[K, T]>;
+	del: AR<K>;
+	chg: AR<[K, T, T]>; // [key, thisValue, otherValue]
+}
+
+// ─────────────────────────────────────────────────────────────
+// O2 public interface
+// ─────────────────────────────────────────────────────────────
+  interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
+
+	// ── shape ────────────────────────────────────────────────
+	readonly size: N;
+
+	// ── subscription ─────────────────────────────────────────
+	on(fn: Sub<K, T>): () => V;
+	off(fn: Sub<K, T>): V;
+
+	// ── batching ─────────────────────────────────────────────
+	batch(fn: () => V): this;
+
+	// ── core CRUD ────────────────────────────────────────────
+	s(v: UF<T>, k: K): this;                                   // set
+	mutate(k: K, fn: (old: T, has: true) => T): T | UD;
+	d(k: K): B;                                                // delete
+	c(): V;                                                    // clear
+
+	g(k: K): T | UD;                                           // get (derived-aware)
+	h(k: K): B;                                                // has (derived-aware)
+
+	// ── derived ──────────────────────────────────────────────
+	dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this;
+	dirty(...keys: AR<K>): this;
+
+	// ── debugging / history ──────────────────────────────────
+	$debug(limit?: N): this;
+	$strict(): this;
+	$history(): M2Event<K, T>[];
+	$why(k: K): M2Event<K, T> | UD;
+	$diff(other: O2<K, T>): DiffResult<K, T>;
+
+	// ── iteration ────────────────────────────────────────────
+	entries(): Generator<[K, T]>;
+	keys(): Generator<K>;
+	values(): Generator<T>;
+	f: (fn: (v: T, k: K, map: this) => void) => V;             // alias of forEachKV
+	forEachKV(fn: (v: T, k: K, map: this) => void): V;
+
+	// ── common convenience ───────────────────────────────────
+	swap(value: UF<T>, key: K): T | UD;
+	take(k: K): T | UD;
+	peek(k: K): T | false;
+	getOrI(value: UF<T>, k: K): T;
+	getOrM(make: () => T, k: K): T;
+	update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T;
+	setIfAbsent(value: UF<T>, k: K): B;
+	setIfPresent(value: UF<T>, k: K): B;
+	replace(value: UF<T>, k: K): B;
+	inc(key: K, by?: N): N;
+	touch(k: K): B;
+
+	// ── transforms (return new O2) ───────────────────────────
+	mapValues<G>(fn: (v: T, k: K) => G): O2<K, G>;
+	mapKeys<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, T>;
+	filterKV(pred: (v: T, k: K) => B): this;
+	filterKeys(pred: (v: T, k: K) => B): this;
+	partition(pred: (v: T, k: K) => B): [O2<K, T>, O2<K, T>];
+	unique<G extends PropertyKey>(fn?: (v: T, k: K) => G): O2<G, T>;
+	pick(keys: Iterable<K>): O2<K, T>;
+	omit(keys: Iterable<K>): O2<K, T>;
+	invert(): O2<A, K>;
+	group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, A2<T>>;
+
+	// ── search / query ───────────────────────────────────────
+	find(pred: (v: T, k: K) => B): [K, T] | UD;
+	findKey(pred: (v: T, k: K) => B): K | UD;
+	findValue(pred: (v: T, k: K) => B): T | UD;
+	some(pred: (v: T, k: K) => B): B;
+	every(pred: (v: T, k: K) => B): B;
+	reduce<G>(fn: (acc: G, v: T, k: K) => G, initial: G): G;
+
+	// ── merging ──────────────────────────────────────────────
+	merge(other: Iterable<readonly [K, T]>): this;
+	clearAndSet(entries: Iterable<readonly [K, T]>): this;
+	patch(partial: Readonly<Partial<Record<K, T>>>): this;
+
+	// ── conversion ───────────────────────────────────────────
+	toObject(): OB<T>;
+	toObjectFast(): OB<T>;
+	snapshot(): OB<T>;
+	toJSON(): OB<T>;
+	select<G>(fn: (data: Readonly<Record<K, T>>) => G): G;
+	toValues(): A2I<T>;
+	toKeys(): A2I<K>;
+	toArray(): A2I<[K, T]>;
+
+	// ── misc ─────────────────────────────────────────────────
+	clone(): this;
+	equals(other: O2<K, T>): B;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Static factory shape (for typing a class reference)
+// ─────────────────────────────────────────────────────────────
+  interface IO2Constructor {
+	fromObject<X extends OB<A>>(obj: X): O2<S, X[keyof X]>;
+	fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2<K, T>;
+	from<K extends PropertyKey, T>(source: O2<K, T> | Readonly<Record<K, T>>): O2<K, T>;
+}
 		interface O2I extends O2 {}
 		// #endregion 
 		//                                                                                             [PROMISE]

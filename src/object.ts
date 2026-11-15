@@ -1,290 +1,500 @@
+export const rv = <T>(v: UF<T>): T => typeof v === "function" ? (v as () => T)() : v;
+export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 
+export class O2I<K extends PropertyKey = S, T = A> {
+	#data: Record<K, T> = Object.create(null);
 
-export class O2I   {
-    static isEmpty(value: object): B {
-        return Reflect.ownKeys(value).length === 0;
-    }
-    static isNotEmpty(value: object): B {
-        return Reflect.ownKeys(value).length !== 0;
-    }
-    static size(value: object): N {
-        return Reflect.ownKeys(value).length as N;
-    }
-    static isPlainObject(value: unknown): B {
-        if (value === null || typeof value !== "object") return false;
-        const prototype = Object.getPrototypeOf(value);
-        return prototype === Object.prototype || prototype === null;
-    }
-    static isObject(value: unknown): B {
-        return value !== null && typeof value === "object";
-    }
-    static get<X = unknown>(
-        value: unknown,
-        path: string | readonly PropertyKey[],
-        fallback?: X
-    ): unknown | X {
-        const parts: readonly PropertyKey[] = typeof path === "string" ? path.split(".") : path;
-        let current = value;
+	public f = this.forEachKV;//                                                    [FOR EACH]
 
-        for (const key of parts) {
-            if (current === null || (typeof current !== "object" && typeof current !== "function")) {
-                return fallback;
-            }
-            current = (current as Record<PropertyKey, unknown>)[key];
-        }
+	#subs?: Set<Sub<K, T>>;
+	#hist?: M2Event<K, T>[];
+	#histLimit = 0;
+	#strict = false;
+	#iterating = 0;
+	#batching = 0;
+	#pending?: Record<K, M2Event<K, T>>;
+	#derived?: Record<K, Derived<K, T>>;
+	#dependents?: Record<K, Set<K>>;
 
-        return current === undefined ? fallback : current;
-    }
-    static getOr<X>(value: unknown, path: string | readonly PropertyKey[], fallback: X): X {
-        return this.get(value, path, fallback) as X;
-    }
-    static set<T extends object>(value: T, path: string | readonly PropertyKey[], next: unknown): T {
-        const parts: readonly PropertyKey[] = typeof path === "string" ? path.split(".") : path;
-        if (!parts.length) return value;
+	constructor(entries?: I<readonly [K, T]>) {//                                   [CONSTRUCT]
+		if (!entries) return;
+		for (const [k, v] of entries) this.#data[k] = v;
+	}
 
-        let current = value as Record<PropertyKey, unknown>;
+	#rawHas(k: K): B { return Object.prototype.hasOwnProperty.call(this.#data, k); }
+	#rawGet(k: K): T | UD { return this.#data[k]; }
 
-        for (let i = 0; i < parts.length - 1; i++) {
-            const key = parts[i];
-            const child = current[key];
+	#emit(e: M2Event<K, T>): V {
+		if (this.#batching > 0) {
+			const pending = this.#pending![e.k];
+			this.#pending![e.k] = pending ? { ...e, prev: pending.prev, batch: true } : { ...e, batch: true };
+			return;
+		}
 
-            if (child === null || (typeof child !== "object" && typeof child !== "function")) {
-                current[key] = {};
-            }
+		this.#record(e);
+		this.#subs?.forEach((sub) => {
+			try { sub(e); } catch (err: A) { process.emitWarning(err); }
+		});
+	}
+	#record(e: M2Event<K, T>): V {
+		if (!this.#hist) return;
 
-            current = current[key] as Record<PropertyKey, unknown>;
-        }
+		this.#hist.push(e);
 
-        current[parts[parts.length - 1]] = next;
-        return value;
-    }
-    static unset(value: object, path: string | readonly PropertyKey[]): B {
-        const parts: readonly PropertyKey[] = typeof path === "string" ? path.split(".") : path;
-        if (!parts.length) return false;
+		if (this.#hist.length > this.#histLimit) {
+			this.#hist.splice(0, this.#hist.length - this.#histLimit);
+		}
+	}
+	#invalidate(k: K): V {
+		const deps = this.#dependents?.[k];
+		if (!deps) return;
 
-        let current = value as Record<PropertyKey, unknown>;
+		for (const dk of deps) {
+			const d = this.#derived?.[dk];
+			if (!d || d.dirty) continue;
 
-        for (let i = 0; i < parts.length - 1; i++) {
-            const child = current[parts[i]];
-            if (child === null || typeof child !== "object") return false;
-            current = child as Record<PropertyKey, unknown>;
-        }
+			d.dirty = true;
+			this.#emit({ op: "dirty", k: dk, has: d.has });
+		}
+	}
+	#computeDerived(k: K, d: Derived<K, T>): T {
+		const vals = d.deps.map((dep) => this.g(dep) as T);
+		const next = d.fn(...vals);
 
-        return Reflect.deleteProperty(current, parts[parts.length - 1]);
-    }
-    static hasPath(value: unknown, path: string | readonly PropertyKey[]): B {
-        const parts: readonly PropertyKey[] = typeof path === "string" ? path.split(".") : path;
-        let current = value;
+		const had = d.has;
+		const prev = d.value;
 
-        for (const key of parts) {
-            if (current === null || (typeof current !== "object" && typeof current !== "function")) {
-                return false;
-            }
-            if (!Object.prototype.hasOwnProperty.call(current, key)) return false;
-            current = (current as Record<PropertyKey, unknown>)[key];
-        }
+		d.value = next;
+		d.has = true;
+		d.dirty = false;
 
-        return true;
-    }
-    static clone<T>(value: T): T {
-        if (value === null || typeof value !== "object") return value;
-        if (Array.isArray(value)) return value.slice() as T;
-        return Object.assign(Object.create(Object.getPrototypeOf(value)), value);
-    }
-    static deepClone<T>(value: T): T {
-        return structuredClone(value);
-    }
-    static deepMerge<T extends object, U extends object>(target: T, source: U): T & U {
-        const result = { ...target } as Record<PropertyKey, unknown>;
+		if (!had || !sameValue(prev, next)) {
+			this.#emit({ op: had ? "upd" : "set", k, v: next, prev: prev as T, has: true });
+		}
 
-        for (const key of Reflect.ownKeys(source)) {
-            const incoming = source[key as keyof U];
-            const current = result[key];
+		return next;
+	}
+	#assertNotIterating(op: S): V {
+		if (this.#strict && this.#iterating > 0) {
+			throw new Error(`O2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
+		}
+	}
 
-            result[key] =
-                this.isPlainObject(current) && this.isPlainObject(incoming)
-                    ? this.deepMerge(
-                        current as Record<PropertyKey, unknown>,
-                        incoming as Record<PropertyKey, unknown>
-                    )
-                    : incoming;
-        }
+	public get size(): N {//                                                             [SIZE]
+		return Reflect.ownKeys(this.#data).length as N;
+	}
+	public [Symbol.iterator](): Generator<[K, T]> { return this.entries(); }
+	public on(fn: Sub<K, T>): () => V {//                                                  [ON]
+		(this.#subs ??= new Set()).add(fn);
+		return () => this.off(fn);
+	}
+	public off(fn: Sub<K, T>): V {//                                                      [OFF]
+		this.#subs?.delete(fn);
+	}
+	public batch(fn: () => V): this {//                                                 [BATCH]
+		this.#batching++;
+		this.#pending ??= Object.create(null);
 
-        return result as T & U;
-    }
-    static defaults<T extends object, U extends object>(target: T, defaults: U): T & U {
-        return Object.assign({}, defaults, target) as T & U;
-    }
-    static getOrCreate<T extends object, K extends PropertyKey, X>(
-        value: T,
-        key: K,
-        create: () => X
-    ): T & Record<K, X> {
-        const object = value as T & Record<K, X>;
+		try {
+			fn();
+		} finally {
+			this.#batching--;
 
-        if (!Object.prototype.hasOwnProperty.call(object, key) || object[key] === undefined) {
-            object[key] = create() as (T & Record<K, X>)[K];
-        }
+			if (this.#batching === 0) {
+				const pending = this.#pending!;
+				this.#pending = undefined;
 
-        return object;
-    }
-    static pick<T extends object, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
-        const result = {} as Pick<T, K>;
+				for (const k of Reflect.ownKeys(pending) as K[]) {
+					const e = pending[k];
+					this.#record(e);
+					this.#subs?.forEach((sub) => sub(e));
+				}
+			}
+		}
 
-        for (const key of keys) {
-            if (Object.prototype.hasOwnProperty.call(value, key)) result[key] = value[key];
-        }
+		return this;
+	}
+	public s(v: UF<T>, k: K): this {//                                                    [SET]
+		this.#assertNotIterating("s");
 
-        return result;
-    }
-    static omit<T extends object, K extends keyof T>(value: T, keys: readonly K[]): Omit<T, K> {
-        const result = { ...value };
+		const next = rv(v);
+		const has = this.h(k);
+		const prev = has ? this.g(k) : undefined;
 
-        for (const key of keys) delete result[key];
+		this.#data[k] = next;
 
-        return result;
-    }
-    static pickBy<T extends object>(
-        value: T,
-        predicate: (value: T[keyof T], key: keyof T) => B
-    ): Partial<T> {
-        const result: Partial<T> = {};
+		this.#invalidate(k);
+		this.#emit({ op: "set", k, v: next, prev: prev as T, has });
 
-        for (const key of Object.keys(value) as (keyof T)[]) {
-            if (predicate(value[key], key)) result[key] = value[key];
-        }
+		return this;
+	}
+	public mutate(k: K, fn: (old: T, has: true) => T): T | UD {//                      [MUTATE]
+		this.#assertNotIterating("mutate");
 
-        return result;
-    }
-    static omitBy<T extends object>(
-        value: T,
-        predicate: (value: T[keyof T], key: keyof T) => B
-    ): Partial<T> {
-        const result: Partial<T> = {};
+		if (!this.h(k)) return undefined;
 
-        for (const key of Object.keys(value) as (keyof T)[]) {
-            if (!predicate(value[key], key)) result[key] = value[key];
-        }
+		const old = this.g(k) as T;
+		const next = fn(old, true);
 
-        return result;
-    }
-    static mapKeys<T extends object, K extends PropertyKey>(
-        value: T,
-        mapper: (key: keyof T, value: T[keyof T]) => K
-    ): Partial<Record<K, T[keyof T]>> {
-        const result: Partial<Record<K, T[keyof T]>> = {};
+		this.s(next, k);
+		return next;
+	}
+	public d(k: K): B {//                                                              [DELETE]
+		this.#assertNotIterating("delete");
 
-        for (const key of Object.keys(value) as (keyof T)[]) {
-            result[mapper(key, value[key])] = value[key];
-        }
+		if (!this.h(k)) return false;
 
-        return result;
-    }
-    static mapValues<T extends object, X>(
-        value: T,
-        mapper: (value: T[keyof T], key: keyof T) => X
-    ): { [K in keyof T]: X } {
-        const result = {} as { [K in keyof T]: X };
+		const prev = this.g(k) as T;
+		delete this.#data[k];
 
-        for (const key of Object.keys(value) as (keyof T)[]) {
-            result[key] = mapper(value[key], key);
-        }
+		this.#invalidate(k);
+		this.#emit({ op: "del", k, prev, has: false });
 
-        return result;
-    }
-    static mapEntries<T extends object, K extends PropertyKey, X>(
-        value: T,
-        mapper: (entry: [keyof T, T[keyof T]]) => readonly [K, X]
-    ): Partial<Record<K, X>> {
-        const result: Partial<Record<K, X>> = {};
+		return true;
+	}
+	public c(): V {//                                                                   [CLEAR]
+		this.#assertNotIterating("clear");
 
-        for (const key of Object.keys(value) as (keyof T)[]) {
-            const [nextKey, nextValue] = mapper([key, value[key]]);
-            result[nextKey] = nextValue;
-        }
+		const entries = this.toArray();
+		this.#data = Object.create(null);//              one object swap, no per-key delete
 
-        return result;
-    }
-    static filter<T extends object>(
-        value: T,
-        predicate: (value: T[keyof T], key: keyof T) => B
-    ): Partial<T> {
-        return this.pickBy(value, predicate);
-    }
-    static isEqual(first: unknown, second: unknown): B {
-        if (Object.is(first, second)) return true;
+		for (const [k, prev] of entries) {
+			this.#invalidate(k);
+			this.#emit({ op: "del", k, prev, has: false });
+		}
+	}
+	public dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this {//                [DERRIVED]
+		(this.#derived ??= Object.create(null))[k] = { deps, fn, dirty: true, has: false };
 
-        if (
-            first === null || second === null ||
-            typeof first !== "object" || typeof second !== "object"
-        ) {
-            return false;
-        }
+		for (const dep of deps) {
+			const dependents = (this.#dependents ??= Object.create(null));
+			(dependents[dep] ??= new Set<K>()).add(k);
+		}
 
-        if (first instanceof Date && second instanceof Date) {
-            return first.getTime() === second.getTime();
-        }
+		return this;
+	}
+	public dirty(...keys: AR<K>): this {//                                              [DIRTY]
+		for (const k of keys) {
+			const d = this.#derived?.[k];
 
-        if (Array.isArray(first) || Array.isArray(second)) {
-            return Array.isArray(first) && Array.isArray(second) &&
-                first.length === second.length &&
-                first.every((value, index) => this.isEqual(value, second[index]));
-        }
+			if (d && !d.dirty) {
+				d.dirty = true;
+				this.#emit({ op: "dirty", k, has: d.has });
+			}
+		}
 
-        const firstKeys = Reflect.ownKeys(first);
-        const secondKeys = Reflect.ownKeys(second);
+		return this;
+	}
+	public g(k: K): T | UD {//                                                           [GET]
+		const d = this.#derived?.[k];
 
-        return firstKeys.length === secondKeys.length &&
-            firstKeys.every(key =>
-                secondKeys.includes(key) &&
-                this.isEqual(
-                    (first as Record<PropertyKey, unknown>)[key],
-                    (second as Record<PropertyKey, unknown>)[key]
-                )
-            );
-    }
-    static isShallowEqual(first: object, second: object): B {
-        if (Object.is(first, second)) return true;
+		if (d) {
+			if (d.dirty || !d.has) return this.#computeDerived(k, d);
+			return d.value;
+		}
 
-        const firstKeys = Reflect.ownKeys(first);
-        const secondKeys = Reflect.ownKeys(second);
+		return this.#rawGet(k);
+	}
+	public h(k: K): B {//                                                                [HAS]
+		const d = this.#derived?.[k];
 
-        return firstKeys.length === secondKeys.length &&
-            firstKeys.every(key =>
-                secondKeys.includes(key) &&
-                Object.is(
-                    (first as Record<PropertyKey, unknown>)[key],
-                    (second as Record<PropertyKey, unknown>)[key]
-                )
-            );
-    }
-    static hasAll<T extends object>(value: T, keys: readonly PropertyKey[]): B {
-        return keys.every(key => Object.prototype.hasOwnProperty.call(value, key));
-    }
-    static hasAny<T extends object>(value: T, keys: readonly PropertyKey[]): B {
-        return keys.some(key => Object.prototype.hasOwnProperty.call(value, key));
-    }
-    static assertKeys<T extends object>(value: T, keys: readonly PropertyKey[]): asserts value is T {
-        const missing = keys.filter(key => !Object.prototype.hasOwnProperty.call(value, key));
+		if (d) {
+			if (d.dirty || !d.has) this.#computeDerived(k, d);
+			return true;
+		}
 
-        if (missing.length) {
-            throw new TypeError(`Missing required keys: ${missing.map(String).join(", ")}`);
-        }
-    }
-    static with<T extends object, K extends keyof T>(value: T, key: K, next: T[K]): T {
-        return { ...value, [key]: next };
-    }
-    static without<T extends object, K extends keyof T>(value: T, key: K): Omit<T, K> {
-        const result = { ...value };
-        delete result[key];
-        return result;
-    }
-    static update<T extends object, K extends keyof T>(
-        value: T,
-        key: K,
-        updater: (current: T[K]) => T[K]
-    ): T {
-        return { ...value, [key]: updater(value[key]) };
-    }
+		return this.#rawHas(k);
+	}
+	public $debug(limit: N = 256): this {//                                            [$DEBUG]
+		this.#hist ??= [];
+		this.#histLimit = limit;
+		return this;
+	}
+	public $strict(): this {//                                                        [$STRICT]
+		this.#strict = true;
+		return this;
+	}
+	public $history(): M2Event<K, T>[] {//                                          [$HISTORY]
+		return this.#hist ? [...this.#hist] : [];
+	}
+	public $why(k: K): M2Event<K, T> | UD {//                                            [$WHY]
+		if (!this.#hist) return undefined;
+
+		for (let i = this.#hist.length - 1; i >= 0; i--) {
+			if (Object.is(this.#hist[i].k, k)) return this.#hist[i];
+		}
+
+		return undefined;
+	}
+	public $diff(other: O2I<K, T>) {//                                                  [$DIFF]
+		const add: AR<[K, T]> = [];
+		const del: AR<K> = [];
+		const chg: AR<[K, T, T]> = [];
+
+		for (const [k, v] of this) {
+			if (!other.h(k)) {
+				add.push([k, v]);
+			} else if (!Object.is(other.g(k), v)) {
+				chg.push([k, v, other.g(k) as T]);
+			}
+		}
+
+		for (const k of other.keys()) {
+			if (!this.h(k)) del.push(k);
+		}
+
+		return { add, del, chg };
+	}
+	public *entries(): Generator<[K, T]> {//                                       [*ENTRIES]
+		this.#iterating++;
+
+		try {
+			for (const k of Reflect.ownKeys(this.#data) as K[]) yield [k, this.#data[k]];
+		} finally {
+			this.#iterating--;
+		}
+	}
+	public *keys(): Generator<K> {//                                                  [*KEYS]
+		this.#iterating++;
+
+		try {
+			for (const k of Reflect.ownKeys(this.#data) as K[]) yield k;
+		} finally {
+			this.#iterating--;
+		}
+	}
+	public *values(): Generator<T> {//                                              [*VALUES]
+		this.#iterating++;
+
+		try {
+			for (const k of Reflect.ownKeys(this.#data) as K[]) yield this.#data[k];
+		} finally {
+			this.#iterating--;
+		}
+	}
+	public swap(value: UF<T>, key: K): T | UD {//                                       [SWAP]
+		const next = rv(value);
+		const previous = this.h(key) ? this.g(key) : next;//       h()/g() kept derived-aware
+		this.s(next, key);
+		return previous as T | UD;
+	}
+	public take(k: K): T | UD {//                                                       [TAKE]
+		const value = this.g(k);
+		this.d(k);
+		return value;
+	}
+	public peek(k: K): T | false {//                                                    [PEEK]
+		return this.h(k) ? (this.g(k) as T) : false;
+	}
+	public getOrI(value: UF<T>, k: K): T {//                                          [GETORI]
+		if (this.h(k)) return this.g(k) as T;
+		const next = rv(value);
+		this.s(next, k);
+		return next;
+	}
+	public getOrM(make: () => T, k: K): T {//                                        [GETORM]
+		if (this.h(k)) return this.g(k) as T;
+		const value = make();
+		this.s(value, k);
+		return value;
+	}
+	public update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T {//            [UPDATE]
+		const has = this.h(k);
+
+		const old = has
+			? (this.g(k) as T)
+			: initial === undefined
+				? undefined as T
+				: rv(initial);
+
+		const next = rv(fn(old, has));
+
+		this.s(next, k);
+		return next;
+	}
+	public setIfAbsent(value: UF<T>, k: K): B {//                               [SETIFABSENT]
+		if (this.h(k)) return false;
+		const next = rv(value);
+		this.s(next, k);
+		return true;
+	}
+	public setIfPresent(value: UF<T>, k: K): B {//                             [SETIFPRESENT]
+		if (!this.h(k)) return false;
+		const next = rv(value);
+		this.s(next, k);
+		return true;
+	}
+	public replace(value: UF<T>, k: K): B {//                                        [REPLACE]
+		const next = rv(value);
+		return this.setIfPresent(next, k);
+	}
+	public inc(key: K, by: N = 1): N {//                                                 [INC]
+		return this.update(key, (old) => (((old ?? 0) as N) + by) as unknown as T, 0 as unknown as T) as N;
+	}
+	public touch(k: K): B {//                                                      [SWTOUCHAP]
+		return this.setIfAbsent(undefined as unknown as T, k);
+	}
+	public mapValues<G>(fn: (v: T, k: K) => G): O2I<K, G> {//                        [MAPVALUES]
+		const out = new O2I<K, G>();
+		for (const [k, v] of this) out.s(fn(v, k), k);
+		return out;
+	}
+	public mapKeys<G extends PropertyKey>(fn: (v: T, k: K) => G): O2I<G, T> {//        [MAPKEYS]
+		const out = new O2I<G, T>();
+		for (const [k, v] of this) out.s(v, fn(v, k));
+		return out;
+	}
+	public filterKV(pred: (v: T, k: K) => B): this {//                              [FILTERKV]
+		for (const [k, v] of this) {
+			if (!pred(v, k)) this.d(k);
+		}
+		return this;
+	}
+	public filterKeys(pred: (v: T, k: K) => B): this {//                          [FILTERKEYS]
+		return this.filterKV(pred);
+	}
+	public partition(pred: (v: T, k: K) => B): [O2I<K, T>, O2I<K, T>] {//            [PARTITION]
+		const yes = new O2I<K, T>();
+		const no = new O2I<K, T>();
+
+		for (const [k, v] of this) {
+			(pred(v, k) ? yes : no).s(v, k);
+		}
+
+		return [yes, no];
+	}
+	public find(pred: (v: T, k: K) => B): [K, T] | UD {//                               [FIND]
+		for (const [k, v] of this) {
+			if (pred(v, k)) return [k, v];
+		}
+		return undefined;
+	}
+	public findKey(pred: (v: T, k: K) => B): K | UD {//                              [FINDKEY]
+		for (const [k, v] of this) {
+			if (pred(v, k)) return k;
+		}
+		return undefined;
+	}
+	public findValue(pred: (v: T, k: K) => B): T | UD {//                          [FINDVALUE]
+		for (const [k, v] of this) {
+			if (pred(v, k)) return v;
+		}
+		return undefined;
+	}
+	public some(pred: (v: T, k: K) => B): B {//                                         [SOME]
+		for (const [k, v] of this) {
+			if (pred(v, k)) return true;
+		}
+		return false;
+	}
+	public every(pred: (v: T, k: K) => B): B {//                                       [EVERY]
+		for (const [k, v] of this) {
+			if (!pred(v, k)) return false;
+		}
+		return true;
+	}
+	public reduce<G>(fn: (acc: G, v: T, k: K) => G, initial: G): G {//                [REDUCE]
+		let acc = initial;
+		for (const [k, v] of this) acc = fn(acc, v, k);
+		return acc;
+	}
+	public forEachKV(fn: (v: T, k: K, map: this) => void): void {//                 [FOREACH]
+		for (const [k, v] of this) fn(v, k, this);
+	}
+	public invert(): O2I<A, K> {//               values become keys — must be string|number|symbol
+		const out = new O2I<A, K>();
+		for (const [k, v] of this) out.s(k, v as A);
+		return out;
+	}
+	public unique<G extends PropertyKey>(fn?: (v: T, k: K) => G): O2I<G, T> {//          [UNIQUE]
+		const out = new O2I<G, T>();
+		for (const [k, v] of this) {
+			const key = (fn ? fn(v, k) : v) as unknown as G;
+			if (!out.h(key)) out.s(v, key);
+		}
+		return out;
+	}
+	public pick(keys: Iterable<K>): O2I<K, T> {//                                          [PICK]
+		const out = new O2I<K, T>();
+		for (const k of keys) {
+			if (this.h(k)) out.s(this.g(k) as T, k);
+		}
+		return out;
+	}
+	public omit(keys: Iterable<K>): O2I<K, T> {//                                          [OMIT]
+		const omitted = new Set(keys);
+		const out = new O2I<K, T>();
+		for (const [k, v] of this) {
+			if (!omitted.has(k)) out.s(v, k);
+		}
+		return out;
+	}
+	public merge(other: Iterable<readonly [K, T]>): this {//                           [MERGE]
+		for (const [k, v] of other) {
+			const n = rv(v);
+			this.s(n, k);
+		}
+		return this;
+	}
+	public clearAndSet(entries: Iterable<readonly [K, T]>): this {//             [CLEARANDSET]
+		return this.batch(() => {
+			this.c();//                         (M2's version calls the native Map.clear() here
+			for (const [k, v] of entries) {    //  — silent, no del events; c() is almost
+				const n = rv(v);                //  certainly what was intended, so I used it)
+				this.s(n, k);
+			}
+		});
+	}
+	public toObject(): OB<T> {//                                                   [TOOBJECT]
+		const out = {} as OB<T>;
+		for (const [k, v] of this) out[k as S] = v;
+		return out;
+	}
+	public toObjectFast(): OB<T> {//          bulk native copy, skips the iterator entirely
+		return { ...(this.#data as A) };
+	}
+	public snapshot(): OB<T> { return this.toObjectFast(); }//      handy name for hook/selector use
+	public toJSON(): OB<T> { return this.toObjectFast(); }//     JSON.stringify(store) just works
+	public select<G>(fn: (data: Readonly<Record<K, T>>) => G): G {//                   [SELECT]
+		return fn(this.#data);
+	}
+	public patch(partial: Readonly<Partial<Record<K, T>>>): this {//                    [PATCH]
+		return this.batch(() => {
+			for (const k of Reflect.ownKeys(partial) as K[]) this.s((partial as A)[k] as T, k);
+		});
+	}
+	public toValues(): A2I<T> { return A2.from(this.values()); }//                 [TOVALUES]
+	public toKeys(): A2I<K> { return A2.from(this.keys()); }//                       [TOKEYS]
+	public toArray(): A2I<[K, T]> { return A2.from(this.entries()); }//             [TOARRAY]
+	public group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2I<G, A2<T>> {//       [GROUP]
+		const out = new O2I<G, A2<T>>();
+		for (const [k, v] of this) out.getOrM(() => new A2<T>(), fn(v, k)).push(v);
+		return out;
+	}
+	public clone(): this {//                                                          [CLONE]
+		return new O2I<K, T>(this) as this;
+	}
+	public equals(other: O2I<K, T>): B {//                                            [EQUALS]
+		if (other === this) return true;
+		if (this.size !== other.size) return false;
+
+		for (const [k, v] of this) {
+			if (!other.h(k) || !sameValue(other.g(k), v)) return false;
+		}
+
+		return true;
+	}
+	static fromObject<X extends OB<A>>(obj: X): O2I<S, X[keyof X]> {//              [FROMOBBJ]
+		const out = new O2I<S, X[keyof X]>();
+		out.#data = { ...obj } as Record<S, X[keyof X]>;//            direct copy, no per-key emits
+		return out;
+	}
+	static fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2I<K, T> {//  [FROMENTIRES]
+		return new O2I(entries);
+	}
+	static from<K extends PropertyKey, T>(source: O2I<K, T> | Readonly<Record<K, T>>): O2I<K, T> {// [FROM]
+		const out = new O2I<K, T>();
+		out.#data = source instanceof O2I ? { ...source.#data } : { ...source };
+		return out;
+	}
 }
-

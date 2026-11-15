@@ -1,216 +1,493 @@
+export const rv = (v) => typeof v === "function" ? v() : v;
+export const sameValue = (a, b) => Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
 export class O2I {
-    static isEmpty(value) {
-        return Reflect.ownKeys(value).length === 0;
+    #data = Object.create(null);
+    f = this.forEachKV; //                                                    [FOR EACH]
+    #subs;
+    #hist;
+    #histLimit = 0;
+    #strict = false;
+    #iterating = 0;
+    #batching = 0;
+    #pending;
+    #derived;
+    #dependents;
+    constructor(entries) {
+        if (!entries)
+            return;
+        for (const [k, v] of entries)
+            this.#data[k] = v;
     }
-    static isNotEmpty(value) {
-        return Reflect.ownKeys(value).length !== 0;
+    #rawHas(k) { return Object.prototype.hasOwnProperty.call(this.#data, k); }
+    #rawGet(k) { return this.#data[k]; }
+    #emit(e) {
+        if (this.#batching > 0) {
+            const pending = this.#pending[e.k];
+            this.#pending[e.k] = pending ? { ...e, prev: pending.prev, batch: true } : { ...e, batch: true };
+            return;
+        }
+        this.#record(e);
+        this.#subs?.forEach((sub) => {
+            try {
+                sub(e);
+            }
+            catch (err) {
+                process.emitWarning(err);
+            }
+        });
     }
-    static size(value) {
-        return Reflect.ownKeys(value).length;
+    #record(e) {
+        if (!this.#hist)
+            return;
+        this.#hist.push(e);
+        if (this.#hist.length > this.#histLimit) {
+            this.#hist.splice(0, this.#hist.length - this.#histLimit);
+        }
     }
-    static isPlainObject(value) {
-        if (value === null || typeof value !== "object")
+    #invalidate(k) {
+        const deps = this.#dependents?.[k];
+        if (!deps)
+            return;
+        for (const dk of deps) {
+            const d = this.#derived?.[dk];
+            if (!d || d.dirty)
+                continue;
+            d.dirty = true;
+            this.#emit({ op: "dirty", k: dk, has: d.has });
+        }
+    }
+    #computeDerived(k, d) {
+        const vals = d.deps.map((dep) => this.g(dep));
+        const next = d.fn(...vals);
+        const had = d.has;
+        const prev = d.value;
+        d.value = next;
+        d.has = true;
+        d.dirty = false;
+        if (!had || !sameValue(prev, next)) {
+            this.#emit({ op: had ? "upd" : "set", k, v: next, prev: prev, has: true });
+        }
+        return next;
+    }
+    #assertNotIterating(op) {
+        if (this.#strict && this.#iterating > 0) {
+            throw new Error(`O2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
+        }
+    }
+    get size() {
+        return Reflect.ownKeys(this.#data).length;
+    }
+    [Symbol.iterator]() { return this.entries(); }
+    on(fn) {
+        (this.#subs ??= new Set()).add(fn);
+        return () => this.off(fn);
+    }
+    off(fn) {
+        this.#subs?.delete(fn);
+    }
+    batch(fn) {
+        this.#batching++;
+        this.#pending ??= Object.create(null);
+        try {
+            fn();
+        }
+        finally {
+            this.#batching--;
+            if (this.#batching === 0) {
+                const pending = this.#pending;
+                this.#pending = undefined;
+                for (const k of Reflect.ownKeys(pending)) {
+                    const e = pending[k];
+                    this.#record(e);
+                    this.#subs?.forEach((sub) => sub(e));
+                }
+            }
+        }
+        return this;
+    }
+    s(v, k) {
+        this.#assertNotIterating("s");
+        const next = rv(v);
+        const has = this.h(k);
+        const prev = has ? this.g(k) : undefined;
+        this.#data[k] = next;
+        this.#invalidate(k);
+        this.#emit({ op: "set", k, v: next, prev: prev, has });
+        return this;
+    }
+    mutate(k, fn) {
+        this.#assertNotIterating("mutate");
+        if (!this.h(k))
+            return undefined;
+        const old = this.g(k);
+        const next = fn(old, true);
+        this.s(next, k);
+        return next;
+    }
+    d(k) {
+        this.#assertNotIterating("delete");
+        if (!this.h(k))
             return false;
-        const prototype = Object.getPrototypeOf(value);
-        return prototype === Object.prototype || prototype === null;
+        const prev = this.g(k);
+        delete this.#data[k];
+        this.#invalidate(k);
+        this.#emit({ op: "del", k, prev, has: false });
+        return true;
     }
-    static isObject(value) {
-        return value !== null && typeof value === "object";
-    }
-    static get(value, path, fallback) {
-        const parts = typeof path === "string" ? path.split(".") : path;
-        let current = value;
-        for (const key of parts) {
-            if (current === null || (typeof current !== "object" && typeof current !== "function")) {
-                return fallback;
-            }
-            current = current[key];
+    c() {
+        this.#assertNotIterating("clear");
+        const entries = this.toArray();
+        this.#data = Object.create(null); //              one object swap, no per-key delete
+        for (const [k, prev] of entries) {
+            this.#invalidate(k);
+            this.#emit({ op: "del", k, prev, has: false });
         }
-        return current === undefined ? fallback : current;
     }
-    static getOr(value, path, fallback) {
-        return this.get(value, path, fallback);
-    }
-    static set(value, path, next) {
-        const parts = typeof path === "string" ? path.split(".") : path;
-        if (!parts.length)
-            return value;
-        let current = value;
-        for (let i = 0; i < parts.length - 1; i++) {
-            const key = parts[i];
-            const child = current[key];
-            if (child === null || (typeof child !== "object" && typeof child !== "function")) {
-                current[key] = {};
-            }
-            current = current[key];
+    dv(k, deps, fn) {
+        (this.#derived ??= Object.create(null))[k] = { deps, fn, dirty: true, has: false };
+        for (const dep of deps) {
+            const dependents = (this.#dependents ??= Object.create(null));
+            (dependents[dep] ??= new Set()).add(k);
         }
-        current[parts[parts.length - 1]] = next;
+        return this;
+    }
+    dirty(...keys) {
+        for (const k of keys) {
+            const d = this.#derived?.[k];
+            if (d && !d.dirty) {
+                d.dirty = true;
+                this.#emit({ op: "dirty", k, has: d.has });
+            }
+        }
+        return this;
+    }
+    g(k) {
+        const d = this.#derived?.[k];
+        if (d) {
+            if (d.dirty || !d.has)
+                return this.#computeDerived(k, d);
+            return d.value;
+        }
+        return this.#rawGet(k);
+    }
+    h(k) {
+        const d = this.#derived?.[k];
+        if (d) {
+            if (d.dirty || !d.has)
+                this.#computeDerived(k, d);
+            return true;
+        }
+        return this.#rawHas(k);
+    }
+    $debug(limit = 256) {
+        this.#hist ??= [];
+        this.#histLimit = limit;
+        return this;
+    }
+    $strict() {
+        this.#strict = true;
+        return this;
+    }
+    $history() {
+        return this.#hist ? [...this.#hist] : [];
+    }
+    $why(k) {
+        if (!this.#hist)
+            return undefined;
+        for (let i = this.#hist.length - 1; i >= 0; i--) {
+            if (Object.is(this.#hist[i].k, k))
+                return this.#hist[i];
+        }
+        return undefined;
+    }
+    $diff(other) {
+        const add = [];
+        const del = [];
+        const chg = [];
+        for (const [k, v] of this) {
+            if (!other.h(k)) {
+                add.push([k, v]);
+            }
+            else if (!Object.is(other.g(k), v)) {
+                chg.push([k, v, other.g(k)]);
+            }
+        }
+        for (const k of other.keys()) {
+            if (!this.h(k))
+                del.push(k);
+        }
+        return { add, del, chg };
+    }
+    *entries() {
+        this.#iterating++;
+        try {
+            for (const k of Reflect.ownKeys(this.#data))
+                yield [k, this.#data[k]];
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    *keys() {
+        this.#iterating++;
+        try {
+            for (const k of Reflect.ownKeys(this.#data))
+                yield k;
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    *values() {
+        this.#iterating++;
+        try {
+            for (const k of Reflect.ownKeys(this.#data))
+                yield this.#data[k];
+        }
+        finally {
+            this.#iterating--;
+        }
+    }
+    swap(value, key) {
+        const next = rv(value);
+        const previous = this.h(key) ? this.g(key) : next; //       h()/g() kept derived-aware
+        this.s(next, key);
+        return previous;
+    }
+    take(k) {
+        const value = this.g(k);
+        this.d(k);
         return value;
     }
-    static unset(value, path) {
-        const parts = typeof path === "string" ? path.split(".") : path;
-        if (!parts.length)
-            return false;
-        let current = value;
-        for (let i = 0; i < parts.length - 1; i++) {
-            const child = current[parts[i]];
-            if (child === null || typeof child !== "object")
-                return false;
-            current = child;
-        }
-        return Reflect.deleteProperty(current, parts[parts.length - 1]);
+    peek(k) {
+        return this.h(k) ? this.g(k) : false;
     }
-    static hasPath(value, path) {
-        const parts = typeof path === "string" ? path.split(".") : path;
-        let current = value;
-        for (const key of parts) {
-            if (current === null || (typeof current !== "object" && typeof current !== "function")) {
+    getOrI(value, k) {
+        if (this.h(k))
+            return this.g(k);
+        const next = rv(value);
+        this.s(next, k);
+        return next;
+    }
+    getOrM(make, k) {
+        if (this.h(k))
+            return this.g(k);
+        const value = make();
+        this.s(value, k);
+        return value;
+    }
+    update(k, fn, initial) {
+        const has = this.h(k);
+        const old = has
+            ? this.g(k)
+            : initial === undefined
+                ? undefined
+                : rv(initial);
+        const next = rv(fn(old, has));
+        this.s(next, k);
+        return next;
+    }
+    setIfAbsent(value, k) {
+        if (this.h(k))
+            return false;
+        const next = rv(value);
+        this.s(next, k);
+        return true;
+    }
+    setIfPresent(value, k) {
+        if (!this.h(k))
+            return false;
+        const next = rv(value);
+        this.s(next, k);
+        return true;
+    }
+    replace(value, k) {
+        const next = rv(value);
+        return this.setIfPresent(next, k);
+    }
+    inc(key, by = 1) {
+        return this.update(key, (old) => ((old ?? 0) + by), 0);
+    }
+    touch(k) {
+        return this.setIfAbsent(undefined, k);
+    }
+    mapValues(fn) {
+        const out = new O2I();
+        for (const [k, v] of this)
+            out.s(fn(v, k), k);
+        return out;
+    }
+    mapKeys(fn) {
+        const out = new O2I();
+        for (const [k, v] of this)
+            out.s(v, fn(v, k));
+        return out;
+    }
+    filterKV(pred) {
+        for (const [k, v] of this) {
+            if (!pred(v, k))
+                this.d(k);
+        }
+        return this;
+    }
+    filterKeys(pred) {
+        return this.filterKV(pred);
+    }
+    partition(pred) {
+        const yes = new O2I();
+        const no = new O2I();
+        for (const [k, v] of this) {
+            (pred(v, k) ? yes : no).s(v, k);
+        }
+        return [yes, no];
+    }
+    find(pred) {
+        for (const [k, v] of this) {
+            if (pred(v, k))
+                return [k, v];
+        }
+        return undefined;
+    }
+    findKey(pred) {
+        for (const [k, v] of this) {
+            if (pred(v, k))
+                return k;
+        }
+        return undefined;
+    }
+    findValue(pred) {
+        for (const [k, v] of this) {
+            if (pred(v, k))
+                return v;
+        }
+        return undefined;
+    }
+    some(pred) {
+        for (const [k, v] of this) {
+            if (pred(v, k))
+                return true;
+        }
+        return false;
+    }
+    every(pred) {
+        for (const [k, v] of this) {
+            if (!pred(v, k))
                 return false;
-            }
-            if (!Object.prototype.hasOwnProperty.call(current, key))
-                return false;
-            current = current[key];
         }
         return true;
     }
-    static clone(value) {
-        if (value === null || typeof value !== "object")
-            return value;
-        if (Array.isArray(value))
-            return value.slice();
-        return Object.assign(Object.create(Object.getPrototypeOf(value)), value);
+    reduce(fn, initial) {
+        let acc = initial;
+        for (const [k, v] of this)
+            acc = fn(acc, v, k);
+        return acc;
     }
-    static deepClone(value) {
-        return structuredClone(value);
+    forEachKV(fn) {
+        for (const [k, v] of this)
+            fn(v, k, this);
     }
-    static deepMerge(target, source) {
-        const result = { ...target };
-        for (const key of Reflect.ownKeys(source)) {
-            const incoming = source[key];
-            const current = result[key];
-            result[key] =
-                this.isPlainObject(current) && this.isPlainObject(incoming)
-                    ? this.deepMerge(current, incoming)
-                    : incoming;
+    invert() {
+        const out = new O2I();
+        for (const [k, v] of this)
+            out.s(k, v);
+        return out;
+    }
+    unique(fn) {
+        const out = new O2I();
+        for (const [k, v] of this) {
+            const key = (fn ? fn(v, k) : v);
+            if (!out.h(key))
+                out.s(v, key);
         }
-        return result;
+        return out;
     }
-    static defaults(target, defaults) {
-        return Object.assign({}, defaults, target);
-    }
-    static getOrCreate(value, key, create) {
-        const object = value;
-        if (!Object.prototype.hasOwnProperty.call(object, key) || object[key] === undefined) {
-            object[key] = create();
+    pick(keys) {
+        const out = new O2I();
+        for (const k of keys) {
+            if (this.h(k))
+                out.s(this.g(k), k);
         }
-        return object;
+        return out;
     }
-    static pick(value, keys) {
-        const result = {};
-        for (const key of keys) {
-            if (Object.prototype.hasOwnProperty.call(value, key))
-                result[key] = value[key];
+    omit(keys) {
+        const omitted = new Set(keys);
+        const out = new O2I();
+        for (const [k, v] of this) {
+            if (!omitted.has(k))
+                out.s(v, k);
         }
-        return result;
+        return out;
     }
-    static omit(value, keys) {
-        const result = { ...value };
-        for (const key of keys)
-            delete result[key];
-        return result;
-    }
-    static pickBy(value, predicate) {
-        const result = {};
-        for (const key of Object.keys(value)) {
-            if (predicate(value[key], key))
-                result[key] = value[key];
+    merge(other) {
+        for (const [k, v] of other) {
+            const n = rv(v);
+            this.s(n, k);
         }
-        return result;
+        return this;
     }
-    static omitBy(value, predicate) {
-        const result = {};
-        for (const key of Object.keys(value)) {
-            if (!predicate(value[key], key))
-                result[key] = value[key];
-        }
-        return result;
+    clearAndSet(entries) {
+        return this.batch(() => {
+            this.c(); //                         (M2's version calls the native Map.clear() here
+            for (const [k, v] of entries) { //  — silent, no del events; c() is almost
+                const n = rv(v); //  certainly what was intended, so I used it)
+                this.s(n, k);
+            }
+        });
     }
-    static mapKeys(value, mapper) {
-        const result = {};
-        for (const key of Object.keys(value)) {
-            result[mapper(key, value[key])] = value[key];
-        }
-        return result;
+    toObject() {
+        const out = {};
+        for (const [k, v] of this)
+            out[k] = v;
+        return out;
     }
-    static mapValues(value, mapper) {
-        const result = {};
-        for (const key of Object.keys(value)) {
-            result[key] = mapper(value[key], key);
-        }
-        return result;
+    toObjectFast() {
+        return { ...this.#data };
     }
-    static mapEntries(value, mapper) {
-        const result = {};
-        for (const key of Object.keys(value)) {
-            const [nextKey, nextValue] = mapper([key, value[key]]);
-            result[nextKey] = nextValue;
-        }
-        return result;
+    snapshot() { return this.toObjectFast(); } //      handy name for hook/selector use
+    toJSON() { return this.toObjectFast(); } //     JSON.stringify(store) just works
+    select(fn) {
+        return fn(this.#data);
     }
-    static filter(value, predicate) {
-        return this.pickBy(value, predicate);
+    patch(partial) {
+        return this.batch(() => {
+            for (const k of Reflect.ownKeys(partial))
+                this.s(partial[k], k);
+        });
     }
-    static isEqual(first, second) {
-        if (Object.is(first, second))
+    toValues() { return A2.from(this.values()); } //                 [TOVALUES]
+    toKeys() { return A2.from(this.keys()); } //                       [TOKEYS]
+    toArray() { return A2.from(this.entries()); } //             [TOARRAY]
+    group(fn) {
+        const out = new O2I();
+        for (const [k, v] of this)
+            out.getOrM(() => new A2(), fn(v, k)).push(v);
+        return out;
+    }
+    clone() {
+        return new O2I(this);
+    }
+    equals(other) {
+        if (other === this)
             return true;
-        if (first === null || second === null ||
-            typeof first !== "object" || typeof second !== "object") {
+        if (this.size !== other.size)
             return false;
+        for (const [k, v] of this) {
+            if (!other.h(k) || !sameValue(other.g(k), v))
+                return false;
         }
-        if (first instanceof Date && second instanceof Date) {
-            return first.getTime() === second.getTime();
-        }
-        if (Array.isArray(first) || Array.isArray(second)) {
-            return Array.isArray(first) && Array.isArray(second) &&
-                first.length === second.length &&
-                first.every((value, index) => this.isEqual(value, second[index]));
-        }
-        const firstKeys = Reflect.ownKeys(first);
-        const secondKeys = Reflect.ownKeys(second);
-        return firstKeys.length === secondKeys.length &&
-            firstKeys.every(key => secondKeys.includes(key) &&
-                this.isEqual(first[key], second[key]));
+        return true;
     }
-    static isShallowEqual(first, second) {
-        if (Object.is(first, second))
-            return true;
-        const firstKeys = Reflect.ownKeys(first);
-        const secondKeys = Reflect.ownKeys(second);
-        return firstKeys.length === secondKeys.length &&
-            firstKeys.every(key => secondKeys.includes(key) &&
-                Object.is(first[key], second[key]));
+    static fromObject(obj) {
+        const out = new O2I();
+        out.#data = { ...obj }; //            direct copy, no per-key emits
+        return out;
     }
-    static hasAll(value, keys) {
-        return keys.every(key => Object.prototype.hasOwnProperty.call(value, key));
+    static fromEntries(entries) {
+        return new O2I(entries);
     }
-    static hasAny(value, keys) {
-        return keys.some(key => Object.prototype.hasOwnProperty.call(value, key));
-    }
-    static assertKeys(value, keys) {
-        const missing = keys.filter(key => !Object.prototype.hasOwnProperty.call(value, key));
-        if (missing.length) {
-            throw new TypeError(`Missing required keys: ${missing.map(String).join(", ")}`);
-        }
-    }
-    static with(value, key, next) {
-        return { ...value, [key]: next };
-    }
-    static without(value, key) {
-        const result = { ...value };
-        delete result[key];
-        return result;
-    }
-    static update(value, key, updater) {
-        return { ...value, [key]: updater(value[key]) };
+    static from(source) {
+        const out = new O2I();
+        out.#data = source instanceof O2I ? { ...source.#data } : { ...source };
+        return out;
     }
 }
