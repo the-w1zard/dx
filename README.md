@@ -2134,6 +2134,531 @@ class QUAD<V = A> {
 const q = new QUAD()
 ```
 
+## `O2` — Object
+ 
+
+| Function | Title | Description |
+|---|---|---|
+| `on(fn)` | Subscribe | Registers a listener called on every emitted event; returns an unsubscribe function. |
+| `off(fn)` | Unsubscribe | Removes a previously registered listener. |
+| `batch(fn)` | Batch | Coalesces all mutations inside `fn` into a single emit per key at the end. |
+| `s(v, k)` | Set | Sets key `k` to value `v` (or resolves a thunk `UF<T>`), emitting a `set` event. |
+| `mutate(k, fn)` | Mutate | If key exists, replaces its value with `fn(old, true)`; no-op (returns `undefined`) if absent. |
+| `d(k)` | Delete | Removes key `k`, emitting a `del` event; returns whether it existed. |
+| `c()` | Clear | Empties the map in one object swap, emitting a `del` event per prior key. |
+| `g(k)` | Get | Returns the value at `k` (computing derived values if dirty/absent); `undefined` if missing. |
+| `h(k)` | Has | Returns whether `k` exists (computing derived values first if needed). |
+| `dv(k, deps, fn)` | Define Derived | Registers `k` as a derived value computed from `deps` via `fn`, invalidated on dep change. |
+| `dirty(...keys)` | Mark Dirty | Flags one or more derived keys as dirty so they recompute on next access. |
+| `$debug(limit)` | Enable History | Turns on the event history buffer with an optional cap (default 256). |
+| `$strict()` | Strict Mode | Enables throwing when mutating during iteration. |
+| `$history()` | History | Returns a copy of the recorded event history. |
+| `$why(k)` | Why | Returns the most recent event for key `k`, or `undefined` if none/history off. |
+| `$diff(other)` | Diff | Compares to another `O2`, returning `{ add, del, chg }` arrays. |
+| `entries()` | Entries | Generator yielding `[key, value]` pairs. |
+| `keys()` | Keys | Generator yielding keys. |
+| `values()` | Values | Generator yielding values. |
+| `f(fn)` / `forEachKV(fn)` | For Each | Calls `fn(value, key, map)` for every entry (aliased as `f`). |
+| `swap(value, key)` | Swap | Sets `key` to `value` and returns the previous value (derived-aware). |
+| `take(k)` | Take | Gets the value at `k` and deletes the key, returning the taken value. |
+| `peek(k)` | Peek | Returns the value at `k` if present, else `false` (no side effects). |
+| `getOrI(value, k)` | Get or Init | Returns existing value, or sets `k` to `value` (thunk-aware) and returns it. |
+| `getOrM(make, k)` | Get or Make | Returns existing value, or calls `make()`, stores, and returns the result. |
+| `update(k, fn, initial?)` | Update | Computes `fn(old, has)` (falling back to `initial`), stores, and returns the new value. |
+| `setIfAbsent(value, k)` | Set If Absent | Sets `k` only if missing; returns whether it was set. |
+| `setIfPresent(value, k)` | Set If Present | Sets `k` only if present; returns whether it was set. |
+| `replace(value, k)` | Replace | Sets `k` only if present (alias-ish of `setIfPresent`); returns whether it was set. |
+| `inc(key, by?)` | Increment | Numerically increments `key` by `by` (default `1`), initializing to `0`. |
+| `touch(k)` | Touch | Ensures `k` exists by setting it to `undefined` if absent; returns whether inserted. |
+| `mapValues(fn)` | Map Values | Returns a new `O2` with each value transformed by `fn`. |
+| `mapKeys(fn)` | Map Keys | Returns a new `O2` with each key transformed by `fn`. |
+| `filterKV(pred)` | Filter (KV) | Deletes in place every entry for which `pred` is falsy; returns `this`. |
+| `filterKeys(pred)` | Filter (Keys) | Alias of `filterKV`. |
+| `partition(pred)` | Partition | Splits into `[yes, no]` two new `O2` instances by `pred`. |
+| `find(pred)` | Find | Returns the first matching `[key, value]`, else `undefined`. |
+| `findKey(pred)` | Find Key | Returns the first matching key, else `undefined`. |
+| `findValue(pred)` | Find Value | Returns the first matching value, else `undefined`. |
+| `some(pred)` | Some | Returns `true` if any entry matches `pred`. |
+| `every(pred)` | Every | Returns `true` if all entries match `pred`. |
+| `reduce(fn, initial)` | Reduce | Folds all entries into an accumulator via `fn`. |
+| `invert()` | Invert | Returns a new `O2` with values as keys and keys as values. |
+| `unique(fn?)` | Unique | Returns a new `O2` keyed by `fn(v,k)` (or value), keeping first occurrence. |
+| `pick(keys)` | Pick | Returns a new `O2` containing only the given keys that exist. |
+| `omit(keys)` | Omit | Returns a new `O2` excluding the given keys. |
+| `merge(other)` | Merge | Sets all `[key, value]` pairs from `other` into `this` (returns `this`). |
+| `clearAndSet(entries)` | Clear and Set | Clears then sets all entries, all inside one `batch`. |
+| `toObject()` | To Object | Returns a plain object via the iterator. |
+| `toObjectFast()` | To Object (Fast) | Returns a shallow copy of the internal data, skipping iteration. |
+| `snapshot()` | Snapshot | Alias of `toObjectFast()`, handy for hooks/selectors. |
+| `toJSON()` | toJSON | Alias of `toObjectFast()` so `JSON.stringify` works. |
+| `select(fn)` | Select | Runs `fn` against the internal data record and returns the result. |
+| `patch(partial)` | Patch | Applies a partial record of updates inside a single `batch`. |
+| `toValues()` | To Values | Returns values collected into an array-like (`A2.from`). |
+| `toKeys()` | To Keys | Returns keys collected into an array-like. |
+| `toArray()` | To Array | Returns `[key, value]` pairs collected into an array-like. |
+| `group(fn)` | Group | Groups entries into `O2<G, A2<T>>` by `fn(v,k)`. |
+| `clone()` | Clone | Returns a shallow copy of this `O2`. |
+| `equals(other)` | Equals | Structural equality check using `sameValue` semantics. |
+| `fromObject(obj)` *(static)* | From Object | Creates an `O2` from a plain object without emitting events. |
+| `fromEntries(entries)` *(static)* | From Entries | Creates an `O2` from an iterable of `[key, value]` pairs. |
+| `from(source)` *(static)* | From | Creates an `O2` from another `O2` or a record, copying data directly. |
+
+### `O2` Usage Reference Sheet
+
+Examples assume:
+
+```ts
+import { O2 } from "./o2";
+
+type User = { name: string; age: number };
+const store = new O2<string, number>();
+const users = new O2<string, User>();
+```
+
+---
+
+## Subscription
+
+### `on(fn)` — Subscribe
+```ts
+const unsub = store.on((e) => console.log(e.op, e.k));
+store.s(1, "a");       // logs: "set a"
+unsub();               // stop listening
+```
+
+### `off(fn)` — Unsubscribe
+```ts
+const listener = (e) => console.log(e);
+store.on(listener);
+store.off(listener);
+```
+
+---
+
+## Batching
+
+### `batch(fn)` — Batch
+```ts
+store.batch(() => {
+  store.s(1, "a");
+  store.s(2, "b");
+  store.s(3, "c");
+});
+// subscribers fire once per key, after the batch closes
+```
+
+---
+
+## Core CRUD
+
+### `s(v, k)` — Set
+```ts
+store.s(42, "answer");
+store.s(() => 99, "lazy");   // thunk is resolved
+```
+
+### `mutate(k, fn)` — Mutate
+```ts
+store.s(10, "counter");
+store.mutate("counter", (old) => old + 5); // 15
+store.mutate("missing", (old) => 0);       // undefined (key absent)
+```
+
+### `d(k)` — Delete
+```ts
+store.s(1, "a");
+store.d("a");  // true
+store.d("a");  // false
+```
+
+### `c()` — Clear
+```ts
+store.s(1, "a").s(2, "b");
+store.c();   // now empty; each prior key emits a "del"
+```
+
+### `g(k)` — Get
+```ts
+store.s(1, "a");
+store.g("a");    // 1
+store.g("zzz");  // undefined
+```
+
+### `h(k)` — Has
+```ts
+store.h("a");   // true
+store.h("zzz"); // false
+```
+
+---
+
+## Derived Values
+
+### `dv(k, deps, fn)` — Define Derived
+```ts
+const nums = new O2<string, number>();
+nums.s(2, "a").s(3, "b");
+nums.dv("sum", ["a", "b"], (a, b) => a + b);
+
+nums.g("sum");        // 5
+nums.s(10, "a");
+nums.g("sum");        // 13
+```
+
+### `dirty(...keys)` — Mark Dirty
+```ts
+nums.dirty("sum");
+nums.g("sum");        // recomputed
+```
+
+---
+
+## Debugging / History
+
+### `$debug(limit?)` — Enable History
+```ts
+store.$debug(50);
+store.s(1, "a");
+store.$history();     // [{ op: "set", k: "a", ... }]
+```
+
+### `$strict()` — Strict Mode
+```ts
+store.$strict();
+for (const [k] of store) {
+  store.s(2, k);      // throws: mutation during iteration
+}
+```
+
+### `$history()` — History
+```ts
+const events = store.$history();
+```
+
+### `$why(k)` — Why
+```ts
+store.s(1, "a");
+store.$why("a");     // last event for "a"
+```
+
+### `$diff(other)` — Diff
+```ts
+const a = O2.fromEntries([["x", 1], ["y", 2]]);
+const b = O2.fromEntries([["x", 1], ["z", 3]]);
+a.$diff(b);   // { add: [["y",2]], del: ["z"], chg: [] }
+```
+
+---
+
+## Iteration
+
+### `entries()` — Entries
+```ts
+for (const [k, v] of store.entries()) console.log(k, v);
+```
+
+### `keys()` — Keys
+```ts
+for (const k of store.keys()) console.log(k);
+```
+
+### `values()` — Values
+```ts
+for (const v of store.values()) console.log(v);
+```
+
+### `forEachKV(fn)` / `f(fn)` — For Each
+```ts
+store.forEachKV((v, k, map) => console.log(k, v));
+store.f((v, k) => console.log(k, v));
+```
+
+---
+
+## Convenience
+
+### `swap(value, key)` — Swap
+```ts
+store.s(1, "a");
+store.swap(2, "a");  // returns 1, store["a"] is now 2
+```
+
+### `take(k)` — Take
+```ts
+store.s(7, "a");
+store.take("a");     // 7, and "a" is deleted
+```
+
+### `peek(k)` — Peek
+```ts
+store.s(3, "a");
+store.peek("a");     // 3
+store.peek("zzz");   // false
+```
+
+### `getOrI(value, k)` — Get or Init
+```ts
+store.getOrI(0, "counter");  // sets 0, returns 0
+store.getOrI(0, "counter");  // returns existing
+```
+
+### `getOrM(make, k)` — Get or Make
+```ts
+store.getOrM(() => Date.now(), "createdAt");
+```
+
+### `update(k, fn, initial?)` — Update
+```ts
+store.update("count", (old, has) => (has ? old : 0) + 1, 0);
+```
+
+### `setIfAbsent(value, k)` — Set If Absent
+```ts
+store.setIfAbsent(1, "a");  // true (set)
+store.setIfAbsent(2, "a");  // false (already there)
+```
+
+### `setIfPresent(value, k)` — Set If Present
+```ts
+store.setIfPresent(99, "a");  // true if "a" exists
+```
+
+### `replace(value, k)` — Replace
+```ts
+store.replace(50, "a");  // true only if "a" existed
+```
+
+### `inc(key, by?)` — Increment
+```ts
+store.inc("hits");      // 1
+store.inc("hits", 5);   // 6
+```
+
+### `touch(k)` — Touch
+```ts
+store.touch("seen");    // true, sets undefined
+```
+
+---
+
+## Transforms
+
+### `mapValues(fn)` — Map Values
+```ts
+store.s(1, "a").s(2, "b");
+store.mapValues((v) => v * 10);  // O2 { a:10, b:20 }
+```
+
+### `mapKeys(fn)` — Map Keys
+```ts
+store.mapKeys((_v, k) => k.toUpperCase()); // O2 { A:1, B:2 }
+```
+
+### `filterKV(pred)` — Filter (in place)
+```ts
+store.s(1, "a").s(2, "b").s(3, "c");
+store.filterKV((v) => v > 1);   // keeps b, c
+```
+
+### `filterKeys(pred)` — Filter Keys (alias)
+```ts
+store.filterKeys((v) => v % 2 === 0);
+```
+
+### `partition(pred)` — Partition
+```ts
+const [odds, evens] = store.partition((v) => v % 2 === 1);
+```
+
+### `unique(fn?)` — Unique
+```ts
+users.unique((u) => u.name);       // one user per name
+```
+
+### `pick(keys)` — Pick
+```ts
+store.pick(["a", "c"]);   // O2 with only those
+```
+
+### `omit(keys)` — Omit
+```ts
+store.omit(["a"]);        // O2 without "a"
+```
+
+### `invert()` — Invert
+```ts
+store.s(1, "a").s(2, "b");
+store.invert();           // O2 { 1:"a", 2:"b" } (keys <-> values)
+```
+
+### `group(fn)` — Group
+```ts
+const people = new O2<string, { name: string; team: string }>([
+  ["a", { name: "Ann", team: "x" }],
+  ["b", { name: "Bob", team: "y" }],
+]);
+people.group((p) => p.team);  // O2<"x"|"y", A2<Person>>
+```
+
+---
+
+## Search
+
+### `find(pred)` — Find
+```ts
+store.find((v) => v > 1);   // [key, value] | undefined
+```
+
+### `findKey(pred)` — Find Key
+```ts
+store.findKey((v) => v > 1);
+```
+
+### `findValue(pred)` — Find Value
+```ts
+store.findValue((v) => v > 1);
+```
+
+### `some(pred)` — Some
+```ts
+store.some((v) => v > 100);   // false
+```
+
+### `every(pred)` — Every
+```ts
+store.every((v) => v >= 0);
+```
+
+### `reduce(fn, initial)` — Reduce
+```ts
+store.reduce((acc, v) => acc + v, 0);
+```
+
+---
+
+## Merging / Patching
+
+### `merge(other)` — Merge
+```ts
+store.merge([["a", 1], ["b", 2]]);
+```
+
+### `clearAndSet(entries)` — Clear and Set
+```ts
+store.clearAndSet([["x", 1], ["y", 2]]);
+```
+
+### `patch(partial)` — Patch
+```ts
+store.patch({ a: 10, b: 20 });  // batched
+```
+
+---
+
+## Conversion
+
+### `toObject()` — To Object
+```ts
+store.toObject();       // { a: 1, b: 2 }
+```
+
+### `toObjectFast()` — To Object (Fast)
+```ts
+store.toObjectFast();   // shallow copy, no iteration
+```
+
+### `snapshot()` — Snapshot
+```ts
+const snap = store.snapshot(); // same as toObjectFast
+```
+
+### `toJSON()` — toJSON
+```ts
+JSON.stringify(store);  // works via toJSON
+```
+
+### `select(fn)` — Select
+```ts
+store.select((data) => data.a + data.b);
+```
+
+### `toValues()` — To Values
+```ts
+store.toValues();       // iterable of values
+```
+
+### `toKeys()` — To Keys
+```ts
+store.toKeys();         // iterable of keys
+```
+
+### `toArray()` — To Array
+```ts
+store.toArray();        // iterable of [k, v]
+```
+
+---
+
+## Misc
+
+### `clone()` — Clone
+```ts
+const copy = store.clone();
+```
+
+### `equals(other)` — Equals
+```ts
+store.equals(store.clone());  // true
+```
+
+---
+
+## Static Factories
+
+### `O2.fromObject(obj)` — From Object
+```ts
+const s = O2.fromObject({ a: 1, b: 2 });   // O2<string, number>
+```
+
+### `O2.fromEntries(entries)` — From Entries
+```ts
+const s = O2.fromEntries<string, number>([["a", 1], ["b", 2]]);
+```
+
+### `O2.from(source)` — From
+```ts
+const a = O2.fromEntries<string, number>([["a", 1]]);
+const b = O2.from(a);         // copy of an O2
+const c = O2.from({ a: 1 });  // from a plain record
+```
+
+---
+
+## A realistic combined example
+
+```ts
+type Task = { title: string; done: boolean };
+
+const tasks = new O2<string, Task>();
+
+const unsub = tasks.on((e) => {
+  if (e.op === "set" || e.op === "upd") console.log("changed:", e.k);
+});
+
+tasks.batch(() => {
+  tasks.s({ title: "Write docs", done: false }, "t1");
+  tasks.s({ title: "Ship O2",    done: false }, "t2");
+});
+
+tasks.update("t1", (old) => ({ ...old, done: true }));
+tasks.dv("doneCount", ["t1", "t2"], (a, b) => +a.done + +b.done);
+
+console.log(tasks.g("doneCount"));   // 1
+console.log(tasks.snapshot());       // plain object
+
+unsub();
+```
+
 ## `A2` — Array
 
 `A2I` extends `Array` and adds collection helpers. Methods returning arrays generally return `A2I` instances.
@@ -2824,40 +3349,6 @@ Numeric helpers return `N2I` for chaining unless otherwise indicated.
 
 
 
-## `O2` — Object
-
-Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.
-
-| Method | Description |
-|---|---|
-| `isEmpty(value)` / `isNotEmpty(value)` | Checks own-key count |
-| `size(value)` | Returns the number of own keys, including symbols |
-| `isPlainObject(value)` / `isObject(value)` | Checks object type |
-| `get(value, path, fallback?)` | Reads a nested path |
-| `getOr(value, path, fallback)` | Reads a nested path with a typed fallback |
-| `set(value, path, next)` | Sets a nested path, creating intermediate objects |
-| `unset(value, path)` | Deletes a nested property |
-| `hasPath(value, path)` | Checks whether a nested path exists |
-| `clone(value)` | Shallow-clones an object or array |
-| `deepClone(value)` | Uses `structuredClone` |
-| `deepMerge(target, source)` | Recursively merges plain objects |
-| `defaults(target, defaults)` | Applies defaults while retaining target values |
-| `getOrCreate(value, key, create)` | Creates a property when absent or undefined |
-| `pick(value, keys)` / `omit(value, keys)` | Selects or excludes properties |
-| `pickBy(value, predicate)` / `omitBy(value, predicate)` | Selects or excludes properties by predicate |
-| `mapKeys(value, mapper)` | Transforms property keys |
-| `mapValues(value, mapper)` | Transforms property values |
-| `mapEntries(value, mapper)` | Transforms key-value entries |
-| `filter(value, predicate)` | Selects properties by predicate |
-| `isEqual(first, second)` | Performs recursive equality checks |
-| `isShallowEqual(first, second)` | Compares own keys and values shallowly |
-| `hasAll(value, keys)` / `hasAny(value, keys)` | Checks required own properties |
-| `assertKeys(value, keys)` | Throws if required own properties are missing |
-| `with(value, key, next)` | Returns a copy with a property changed |
-| `without(value, key)` | Returns a copy without a property |
-| `update(value, key, updater)` | Returns a copy with an updated property |
-
-`O2` is exposed as a static utility constructor on `globalThis`.
 
 
 ## `OTracer` — Object Tracer

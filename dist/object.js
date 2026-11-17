@@ -99,7 +99,14 @@ export class O2I {
                 for (const k of Reflect.ownKeys(pending)) {
                     const e = pending[k];
                     this.#record(e);
-                    this.#subs?.forEach((sub) => sub(e));
+                    this.#subs?.forEach((sub) => {
+                        try {
+                            sub(e);
+                        }
+                        catch (err) {
+                            process.emitWarning(err);
+                        }
+                    });
                 }
             }
         }

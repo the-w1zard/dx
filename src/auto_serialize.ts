@@ -1,20 +1,10 @@
-export const SKIP = Symbol('ser:skip');
 
 export interface CustomCodecResult {
   type: string;
   value: unknown; // must already be JSON-safe / already encoded via encodeChild
 }
-export type CustomEncoder = (
-  value: unknown,
-  encodeChild: (v: unknown) => unknown
-) => CustomCodecResult | typeof SKIP;
-
-export type CustomDecoder = (
-  type: string,
-  value: unknown,
-  decodeChild: (v: unknown) => unknown
-) => unknown | typeof SKIP;
-
+export type CustomEncoder = (  value: unknown,  encodeChild: (v: unknown) => unknown) => CustomCodecResult | typeof SKIP;
+export type CustomDecoder = (  type: string,  value: unknown,  decodeChild: (v: unknown) => unknown) => unknown | typeof SKIP;
 export interface SerFormatConfig {
   date?: boolean;
   bigint?: boolean;
@@ -33,12 +23,12 @@ export interface SerFormatConfig {
   boolean?: boolean;
 }
 
+const SKIP = Symbol('ser:skip');
 const DEFAULT_CONFIG: Required<SerFormatConfig> = {
   date: true, bigint: true, regexp: true, error: true, specialNumber: true,
   undefined: true, typedArray: true, url: true, map: true, set: true,
   array: true, object: true, string: true, number: true, boolean: true,
 };
-
 const TYPED_ARRAY_NAMES = new Set([
   'Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array',
   'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array',

@@ -2485,6 +2485,735 @@ n.<span class="hljs-title function_">cache</span>();                        <spa
 <span class="hljs-keyword">import</span> { nested } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./nested&quot;</span>;
 <span class="hljs-keyword">const</span> shared = nested.<span class="hljs-title function_">map</span>(<span class="hljs-string">&quot;s&quot;</span>, <span class="hljs-string">&quot;m&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>);
 </code></pre>
+<h2 id="performance">Performance</h2>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>The other benchs results are somewhere in this doc, but I don't need them since I remember the numbers but if you do NEED to see them they are lower down in the doc.</p>
+<p>One tax that is worth paying for when it comes to this 4 tiered format, is performance... all things considered, it ain't THAT bad.</p>
+</div>
+<pre><code class="language-txt">----------- Starting 10-Second Binary Store Benchmarks (Set &amp; Get) -----------
+[getNestedMap6 vs]               27,641,856 ops in 10.00s -&gt; 2,764,058 ops/sec
+[QUAD COLD]                    767,404,032 ops in 10.00s -&gt; 76,739,753 ops/sec
+[QUAD HOT]                  5,180,663,808 ops in 10.00s -&gt; 518,064,505 ops/sec
+[BYTEOP_MAP LG vs]             630,345,728 ops in 10.00s -&gt; 63,034,382 ops/sec
+[Map]                          992,200,704 ops in 10.00s -&gt; 99,219,947 ops/sec
+[M2B]                       1,493,663,744 ops in 10.00s -&gt; 149,366,301 ops/sec
+[M2]                           269,049,856 ops in 10.00s -&gt; 26,904,897 ops/sec
+[BYTE_MAP small vs]              42,151,936 ops in 10.00s -&gt; 4,215,025 ops/sec
+[M2Bin (Hybrid Map + Int32/F64)] 29,689,856 ops in 10.00s -&gt; 2,968,948 ops/sec
+</code></pre>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>It consistently does between 3-4 mill, it dipped a little lower in this test, but thats as much as we are going to get out of it.</p>
+<p>In the hot path, and thats where I have been able to cheat this in the past by cacheing the cache, we can get a decent bump up to 105 million.</p>
+<p>Pretty good, as this is maps ceiling with v8.</p>
+<p>As you can see the second result and third results, are a tad higher... same scoped channel format.</p>
+<p>I have made a primitive for this, but this isn't a primitive that can simply just stay in this module, because if you are looking to take advantage of that boost in performance... it needs to be placed within your app.</p>
+</div>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> <span class="hljs-attr">DEF_R</span>: S = <span class="hljs-string">&quot;root&quot;</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-attr">DEF_M</span>: S = <span class="hljs-string">&quot;master&quot;</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-attr">DEF_S</span>: S = <span class="hljs-string">&quot;slave&quot;</span>;
+type <span class="hljs-title class_">QuadSub</span>&lt;V&gt; = <span class="hljs-function">(<span class="hljs-params">v: V | UD</span>) =&gt;</span> <span class="hljs-keyword">void</span>;
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">QUAD</span>&lt;V = A&gt; {
+	#<span class="hljs-attr">root</span>: <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, V&gt;&gt;&gt;&gt; = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>);
+	#<span class="hljs-attr">subRoot</span>: <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Record</span>&lt;S, <span class="hljs-title class_">Set</span>&lt;<span class="hljs-title class_">QuadSub</span>&lt;V&gt;&gt;&gt;&gt;&gt;&gt; = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>);
+	<span class="hljs-attr">_bear</span>: <span class="hljs-title class_">Record</span>&lt;string, V&gt; = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>);
+	public <span class="hljs-title function_">s</span>(<span class="hljs-attr">v</span>: <span class="hljs-variable constant_">UF</span>&lt;V&gt;, <span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): <span class="hljs-variable language_">this</span> {
+		<span class="hljs-keyword">const</span> rL = (<span class="hljs-variable language_">this</span>.#root[r] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> mL = (rL[m] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> sL = (mL[s] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> next = <span class="hljs-title function_">rv</span>(v);
+		sL[k] = next;
+		<span class="hljs-variable language_">this</span>.#<span class="hljs-title function_">emit</span>(k, s, m, r, next);
+		<span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+	}
+	public <span class="hljs-title function_">sl</span>(<span class="hljs-params">s: S = DEF_S, m: S = DEF_M, r: S = DEF_R</span>) {
+		<span class="hljs-keyword">const</span> rL = (<span class="hljs-variable language_">this</span>.#root[r] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> mL = (rL[m] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> sL = (mL[s] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">return</span> sL;
+	}
+	public <span class="hljs-title function_">ks</span>(<span class="hljs-params">v: UF&lt;V&gt;, k: S</span>) { <span class="hljs-comment">//                                    SET hot path</span>
+		<span class="hljs-keyword">const</span> sL = <span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span>
+		<span class="hljs-keyword">const</span> next = <span class="hljs-title function_">rv</span>(v);
+		sL[k] = next;
+		<span class="hljs-variable language_">this</span>.#<span class="hljs-title function_">emit</span>(k, <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-variable constant_">DEF_R</span>, next);
+		<span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+	}
+	public <span class="hljs-title function_">kg</span>(<span class="hljs-attr">k</span>: S): V | <span class="hljs-variable constant_">UD</span> { <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span>[k]; } <span class="hljs-comment">//              GET hot path</span>
+	public <span class="hljs-title function_">kh</span>(<span class="hljs-attr">k</span>: S): B { <span class="hljs-keyword">return</span> k <span class="hljs-keyword">in</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span>; } <span class="hljs-comment">//                 HAS hot path</span>
+	public <span class="hljs-title function_">kd</span>(<span class="hljs-attr">k</span>: S): B { <span class="hljs-comment">//                                           DELTE hot path</span>
+		<span class="hljs-keyword">if</span> (!(k <span class="hljs-keyword">in</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		<span class="hljs-keyword">delete</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span>[k];
+		<span class="hljs-variable language_">this</span>.#<span class="hljs-title function_">emit</span>(k, <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-variable constant_">DEF_R</span>, <span class="hljs-literal">undefined</span>);
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+	}
+	<span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+		<span class="hljs-variable language_">this</span>.<span class="hljs-property">_bear</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">sl</span>()
+	}
+
+	public <span class="hljs-title function_">g</span>(<span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): V | <span class="hljs-variable constant_">UD</span> {
+		<span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.#root[r]?.[m]?.[s]?.[k];
+	}
+
+	public <span class="hljs-title function_">h</span>(<span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): B {
+		<span class="hljs-keyword">return</span> !!<span class="hljs-variable language_">this</span>.#root[r]?.[m]?.[s] &amp;&amp; k <span class="hljs-keyword">in</span> <span class="hljs-variable language_">this</span>.#root[r][m][s];
+	}
+
+	public <span class="hljs-title function_">d</span>(<span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): B {
+		<span class="hljs-keyword">const</span> sL = <span class="hljs-variable language_">this</span>.#root[r]?.[m]?.[s];
+		<span class="hljs-keyword">if</span> (!sL || !(k <span class="hljs-keyword">in</span> sL)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		<span class="hljs-keyword">delete</span> sL[k];
+		<span class="hljs-variable language_">this</span>.#<span class="hljs-title function_">emit</span>(k, s, m, r, <span class="hljs-literal">undefined</span>);
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+	}
+
+	public <span class="hljs-title function_">on</span>(<span class="hljs-attr">fn</span>: <span class="hljs-title class_">QuadSub</span>&lt;V&gt;, <span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): <span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">void</span> {
+		<span class="hljs-keyword">const</span> rL = (<span class="hljs-variable language_">this</span>.#subRoot[r] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> mL = (rL[m] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> sL = (mL[s] ??= <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>));
+		<span class="hljs-keyword">const</span> <span class="hljs-attr">set</span>: <span class="hljs-title class_">Set</span>&lt;<span class="hljs-title class_">QuadSub</span>&lt;V&gt;&gt; = (sL[k] ??= <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>());
+		set.<span class="hljs-title function_">add</span>(fn);
+		<span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+			set.<span class="hljs-title function_">delete</span>(fn);
+			<span class="hljs-keyword">if</span> (!set.<span class="hljs-property">size</span>) <span class="hljs-keyword">delete</span> sL[k];
+		};
+	}
+
+	public <span class="hljs-title function_">off</span>(<span class="hljs-attr">fn</span>: <span class="hljs-title class_">QuadSub</span>&lt;V&gt;, <span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S = <span class="hljs-variable constant_">DEF_S</span>, <span class="hljs-attr">m</span>: S = <span class="hljs-variable constant_">DEF_M</span>, <span class="hljs-attr">r</span>: S = <span class="hljs-variable constant_">DEF_R</span>): <span class="hljs-keyword">void</span> {
+		<span class="hljs-variable language_">this</span>.#subRoot[r]?.[m]?.[s]?.[k]?.<span class="hljs-title function_">delete</span>(fn);
+	}
+
+	#<span class="hljs-title function_">emit</span>(<span class="hljs-attr">k</span>: S, <span class="hljs-attr">s</span>: S, <span class="hljs-attr">m</span>: S, <span class="hljs-attr">r</span>: S, <span class="hljs-attr">v</span>: V | <span class="hljs-variable constant_">UD</span>): <span class="hljs-keyword">void</span> {
+		<span class="hljs-keyword">const</span> set = <span class="hljs-variable language_">this</span>.#subRoot[r]?.[m]?.[s]?.[k];
+		<span class="hljs-keyword">if</span> (!set) <span class="hljs-keyword">return</span>;
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> fn <span class="hljs-keyword">of</span> set) <span class="hljs-title function_">fn</span>(v);
+	}
+}
+<span class="hljs-keyword">const</span> q = <span class="hljs-keyword">new</span> <span class="hljs-title function_">QUAD</span>()
+</code></pre>
+<h2 id="o2--object"><code>O2</code> — Object</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Title</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on(fn)</code></td>
+<td>Subscribe</td>
+<td>Registers a listener called on every emitted event; returns an unsubscribe function.</td>
+</tr>
+<tr>
+<td><code>off(fn)</code></td>
+<td>Unsubscribe</td>
+<td>Removes a previously registered listener.</td>
+</tr>
+<tr>
+<td><code>batch(fn)</code></td>
+<td>Batch</td>
+<td>Coalesces all mutations inside <code>fn</code> into a single emit per key at the end.</td>
+</tr>
+<tr>
+<td><code>s(v, k)</code></td>
+<td>Set</td>
+<td>Sets key <code>k</code> to value <code>v</code> (or resolves a thunk <code>UF&lt;T&gt;</code>), emitting a <code>set</code> event.</td>
+</tr>
+<tr>
+<td><code>mutate(k, fn)</code></td>
+<td>Mutate</td>
+<td>If key exists, replaces its value with <code>fn(old, true)</code>; no-op (returns <code>undefined</code>) if absent.</td>
+</tr>
+<tr>
+<td><code>d(k)</code></td>
+<td>Delete</td>
+<td>Removes key <code>k</code>, emitting a <code>del</code> event; returns whether it existed.</td>
+</tr>
+<tr>
+<td><code>c()</code></td>
+<td>Clear</td>
+<td>Empties the map in one object swap, emitting a <code>del</code> event per prior key.</td>
+</tr>
+<tr>
+<td><code>g(k)</code></td>
+<td>Get</td>
+<td>Returns the value at <code>k</code> (computing derived values if dirty/absent); <code>undefined</code> if missing.</td>
+</tr>
+<tr>
+<td><code>h(k)</code></td>
+<td>Has</td>
+<td>Returns whether <code>k</code> exists (computing derived values first if needed).</td>
+</tr>
+<tr>
+<td><code>dv(k, deps, fn)</code></td>
+<td>Define Derived</td>
+<td>Registers <code>k</code> as a derived value computed from <code>deps</code> via <code>fn</code>, invalidated on dep change.</td>
+</tr>
+<tr>
+<td><code>dirty(...keys)</code></td>
+<td>Mark Dirty</td>
+<td>Flags one or more derived keys as dirty so they recompute on next access.</td>
+</tr>
+<tr>
+<td><code>$debug(limit)</code></td>
+<td>Enable History</td>
+<td>Turns on the event history buffer with an optional cap (default 256).</td>
+</tr>
+<tr>
+<td><code>$strict()</code></td>
+<td>Strict Mode</td>
+<td>Enables throwing when mutating during iteration.</td>
+</tr>
+<tr>
+<td><code>$history()</code></td>
+<td>History</td>
+<td>Returns a copy of the recorded event history.</td>
+</tr>
+<tr>
+<td><code>$why(k)</code></td>
+<td>Why</td>
+<td>Returns the most recent event for key <code>k</code>, or <code>undefined</code> if none/history off.</td>
+</tr>
+<tr>
+<td><code>$diff(other)</code></td>
+<td>Diff</td>
+<td>Compares to another <code>O2</code>, returning <code>{ add, del, chg }</code> arrays.</td>
+</tr>
+<tr>
+<td><code>entries()</code></td>
+<td>Entries</td>
+<td>Generator yielding <code>[key, value]</code> pairs.</td>
+</tr>
+<tr>
+<td><code>keys()</code></td>
+<td>Keys</td>
+<td>Generator yielding keys.</td>
+</tr>
+<tr>
+<td><code>values()</code></td>
+<td>Values</td>
+<td>Generator yielding values.</td>
+</tr>
+<tr>
+<td><code>f(fn)</code> / <code>forEachKV(fn)</code></td>
+<td>For Each</td>
+<td>Calls <code>fn(value, key, map)</code> for every entry (aliased as <code>f</code>).</td>
+</tr>
+<tr>
+<td><code>swap(value, key)</code></td>
+<td>Swap</td>
+<td>Sets <code>key</code> to <code>value</code> and returns the previous value (derived-aware).</td>
+</tr>
+<tr>
+<td><code>take(k)</code></td>
+<td>Take</td>
+<td>Gets the value at <code>k</code> and deletes the key, returning the taken value.</td>
+</tr>
+<tr>
+<td><code>peek(k)</code></td>
+<td>Peek</td>
+<td>Returns the value at <code>k</code> if present, else <code>false</code> (no side effects).</td>
+</tr>
+<tr>
+<td><code>getOrI(value, k)</code></td>
+<td>Get or Init</td>
+<td>Returns existing value, or sets <code>k</code> to <code>value</code> (thunk-aware) and returns it.</td>
+</tr>
+<tr>
+<td><code>getOrM(make, k)</code></td>
+<td>Get or Make</td>
+<td>Returns existing value, or calls <code>make()</code>, stores, and returns the result.</td>
+</tr>
+<tr>
+<td><code>update(k, fn, initial?)</code></td>
+<td>Update</td>
+<td>Computes <code>fn(old, has)</code> (falling back to <code>initial</code>), stores, and returns the new value.</td>
+</tr>
+<tr>
+<td><code>setIfAbsent(value, k)</code></td>
+<td>Set If Absent</td>
+<td>Sets <code>k</code> only if missing; returns whether it was set.</td>
+</tr>
+<tr>
+<td><code>setIfPresent(value, k)</code></td>
+<td>Set If Present</td>
+<td>Sets <code>k</code> only if present; returns whether it was set.</td>
+</tr>
+<tr>
+<td><code>replace(value, k)</code></td>
+<td>Replace</td>
+<td>Sets <code>k</code> only if present (alias-ish of <code>setIfPresent</code>); returns whether it was set.</td>
+</tr>
+<tr>
+<td><code>inc(key, by?)</code></td>
+<td>Increment</td>
+<td>Numerically increments <code>key</code> by <code>by</code> (default <code>1</code>), initializing to <code>0</code>.</td>
+</tr>
+<tr>
+<td><code>touch(k)</code></td>
+<td>Touch</td>
+<td>Ensures <code>k</code> exists by setting it to <code>undefined</code> if absent; returns whether inserted.</td>
+</tr>
+<tr>
+<td><code>mapValues(fn)</code></td>
+<td>Map Values</td>
+<td>Returns a new <code>O2</code> with each value transformed by <code>fn</code>.</td>
+</tr>
+<tr>
+<td><code>mapKeys(fn)</code></td>
+<td>Map Keys</td>
+<td>Returns a new <code>O2</code> with each key transformed by <code>fn</code>.</td>
+</tr>
+<tr>
+<td><code>filterKV(pred)</code></td>
+<td>Filter (KV)</td>
+<td>Deletes in place every entry for which <code>pred</code> is falsy; returns <code>this</code>.</td>
+</tr>
+<tr>
+<td><code>filterKeys(pred)</code></td>
+<td>Filter (Keys)</td>
+<td>Alias of <code>filterKV</code>.</td>
+</tr>
+<tr>
+<td><code>partition(pred)</code></td>
+<td>Partition</td>
+<td>Splits into <code>[yes, no]</code> two new <code>O2</code> instances by <code>pred</code>.</td>
+</tr>
+<tr>
+<td><code>find(pred)</code></td>
+<td>Find</td>
+<td>Returns the first matching <code>[key, value]</code>, else <code>undefined</code>.</td>
+</tr>
+<tr>
+<td><code>findKey(pred)</code></td>
+<td>Find Key</td>
+<td>Returns the first matching key, else <code>undefined</code>.</td>
+</tr>
+<tr>
+<td><code>findValue(pred)</code></td>
+<td>Find Value</td>
+<td>Returns the first matching value, else <code>undefined</code>.</td>
+</tr>
+<tr>
+<td><code>some(pred)</code></td>
+<td>Some</td>
+<td>Returns <code>true</code> if any entry matches <code>pred</code>.</td>
+</tr>
+<tr>
+<td><code>every(pred)</code></td>
+<td>Every</td>
+<td>Returns <code>true</code> if all entries match <code>pred</code>.</td>
+</tr>
+<tr>
+<td><code>reduce(fn, initial)</code></td>
+<td>Reduce</td>
+<td>Folds all entries into an accumulator via <code>fn</code>.</td>
+</tr>
+<tr>
+<td><code>invert()</code></td>
+<td>Invert</td>
+<td>Returns a new <code>O2</code> with values as keys and keys as values.</td>
+</tr>
+<tr>
+<td><code>unique(fn?)</code></td>
+<td>Unique</td>
+<td>Returns a new <code>O2</code> keyed by <code>fn(v,k)</code> (or value), keeping first occurrence.</td>
+</tr>
+<tr>
+<td><code>pick(keys)</code></td>
+<td>Pick</td>
+<td>Returns a new <code>O2</code> containing only the given keys that exist.</td>
+</tr>
+<tr>
+<td><code>omit(keys)</code></td>
+<td>Omit</td>
+<td>Returns a new <code>O2</code> excluding the given keys.</td>
+</tr>
+<tr>
+<td><code>merge(other)</code></td>
+<td>Merge</td>
+<td>Sets all <code>[key, value]</code> pairs from <code>other</code> into <code>this</code> (returns <code>this</code>).</td>
+</tr>
+<tr>
+<td><code>clearAndSet(entries)</code></td>
+<td>Clear and Set</td>
+<td>Clears then sets all entries, all inside one <code>batch</code>.</td>
+</tr>
+<tr>
+<td><code>toObject()</code></td>
+<td>To Object</td>
+<td>Returns a plain object via the iterator.</td>
+</tr>
+<tr>
+<td><code>toObjectFast()</code></td>
+<td>To Object (Fast)</td>
+<td>Returns a shallow copy of the internal data, skipping iteration.</td>
+</tr>
+<tr>
+<td><code>snapshot()</code></td>
+<td>Snapshot</td>
+<td>Alias of <code>toObjectFast()</code>, handy for hooks/selectors.</td>
+</tr>
+<tr>
+<td><code>toJSON()</code></td>
+<td>toJSON</td>
+<td>Alias of <code>toObjectFast()</code> so <code>JSON.stringify</code> works.</td>
+</tr>
+<tr>
+<td><code>select(fn)</code></td>
+<td>Select</td>
+<td>Runs <code>fn</code> against the internal data record and returns the result.</td>
+</tr>
+<tr>
+<td><code>patch(partial)</code></td>
+<td>Patch</td>
+<td>Applies a partial record of updates inside a single <code>batch</code>.</td>
+</tr>
+<tr>
+<td><code>toValues()</code></td>
+<td>To Values</td>
+<td>Returns values collected into an array-like (<code>A2.from</code>).</td>
+</tr>
+<tr>
+<td><code>toKeys()</code></td>
+<td>To Keys</td>
+<td>Returns keys collected into an array-like.</td>
+</tr>
+<tr>
+<td><code>toArray()</code></td>
+<td>To Array</td>
+<td>Returns <code>[key, value]</code> pairs collected into an array-like.</td>
+</tr>
+<tr>
+<td><code>group(fn)</code></td>
+<td>Group</td>
+<td>Groups entries into <code>O2&lt;G, A2&lt;T&gt;&gt;</code> by <code>fn(v,k)</code>.</td>
+</tr>
+<tr>
+<td><code>clone()</code></td>
+<td>Clone</td>
+<td>Returns a shallow copy of this <code>O2</code>.</td>
+</tr>
+<tr>
+<td><code>equals(other)</code></td>
+<td>Equals</td>
+<td>Structural equality check using <code>sameValue</code> semantics.</td>
+</tr>
+<tr>
+<td><code>fromObject(obj)</code> <em>(static)</em></td>
+<td>From Object</td>
+<td>Creates an <code>O2</code> from a plain object without emitting events.</td>
+</tr>
+<tr>
+<td><code>fromEntries(entries)</code> <em>(static)</em></td>
+<td>From Entries</td>
+<td>Creates an <code>O2</code> from an iterable of <code>[key, value]</code> pairs.</td>
+</tr>
+<tr>
+<td><code>from(source)</code> <em>(static)</em></td>
+<td>From</td>
+<td>Creates an <code>O2</code> from another <code>O2</code> or a record, copying data directly.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="o2-usage-reference-sheet"><code>O2</code> Usage Reference Sheet</h3>
+<p>Examples assume:</p>
+<pre><code class="language-ts"><span class="hljs-keyword">import</span> { <span class="hljs-variable constant_">O2</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./o2&quot;</span>;
+
+<span class="hljs-keyword">type</span> <span class="hljs-title class_">User</span> = { <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">age</span>: <span class="hljs-built_in">number</span> };
+<span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;();
+<span class="hljs-keyword">const</span> users = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-title class_">User</span>&gt;();
+</code></pre>
+<hr>
+<h2 id="subscription">Subscription</h2>
+<h3 id="onfn--subscribe"><code>on(fn)</code> — Subscribe</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> unsub = store.<span class="hljs-title function_">on</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e.<span class="hljs-property">op</span>, e.<span class="hljs-property">k</span>));
+store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// logs: &quot;set a&quot;</span>
+<span class="hljs-title function_">unsub</span>();               <span class="hljs-comment">// stop listening</span>
+</code></pre>
+<h3 id="offfn--unsubscribe"><code>off(fn)</code> — Unsubscribe</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> <span class="hljs-title function_">listener</span> = (<span class="hljs-params">e</span>) =&gt; <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e);
+store.<span class="hljs-title function_">on</span>(listener);
+store.<span class="hljs-title function_">off</span>(listener);
+</code></pre>
+<hr>
+<h2 id="batching">Batching</h2>
+<h3 id="batchfn--batch"><code>batch(fn)</code> — Batch</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">batch</span>(<span class="hljs-function">() =&gt;</span> {
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;c&quot;</span>);
+});
+<span class="hljs-comment">// subscribers fire once per key, after the batch closes</span>
+</code></pre>
+<hr>
+<h2 id="core-crud">Core CRUD</h2>
+<h3 id="sv-k--set"><code>s(v, k)</code> — Set</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">42</span>, <span class="hljs-string">&quot;answer&quot;</span>);
+store.<span class="hljs-title function_">s</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-number">99</span>, <span class="hljs-string">&quot;lazy&quot;</span>);   <span class="hljs-comment">// thunk is resolved</span>
+</code></pre>
+<h3 id="mutatek-fn--mutate"><code>mutate(k, fn)</code> — Mutate</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">10</span>, <span class="hljs-string">&quot;counter&quot;</span>);
+store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> old + <span class="hljs-number">5</span>); <span class="hljs-comment">// 15</span>
+store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;missing&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> <span class="hljs-number">0</span>);       <span class="hljs-comment">// undefined (key absent)</span>
+</code></pre>
+<h3 id="dk--delete"><code>d(k)</code> — Delete</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="c--clear"><code>c()</code> — Clear</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
+store.<span class="hljs-title function_">c</span>();   <span class="hljs-comment">// now empty; each prior key emits a &quot;del&quot;</span>
+</code></pre>
+<h3 id="gk--get"><code>g(k)</code> — Get</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;a&quot;</span>);    <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;zzz&quot;</span>);  <span class="hljs-comment">// undefined</span>
+</code></pre>
+<h3 id="hk--has"><code>h(k)</code> — Has</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;a&quot;</span>);   <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;zzz&quot;</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<hr>
+<h2 id="derived-values">Derived Values</h2>
+<h3 id="dvk-deps-fn--define-derived"><code>dv(k, deps, fn)</code> — Define Derived</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> nums = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;();
+nums.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;b&quot;</span>);
+nums.<span class="hljs-title function_">dv</span>(<span class="hljs-string">&quot;sum&quot;</span>, [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>], <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a + b);
+
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// 5</span>
+nums.<span class="hljs-title function_">s</span>(<span class="hljs-number">10</span>, <span class="hljs-string">&quot;a&quot;</span>);
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// 13</span>
+</code></pre>
+<h3 id="dirtykeys--mark-dirty"><code>dirty(...keys)</code> — Mark Dirty</h3>
+<pre><code class="language-ts">nums.<span class="hljs-title function_">dirty</span>(<span class="hljs-string">&quot;sum&quot;</span>);
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// recomputed</span>
+</code></pre>
+<hr>
+<h2 id="debugging--history">Debugging / History</h2>
+<h3 id="debuglimit--enable-history"><code>$debug(limit?)</code> — Enable History</h3>
+<pre><code class="language-ts">store.$debug(<span class="hljs-number">50</span>);
+store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.$history();     <span class="hljs-comment">// [{ op: &quot;set&quot;, k: &quot;a&quot;, ... }]</span>
+</code></pre>
+<h3 id="strict--strict-mode"><code>$strict()</code> — Strict Mode</h3>
+<pre><code class="language-ts">store.$strict();
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k] <span class="hljs-keyword">of</span> store) {
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, k);      <span class="hljs-comment">// throws: mutation during iteration</span>
+}
+</code></pre>
+<h3 id="history--history"><code>$history()</code> — History</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> events = store.$history();
+</code></pre>
+<h3 id="whyk--why"><code>$why(k)</code> — Why</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.$why(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// last event for &quot;a&quot;</span>
+</code></pre>
+<h3 id="diffother--diff"><code>$diff(other)</code> — Diff</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>]]);
+<span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-number">3</span>]]);
+a.$diff(b);   <span class="hljs-comment">// { add: [[&quot;y&quot;,2]], del: [&quot;z&quot;], chg: [] }</span>
+</code></pre>
+<hr>
+<h2 id="iteration">Iteration</h2>
+<h3 id="entries--entries"><code>entries()</code> — Entries</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k, v] <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">entries</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v);
+</code></pre>
+<h3 id="keys--keys"><code>keys()</code> — Keys</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> k <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">keys</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k);
+</code></pre>
+<h3 id="values--values"><code>values()</code> — Values</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> v <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">values</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v);
+</code></pre>
+<h3 id="foreachkvfn--ffn--for-each"><code>forEachKV(fn)</code> / <code>f(fn)</code> — For Each</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">forEachKV</span>(<span class="hljs-function">(<span class="hljs-params">v, k, map</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v));
+store.<span class="hljs-title function_">f</span>(<span class="hljs-function">(<span class="hljs-params">v, k</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v));
+</code></pre>
+<hr>
+<h2 id="convenience">Convenience</h2>
+<h3 id="swapvalue-key--swap"><code>swap(value, key)</code> — Swap</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.<span class="hljs-title function_">swap</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// returns 1, store[&quot;a&quot;] is now 2</span>
+</code></pre>
+<h3 id="takek--take"><code>take(k)</code> — Take</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">7</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.<span class="hljs-title function_">take</span>(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// 7, and &quot;a&quot; is deleted</span>
+</code></pre>
+<h3 id="peekk--peek"><code>peek(k)</code> — Peek</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;a&quot;</span>);
+store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// 3</span>
+store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;zzz&quot;</span>);   <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="getorivalue-k--get-or-init"><code>getOrI(value, k)</code> — Get or Init</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;counter&quot;</span>);  <span class="hljs-comment">// sets 0, returns 0</span>
+store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;counter&quot;</span>);  <span class="hljs-comment">// returns existing</span>
+</code></pre>
+<h3 id="getormmake-k--get-or-make"><code>getOrM(make, k)</code> — Get or Make</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">getOrM</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>(), <span class="hljs-string">&quot;createdAt&quot;</span>);
+</code></pre>
+<h3 id="updatek-fn-initial--update"><code>update(k, fn, initial?)</code> — Update</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">update</span>(<span class="hljs-string">&quot;count&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old, has</span>) =&gt;</span> (has ? old : <span class="hljs-number">0</span>) + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);
+</code></pre>
+<h3 id="setifabsentvalue-k--set-if-absent"><code>setIfAbsent(value, k)</code> — Set If Absent</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true (set)</span>
+store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// false (already there)</span>
+</code></pre>
+<h3 id="setifpresentvalue-k--set-if-present"><code>setIfPresent(value, k)</code> — Set If Present</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">setIfPresent</span>(<span class="hljs-number">99</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true if &quot;a&quot; exists</span>
+</code></pre>
+<h3 id="replacevalue-k--replace"><code>replace(value, k)</code> — Replace</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">replace</span>(<span class="hljs-number">50</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true only if &quot;a&quot; existed</span>
+</code></pre>
+<h3 id="inckey-by--increment"><code>inc(key, by?)</code> — Increment</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>);      <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>, <span class="hljs-number">5</span>);   <span class="hljs-comment">// 6</span>
+</code></pre>
+<h3 id="touchk--touch"><code>touch(k)</code> — Touch</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">touch</span>(<span class="hljs-string">&quot;seen&quot;</span>);    <span class="hljs-comment">// true, sets undefined</span>
+</code></pre>
+<hr>
+<h2 id="transforms">Transforms</h2>
+<h3 id="mapvaluesfn--map-values"><code>mapValues(fn)</code> — Map Values</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
+store.<span class="hljs-title function_">mapValues</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v * <span class="hljs-number">10</span>);  <span class="hljs-comment">// O2 { a:10, b:20 }</span>
+</code></pre>
+<h3 id="mapkeysfn--map-keys"><code>mapKeys(fn)</code> — Map Keys</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">mapKeys</span>(<span class="hljs-function">(<span class="hljs-params">_v, k</span>) =&gt;</span> k.<span class="hljs-title function_">toUpperCase</span>()); <span class="hljs-comment">// O2 { A:1, B:2 }</span>
+</code></pre>
+<h3 id="filterkvpred--filter-in-place"><code>filterKV(pred)</code> — Filter (in place)</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;c&quot;</span>);
+store.<span class="hljs-title function_">filterKV</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);   <span class="hljs-comment">// keeps b, c</span>
+</code></pre>
+<h3 id="filterkeyspred--filter-keys-alias"><code>filterKeys(pred)</code> — Filter Keys (alias)</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">filterKeys</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v % <span class="hljs-number">2</span> === <span class="hljs-number">0</span>);
+</code></pre>
+<h3 id="partitionpred--partition"><code>partition(pred)</code> — Partition</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> [odds, evens] = store.<span class="hljs-title function_">partition</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v % <span class="hljs-number">2</span> === <span class="hljs-number">1</span>);
+</code></pre>
+<h3 id="uniquefn--unique"><code>unique(fn?)</code> — Unique</h3>
+<pre><code class="language-ts">users.<span class="hljs-title function_">unique</span>(<span class="hljs-function">(<span class="hljs-params">u</span>) =&gt;</span> u.<span class="hljs-property">name</span>);       <span class="hljs-comment">// one user per name</span>
+</code></pre>
+<h3 id="pickkeys--pick"><code>pick(keys)</code> — Pick</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">pick</span>([<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>]);   <span class="hljs-comment">// O2 with only those</span>
+</code></pre>
+<h3 id="omitkeys--omit"><code>omit(keys)</code> — Omit</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">omit</span>([<span class="hljs-string">&quot;a&quot;</span>]);        <span class="hljs-comment">// O2 without &quot;a&quot;</span>
+</code></pre>
+<h3 id="invert--invert"><code>invert()</code> — Invert</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
+store.<span class="hljs-title function_">invert</span>();           <span class="hljs-comment">// O2 { 1:&quot;a&quot;, 2:&quot;b&quot; } (keys &lt;-&gt; values)</span>
+</code></pre>
+<h3 id="groupfn--group"><code>group(fn)</code> — Group</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> people = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, { <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">team</span>: <span class="hljs-built_in">string</span> }&gt;([
+  [<span class="hljs-string">&quot;a&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;x&quot;</span> }],
+  [<span class="hljs-string">&quot;b&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;y&quot;</span> }],
+]);
+people.<span class="hljs-title function_">group</span>(<span class="hljs-function">(<span class="hljs-params">p</span>) =&gt;</span> p.<span class="hljs-property">team</span>);  <span class="hljs-comment">// O2&lt;&quot;x&quot;|&quot;y&quot;, A2&lt;Person&gt;&gt;</span>
+</code></pre>
+<hr>
+<h2 id="search">Search</h2>
+<h3 id="findpred--find"><code>find(pred)</code> — Find</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">find</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);   <span class="hljs-comment">// [key, value] | undefined</span>
+</code></pre>
+<h3 id="findkeypred--find-key"><code>findKey(pred)</code> — Find Key</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">findKey</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+</code></pre>
+<h3 id="findvaluepred--find-value"><code>findValue(pred)</code> — Find Value</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">findValue</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+</code></pre>
+<h3 id="somepred--some"><code>some(pred)</code> — Some</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">some</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">100</span>);   <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="everypred--every"><code>every(pred)</code> — Every</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">every</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt;= <span class="hljs-number">0</span>);
+</code></pre>
+<h3 id="reducefn-initial--reduce"><code>reduce(fn, initial)</code> — Reduce</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">acc, v</span>) =&gt;</span> acc + v, <span class="hljs-number">0</span>);
+</code></pre>
+<hr>
+<h2 id="merging--patching">Merging / Patching</h2>
+<h3 id="mergeother--merge"><code>merge(other)</code> — Merge</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">merge</span>([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>]]);
+</code></pre>
+<h3 id="clearandsetentries--clear-and-set"><code>clearAndSet(entries)</code> — Clear and Set</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">clearAndSet</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>]]);
+</code></pre>
+<h3 id="patchpartial--patch"><code>patch(partial)</code> — Patch</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">patch</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">10</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">20</span> });  <span class="hljs-comment">// batched</span>
+</code></pre>
+<hr>
+<h2 id="conversion">Conversion</h2>
+<h3 id="toobject--to-object"><code>toObject()</code> — To Object</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">toObject</span>();       <span class="hljs-comment">// { a: 1, b: 2 }</span>
+</code></pre>
+<h3 id="toobjectfast--to-object-fast"><code>toObjectFast()</code> — To Object (Fast)</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">toObjectFast</span>();   <span class="hljs-comment">// shallow copy, no iteration</span>
+</code></pre>
+<h3 id="snapshot--snapshot"><code>snapshot()</code> — Snapshot</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> snap = store.<span class="hljs-title function_">snapshot</span>(); <span class="hljs-comment">// same as toObjectFast</span>
+</code></pre>
+<h3 id="tojson--tojson"><code>toJSON()</code> — toJSON</h3>
+<pre><code class="language-ts"><span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(store);  <span class="hljs-comment">// works via toJSON</span>
+</code></pre>
+<h3 id="selectfn--select"><code>select(fn)</code> — Select</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">select</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> data.<span class="hljs-property">a</span> + data.<span class="hljs-property">b</span>);
+</code></pre>
+<h3 id="tovalues--to-values"><code>toValues()</code> — To Values</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">toValues</span>();       <span class="hljs-comment">// iterable of values</span>
+</code></pre>
+<h3 id="tokeys--to-keys"><code>toKeys()</code> — To Keys</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">toKeys</span>();         <span class="hljs-comment">// iterable of keys</span>
+</code></pre>
+<h3 id="toarray--to-array"><code>toArray()</code> — To Array</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">toArray</span>();        <span class="hljs-comment">// iterable of [k, v]</span>
+</code></pre>
+<hr>
+<h2 id="misc">Misc</h2>
+<h3 id="clone--clone"><code>clone()</code> — Clone</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> copy = store.<span class="hljs-title function_">clone</span>();
+</code></pre>
+<h3 id="equalsother--equals"><code>equals(other)</code> — Equals</h3>
+<pre><code class="language-ts">store.<span class="hljs-title function_">equals</span>(store.<span class="hljs-title function_">clone</span>());  <span class="hljs-comment">// true</span>
+</code></pre>
+<hr>
+<h2 id="static-factories">Static Factories</h2>
+<h3 id="o2fromobjectobj--from-object"><code>O2.fromObject(obj)</code> — From Object</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> s = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromObject</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span> });   <span class="hljs-comment">// O2&lt;string, number&gt;</span>
+</code></pre>
+<h3 id="o2fromentriesentries--from-entries"><code>O2.fromEntries(entries)</code> — From Entries</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> s = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>]]);
+</code></pre>
+<h3 id="o2fromsource--from"><code>O2.from(source)</code> — From</h3>
+<pre><code class="language-ts"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>]]);
+<span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>(a);         <span class="hljs-comment">// copy of an O2</span>
+<span class="hljs-keyword">const</span> c = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> });  <span class="hljs-comment">// from a plain record</span>
+</code></pre>
+<hr>
+<h2 id="a-realistic-combined-example">A realistic combined example</h2>
+<pre><code class="language-ts"><span class="hljs-keyword">type</span> <span class="hljs-title class_">Task</span> = { <span class="hljs-attr">title</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">done</span>: <span class="hljs-built_in">boolean</span> };
+
+<span class="hljs-keyword">const</span> tasks = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-title class_">Task</span>&gt;();
+
+<span class="hljs-keyword">const</span> unsub = tasks.<span class="hljs-title function_">on</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;set&quot;</span> || e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;upd&quot;</span>) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;changed:&quot;</span>, e.<span class="hljs-property">k</span>);
+});
+
+tasks.<span class="hljs-title function_">batch</span>(<span class="hljs-function">() =&gt;</span> {
+  tasks.<span class="hljs-title function_">s</span>({ <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Write docs&quot;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> }, <span class="hljs-string">&quot;t1&quot;</span>);
+  tasks.<span class="hljs-title function_">s</span>({ <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Ship O2&quot;</span>,    <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> }, <span class="hljs-string">&quot;t2&quot;</span>);
+});
+
+tasks.<span class="hljs-title function_">update</span>(<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> ({ ...old, <span class="hljs-attr">done</span>: <span class="hljs-literal">true</span> }));
+tasks.<span class="hljs-title function_">dv</span>(<span class="hljs-string">&quot;doneCount&quot;</span>, [<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-string">&quot;t2&quot;</span>], <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> +a.<span class="hljs-property">done</span> + +b.<span class="hljs-property">done</span>);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;doneCount&quot;</span>));   <span class="hljs-comment">// 1</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">snapshot</span>());       <span class="hljs-comment">// plain object</span>
+
+<span class="hljs-title function_">unsub</span>();
+</code></pre>
 <h2 id="a2--array"><code>A2</code> — Array</h2>
 <p><code>A2I</code> extends <code>Array</code> and adds collection helpers. Methods returning arrays generally return <code>A2I</code> instances.</p>
 <table>
@@ -3983,123 +4712,6 @@ n.<span class="hljs-title function_">cache</span>();                        <spa
 </tr>
 </tbody>
 </table>
-<h2 id="o2--object"><code>O2</code> — Object</h2>
-<p>Provides static object inspection, nested-path access, cloning, merging, selection, transformation, comparison, and update helpers.</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>isEmpty(value)</code> / <code>isNotEmpty(value)</code></td>
-<td>Checks own-key count</td>
-</tr>
-<tr>
-<td><code>size(value)</code></td>
-<td>Returns the number of own keys, including symbols</td>
-</tr>
-<tr>
-<td><code>isPlainObject(value)</code> / <code>isObject(value)</code></td>
-<td>Checks object type</td>
-</tr>
-<tr>
-<td><code>get(value, path, fallback?)</code></td>
-<td>Reads a nested path</td>
-</tr>
-<tr>
-<td><code>getOr(value, path, fallback)</code></td>
-<td>Reads a nested path with a typed fallback</td>
-</tr>
-<tr>
-<td><code>set(value, path, next)</code></td>
-<td>Sets a nested path, creating intermediate objects</td>
-</tr>
-<tr>
-<td><code>unset(value, path)</code></td>
-<td>Deletes a nested property</td>
-</tr>
-<tr>
-<td><code>hasPath(value, path)</code></td>
-<td>Checks whether a nested path exists</td>
-</tr>
-<tr>
-<td><code>clone(value)</code></td>
-<td>Shallow-clones an object or array</td>
-</tr>
-<tr>
-<td><code>deepClone(value)</code></td>
-<td>Uses <code>structuredClone</code></td>
-</tr>
-<tr>
-<td><code>deepMerge(target, source)</code></td>
-<td>Recursively merges plain objects</td>
-</tr>
-<tr>
-<td><code>defaults(target, defaults)</code></td>
-<td>Applies defaults while retaining target values</td>
-</tr>
-<tr>
-<td><code>getOrCreate(value, key, create)</code></td>
-<td>Creates a property when absent or undefined</td>
-</tr>
-<tr>
-<td><code>pick(value, keys)</code> / <code>omit(value, keys)</code></td>
-<td>Selects or excludes properties</td>
-</tr>
-<tr>
-<td><code>pickBy(value, predicate)</code> / <code>omitBy(value, predicate)</code></td>
-<td>Selects or excludes properties by predicate</td>
-</tr>
-<tr>
-<td><code>mapKeys(value, mapper)</code></td>
-<td>Transforms property keys</td>
-</tr>
-<tr>
-<td><code>mapValues(value, mapper)</code></td>
-<td>Transforms property values</td>
-</tr>
-<tr>
-<td><code>mapEntries(value, mapper)</code></td>
-<td>Transforms key-value entries</td>
-</tr>
-<tr>
-<td><code>filter(value, predicate)</code></td>
-<td>Selects properties by predicate</td>
-</tr>
-<tr>
-<td><code>isEqual(first, second)</code></td>
-<td>Performs recursive equality checks</td>
-</tr>
-<tr>
-<td><code>isShallowEqual(first, second)</code></td>
-<td>Compares own keys and values shallowly</td>
-</tr>
-<tr>
-<td><code>hasAll(value, keys)</code> / <code>hasAny(value, keys)</code></td>
-<td>Checks required own properties</td>
-</tr>
-<tr>
-<td><code>assertKeys(value, keys)</code></td>
-<td>Throws if required own properties are missing</td>
-</tr>
-<tr>
-<td><code>with(value, key, next)</code></td>
-<td>Returns a copy with a property changed</td>
-</tr>
-<tr>
-<td><code>without(value, key)</code></td>
-<td>Returns a copy without a property</td>
-</tr>
-<tr>
-<td><code>update(value, key, updater)</code></td>
-<td>Returns a copy with an updated property</td>
-</tr>
-</tbody>
-</table>
-<p><code>O2</code> is exposed as a static utility constructor on <code>globalThis</code>.</p>
 <h2 id="otracer--object-tracer"><code>OTracer</code> — Object Tracer</h2>
 <table>
 <thead>

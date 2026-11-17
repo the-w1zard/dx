@@ -1,4 +1,4 @@
-export const SKIP = Symbol('ser:skip');
+const SKIP = Symbol('ser:skip');
 const DEFAULT_CONFIG = {
     date: true, bigint: true, regexp: true, error: true, specialNumber: true,
     undefined: true, typedArray: true, url: true, map: true, set: true,

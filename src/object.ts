@@ -107,9 +107,12 @@ export class O2I<K extends PropertyKey = S, T = A> {
 				for (const k of Reflect.ownKeys(pending) as K[]) {
 					const e = pending[k];
 					this.#record(e);
-					this.#subs?.forEach((sub) => sub(e));
+					this.#subs?.forEach((sub) => {
+						try { sub(e); } catch (err: A) { process.emitWarning(err); }
+					});
 				}
 			}
+
 		}
 
 		return this;

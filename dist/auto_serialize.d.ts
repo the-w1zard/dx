@@ -1,4 +1,3 @@
-export declare const SKIP: unique symbol;
 export interface CustomCodecResult {
     type: string;
     value: unknown;
@@ -22,6 +21,7 @@ export interface SerFormatConfig {
     number?: boolean;
     boolean?: boolean;
 }
+declare const SKIP: unique symbol;
 declare class SERI {
     private config;
     private customEncoder?;
