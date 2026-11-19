@@ -1043,7 +1043,12 @@ declare global {
 // O2 public interface
 // ─────────────────────────────────────────────────────────────
   interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
-
+	get(k: K): T | UD
+	set(k: K, v: UF<T>): this
+	has(k: K): B 
+	delete(k: K): B
+	clear(): V
+	forEach(fn: (v: T, k: K, map: this) => void): void
 	// ── shape ────────────────────────────────────────────────
 	readonly size: N;
 
@@ -1568,28 +1573,3 @@ declare global {
 		
 }
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
