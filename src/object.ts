@@ -86,6 +86,13 @@ export class O2I<K extends PropertyKey = S, T = A> {
 	public delete(k: K): B { return this.d(k); }
 	public clear(): V { return this.c(); }
 	public forEach(fn: (v: T, k: K, map: this) => void): void { return this.forEachKV(fn); }
+	public get length(): N { return this.size; }
+	static groupBy<T, K extends PropertyKey>(items: I<T>, fn: (item: T, index: N) => K): O2I<K, A2<T>> {
+		const out = new O2I<K, A2<T>>();
+		let i = 0;
+		for (const item of items) out.getOrM(() => new A2<T>(), fn(item, i++)).push(item);
+		return out;
+	}
 	public get size(): N {//                                                             [SIZE]
 		return Reflect.ownKeys(this.#data).length as N;
 	}

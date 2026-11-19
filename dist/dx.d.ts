@@ -161,7 +161,6 @@ declare global {
 			has: B;
 			batch?: B;
 		}
-		type Sub<H, T> = (e: M2Event<H, T>) => V;
 		interface Derived<H, T> {
 			deps: AR<H>;
 			fn: (...vals: AR<T>) => T;
@@ -1030,123 +1029,125 @@ declare global {
 		// #endregion 
 		//                                                                                              [OBJECT]
 		// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-  type Sub<K extends PropertyKey, T> = (e: M2Event<K, T>) => void;
+		type Sub<K extends PropertyKey, T> = (e: M2Event<K, T>) => void;
 
 
-  interface DiffResult<K extends PropertyKey, T> {
-	add: AR<[K, T]>;
-	del: AR<K>;
-	chg: AR<[K, T, T]>; // [key, thisValue, otherValue]
-}
+		interface DiffResult<K extends PropertyKey, T> {
+			add: AR<[K, T]>;
+			del: AR<K>;
+			chg: AR<[K, T, T]>; // [key, thisValue, otherValue]
+		}
 
-// ─────────────────────────────────────────────────────────────
-// O2 public interface
-// ─────────────────────────────────────────────────────────────
-  interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
-	get(k: K): T | UD
-	set(k: K, v: UF<T>): this
-	has(k: K): B 
-	delete(k: K): B
-	clear(): V
-	forEach(fn: (v: T, k: K, map: this) => void): void
-	// ── shape ────────────────────────────────────────────────
-	readonly size: N;
+		// ─────────────────────────────────────────────────────────────
+		// O2 public interface
+		// ─────────────────────────────────────────────────────────────
+		interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
+			get(k: K): T | UD
+			set(k: K, v: UF<T>): this
+			has(k: K): B 
+			delete(k: K): B
+			clear(): V
+			forEach(fn: (v: T, k: K, map: this) => void): void
+			groupBy<T, K extends PropertyKey>(items: I<T>, fn: (item: T, index: N) => K): O2<K, A2<T>>
+			// ── shape ────────────────────────────────────────────────
+			readonly size: N;
+			readonly length: N;
 
-	// ── subscription ─────────────────────────────────────────
-	on(fn: Sub<K, T>): () => V;
-	off(fn: Sub<K, T>): V;
+			// ── subscription ─────────────────────────────────────────
+			on(fn: Sub<K, T>): () => V;
+			off(fn: Sub<K, T>): V;
 
-	// ── batching ─────────────────────────────────────────────
-	batch(fn: () => V): this;
+			// ── batching ─────────────────────────────────────────────
+			batch(fn: () => V): this;
 
-	// ── core CRUD ────────────────────────────────────────────
-	s(v: UF<T>, k: K): this;                                   // set
-	mutate(k: K, fn: (old: T, has: true) => T): T | UD;
-	d(k: K): B;                                                // delete
-	c(): V;                                                    // clear
+			// ── core CRUD ────────────────────────────────────────────
+			s(v: UF<T>, k: K): this;                                   // set
+			mutate(k: K, fn: (old: T, has: true) => T): T | UD;
+			d(k: K): B;                                                // delete
+			c(): V;                                                    // clear
 
-	g(k: K): T | UD;                                           // get (derived-aware)
-	h(k: K): B;                                                // has (derived-aware)
+			g(k: K): T | UD;                                           // get (derived-aware)
+			h(k: K): B;                                                // has (derived-aware)
 
-	// ── derived ──────────────────────────────────────────────
-	dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this;
-	dirty(...keys: AR<K>): this;
+			// ── derived ──────────────────────────────────────────────
+			dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this;
+			dirty(...keys: AR<K>): this;
 
-	// ── debugging / history ──────────────────────────────────
-	$debug(limit?: N): this;
-	$strict(): this;
-	$history(): M2Event<K, T>[];
-	$why(k: K): M2Event<K, T> | UD;
-	$diff(other: O2<K, T>): DiffResult<K, T>;
+			// ── debugging / history ──────────────────────────────────
+			$debug(limit?: N): this;
+			$strict(): this;
+			$history(): M2Event<K, T>[];
+			$why(k: K): M2Event<K, T> | UD;
+			$diff(other: O2<K, T>): DiffResult<K, T>;
 
-	// ── iteration ────────────────────────────────────────────
-	entries(): Generator<[K, T]>;
-	keys(): Generator<K>;
-	values(): Generator<T>;
-	f: (fn: (v: T, k: K, map: this) => void) => V;             // alias of forEachKV
-	forEachKV(fn: (v: T, k: K, map: this) => void): V;
+			// ── iteration ────────────────────────────────────────────
+			entries(): Generator<[K, T]>;
+			keys(): Generator<K>;
+			values(): Generator<T>;
+			f: (fn: (v: T, k: K, map: this) => void) => V;             // alias of forEachKV
+			forEachKV(fn: (v: T, k: K, map: this) => void): V;
 
-	// ── common convenience ───────────────────────────────────
-	swap(value: UF<T>, key: K): T | UD;
-	take(k: K): T | UD;
-	peek(k: K): T | false;
-	getOrI(value: UF<T>, k: K): T;
-	getOrM(make: () => T, k: K): T;
-	update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T;
-	setIfAbsent(value: UF<T>, k: K): B;
-	setIfPresent(value: UF<T>, k: K): B;
-	replace(value: UF<T>, k: K): B;
-	inc(key: K, by?: N): N;
-	touch(k: K): B;
+			// ── common convenience ───────────────────────────────────
+			swap(value: UF<T>, key: K): T | UD;
+			take(k: K): T | UD;
+			peek(k: K): T | false;
+			getOrI(value: UF<T>, k: K): T;
+			getOrM(make: () => T, k: K): T;
+			update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T;
+			setIfAbsent(value: UF<T>, k: K): B;
+			setIfPresent(value: UF<T>, k: K): B;
+			replace(value: UF<T>, k: K): B;
+			inc(key: K, by?: N): N;
+			touch(k: K): B;
 
-	// ── transforms (return new O2) ───────────────────────────
-	mapValues<G>(fn: (v: T, k: K) => G): O2<K, G>;
-	mapKeys<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, T>;
-	filterKV(pred: (v: T, k: K) => B): this;
-	filterKeys(pred: (v: T, k: K) => B): this;
-	partition(pred: (v: T, k: K) => B): [O2<K, T>, O2<K, T>];
-	unique<G extends PropertyKey>(fn?: (v: T, k: K) => G): O2<G, T>;
-	pick(keys: Iterable<K>): O2<K, T>;
-	omit(keys: Iterable<K>): O2<K, T>;
-	invert(): O2<A, K>;
-	group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, A2<T>>;
+			// ── transforms (return new O2) ───────────────────────────
+			mapValues<G>(fn: (v: T, k: K) => G): O2<K, G>;
+			mapKeys<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, T>;
+			filterKV(pred: (v: T, k: K) => B): this;
+			filterKeys(pred: (v: T, k: K) => B): this;
+			partition(pred: (v: T, k: K) => B): [O2<K, T>, O2<K, T>];
+			unique<G extends PropertyKey>(fn?: (v: T, k: K) => G): O2<G, T>;
+			pick(keys: Iterable<K>): O2<K, T>;
+			omit(keys: Iterable<K>): O2<K, T>;
+			invert(): O2<A, K>;
+			group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, A2<T>>;
 
-	// ── search / query ───────────────────────────────────────
-	find(pred: (v: T, k: K) => B): [K, T] | UD;
-	findKey(pred: (v: T, k: K) => B): K | UD;
-	findValue(pred: (v: T, k: K) => B): T | UD;
-	some(pred: (v: T, k: K) => B): B;
-	every(pred: (v: T, k: K) => B): B;
-	reduce<G>(fn: (acc: G, v: T, k: K) => G, initial: G): G;
+			// ── search / query ───────────────────────────────────────
+			find(pred: (v: T, k: K) => B): [K, T] | UD;
+			findKey(pred: (v: T, k: K) => B): K | UD;
+			findValue(pred: (v: T, k: K) => B): T | UD;
+			some(pred: (v: T, k: K) => B): B;
+			every(pred: (v: T, k: K) => B): B;
+			reduce<G>(fn: (acc: G, v: T, k: K) => G, initial: G): G;
 
-	// ── merging ──────────────────────────────────────────────
-	merge(other: Iterable<readonly [K, T]>): this;
-	clearAndSet(entries: Iterable<readonly [K, T]>): this;
-	patch(partial: Readonly<Partial<Record<K, T>>>): this;
+			// ── merging ──────────────────────────────────────────────
+			merge(other: Iterable<readonly [K, T]>): this;
+			clearAndSet(entries: Iterable<readonly [K, T]>): this;
+			patch(partial: Readonly<Partial<Record<K, T>>>): this;
 
-	// ── conversion ───────────────────────────────────────────
-	toObject(): OB<T>;
-	toObjectFast(): OB<T>;
-	snapshot(): OB<T>;
-	toJSON(): OB<T>;
-	select<G>(fn: (data: Readonly<Record<K, T>>) => G): G;
-	toValues(): A2I<T>;
-	toKeys(): A2I<K>;
-	toArray(): A2I<[K, T]>;
+			// ── conversion ───────────────────────────────────────────
+			toObject(): OB<T>;
+			toObjectFast(): OB<T>;
+			snapshot(): OB<T>;
+			toJSON(): OB<T>;
+			select<G>(fn: (data: Readonly<Record<K, T>>) => G): G;
+			toValues(): A2I<T>;
+			toKeys(): A2I<K>;
+			toArray(): A2I<[K, T]>;
 
-	// ── misc ─────────────────────────────────────────────────
-	clone(): this;
-	equals(other: O2<K, T>): B;
-}
+			// ── misc ─────────────────────────────────────────────────
+			clone(): this;
+			equals(other: O2<K, T>): B;
+		}
 
-// ─────────────────────────────────────────────────────────────
-// Static factory shape (for typing a class reference)
-// ─────────────────────────────────────────────────────────────
-  interface IO2Constructor {
-	fromObject<X extends OB<A>>(obj: X): O2<S, X[keyof X]>;
-	fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2<K, T>;
-	from<K extends PropertyKey, T>(source: O2<K, T> | Readonly<Record<K, T>>): O2<K, T>;
-}
+		// ─────────────────────────────────────────────────────────────
+		// Static factory shape (for typing a class reference)
+		// ─────────────────────────────────────────────────────────────
+		interface IO2Constructor {
+			fromObject<X extends OB<A>>(obj: X): O2<S, X[keyof X]>;
+			fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2<K, T>;
+			from<K extends PropertyKey, T>(source: O2<K, T> | Readonly<Record<K, T>>): O2<K, T>;
+		}
 		interface O2I extends O2 {}
 		// #endregion 
 		//                                                                                             [PROMISE]
