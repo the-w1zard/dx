@@ -4,6 +4,12 @@ export declare class O2I<K extends PropertyKey = S, T = A> {
     #private;
     f: (fn: (v: T, k: K, map: this) => void) => void;
     constructor(entries?: I<readonly [K, T]>);
+    get(k: K): T | UD;
+    set(k: K, v: UF<T>): this;
+    has(k: K): B;
+    delete(k: K): B;
+    clear(): V;
+    forEach(fn: (v: T, k: K, map: this) => void): void;
     get size(): N;
     [Symbol.iterator](): Generator<[K, T]>;
     on(fn: Sub<K, T>): () => V;

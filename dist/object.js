@@ -74,6 +74,13 @@ export class O2I {
             throw new Error(`O2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
         }
     }
+    // IN ORDER TO MATCH MAPS CALL API FOR INSTANT AND EASY CONVERSIONS
+    get(k) { return this.g(k); }
+    set(k, v) { return this.s(v, k); } // note: flipped to match Map's (key, value)
+    has(k) { return this.h(k); }
+    delete(k) { return this.d(k); }
+    clear() { return this.c(); }
+    forEach(fn) { return this.forEachKV(fn); }
     get size() {
         return Reflect.ownKeys(this.#data).length;
     }

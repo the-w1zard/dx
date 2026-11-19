@@ -2136,6 +2136,19 @@ const q = new QUAD()
 
 ## `O2` — Object
  
+> [!NOTE] 
+>
+> Increasing the DX further, maps call api has been added to O2. Thus making the conversion instant, and painless.
+>
+> - get
+> - set
+> - has
+> - delete
+> - clear
+> - forEach
+>
+> Have been added and is now available for use.
+
 
 | Function | Title | Description |
 |---|---|---|

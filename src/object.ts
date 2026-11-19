@@ -79,7 +79,13 @@ export class O2I<K extends PropertyKey = S, T = A> {
 			throw new Error(`O2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
 		}
 	}
-
+	// IN ORDER TO MATCH MAPS CALL API FOR INSTANT AND EASY CONVERSIONS
+	public get(k: K): T | UD { return this.g(k); }
+	public set(k: K, v: UF<T>): this { return this.s(v, k); }   // note: flipped to match Map's (key, value)
+	public has(k: K): B { return this.h(k); }
+	public delete(k: K): B { return this.d(k); }
+	public clear(): V { return this.c(); }
+	public forEach(fn: (v: T, k: K, map: this) => void): void { return this.forEachKV(fn); }
 	public get size(): N {//                                                             [SIZE]
 		return Reflect.ownKeys(this.#data).length as N;
 	}
