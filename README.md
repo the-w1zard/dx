@@ -2148,6 +2148,8 @@ const q = new QUAD()
 > - forEach
 >
 > Have been added and is now available for use.
+>
+> [UPDATE] AHH OHHH my god, that was satisfying. Using find and replace to convert every single Map and M2 in the project... it was a lot of them... without modyifing a single callsite. 5700 call sites, untouched.
 
 
 | Function | Title | Description |

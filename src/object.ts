@@ -80,11 +80,46 @@ export class O2I<K extends PropertyKey = S, T = A> {
 		}
 	}
 	// IN ORDER TO MATCH MAPS CALL API FOR INSTANT AND EASY CONVERSIONS
-	public get(k: K): T | UD { return this.g(k); }
-	public set(k: K, v: UF<T>): this { return this.s(v, k); }   // note: flipped to match Map's (key, value)
-	public has(k: K): B { return this.h(k); }
-	public delete(k: K): B { return this.d(k); }
-	public clear(): V { return this.c(); }
+	public get(k: K): T | UD { 
+		const d = this.#derived?.[k];
+		if (d) { if (d.dirty || !d.has) return this.#computeDerived(k, d); return d.value; }
+		return this.#rawGet(k);
+	 }
+	public set(k: K, v: UF<T>): this { 
+		this.#assertNotIterating("s");
+		const next = rv(v);
+		const has = this.h(k);
+		const prev = has ? this.g(k) : undefined;
+		this.#data[k] = next;
+		this.#invalidate(k);
+		this.#emit({ op: "set", k, v: next, prev: prev as T, has });
+		return this;
+	 }   // note: flipped to match Map's (key, value)
+	public has(k: K): B { 
+		const d = this.#derived?.[k];
+		if (d) { if (d.dirty || !d.has) this.#computeDerived(k, d); return true; }
+		return this.#rawHas(k);
+	 }
+	public delete(k: K): B { 
+		this.#assertNotIterating("delete");
+		if (!this.h(k)) return false;
+		const prev = this.g(k) as T;
+		delete this.#data[k];
+		this.#invalidate(k);
+		this.#emit({ op: "del", k, prev, has: false });
+		return true;
+	 }
+	public clear(): V { 
+		this.#assertNotIterating("clear");
+
+		const entries = this.toArray();
+		this.#data = Object.create(null);//              one object swap, no per-key delete
+
+		for (const [k, prev] of entries) {
+			this.#invalidate(k);
+			this.#emit({ op: "del", k, prev, has: false });
+		}
+	 }
 	public forEach(fn: (v: T, k: K, map: this) => void): void { return this.forEachKV(fn); }
 	public get length(): N { return this.size; }
 	static groupBy<T, K extends PropertyKey>(items: I<T>, fn: (item: T, index: N) => K): O2I<K, A2<T>> {
@@ -157,15 +192,11 @@ export class O2I<K extends PropertyKey = S, T = A> {
 	}
 	public d(k: K): B {//                                                              [DELETE]
 		this.#assertNotIterating("delete");
-
 		if (!this.h(k)) return false;
-
 		const prev = this.g(k) as T;
 		delete this.#data[k];
-
 		this.#invalidate(k);
 		this.#emit({ op: "del", k, prev, has: false });
-
 		return true;
 	}
 	public c(): V {//                                                                   [CLEAR]
@@ -203,22 +234,12 @@ export class O2I<K extends PropertyKey = S, T = A> {
 	}
 	public g(k: K): T | UD {//                                                           [GET]
 		const d = this.#derived?.[k];
-
-		if (d) {
-			if (d.dirty || !d.has) return this.#computeDerived(k, d);
-			return d.value;
-		}
-
+		if (d) { if (d.dirty || !d.has) return this.#computeDerived(k, d); return d.value; }
 		return this.#rawGet(k);
 	}
 	public h(k: K): B {//                                                                [HAS]
 		const d = this.#derived?.[k];
-
-		if (d) {
-			if (d.dirty || !d.has) this.#computeDerived(k, d);
-			return true;
-		}
-
+		if (d) { if (d.dirty || !d.has) this.#computeDerived(k, d); return true; }
 		return this.#rawHas(k);
 	}
 	public $debug(limit: N = 256): this {//                                            [$DEBUG]
