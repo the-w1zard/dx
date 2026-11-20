@@ -75,12 +75,62 @@ export class O2I {
         }
     }
     // IN ORDER TO MATCH MAPS CALL API FOR INSTANT AND EASY CONVERSIONS
-    get(k) { return this.g(k); }
-    set(k, v) { return this.s(v, k); } // note: flipped to match Map's (key, value)
-    has(k) { return this.h(k); }
-    delete(k) { return this.d(k); }
-    clear() { return this.c(); }
+    get(k) {
+        const d = this.#derived?.[k];
+        if (d) {
+            if (d.dirty || !d.has)
+                return this.#computeDerived(k, d);
+            return d.value;
+        }
+        return this.#rawGet(k);
+    }
+    set(k, v) {
+        this.#assertNotIterating("s");
+        const next = rv(v);
+        const has = this.h(k);
+        const prev = has ? this.g(k) : undefined;
+        this.#data[k] = next;
+        this.#invalidate(k);
+        this.#emit({ op: "set", k, v: next, prev: prev, has });
+        return this;
+    } // note: flipped to match Map's (key, value)
+    has(k) {
+        const d = this.#derived?.[k];
+        if (d) {
+            if (d.dirty || !d.has)
+                this.#computeDerived(k, d);
+            return true;
+        }
+        return this.#rawHas(k);
+    }
+    delete(k) {
+        this.#assertNotIterating("delete");
+        if (!this.h(k))
+            return false;
+        const prev = this.g(k);
+        delete this.#data[k];
+        this.#invalidate(k);
+        this.#emit({ op: "del", k, prev, has: false });
+        return true;
+    }
+    clear() {
+        this.#assertNotIterating("clear");
+        const entries = this.toArray();
+        this.#data = Object.create(null); //              one object swap, no per-key delete
+        for (const [k, prev] of entries) {
+            this.#invalidate(k);
+            this.#emit({ op: "del", k, prev, has: false });
+        }
+    }
     forEach(fn) { return this.forEachKV(fn); }
+    get length() { return this.size; }
+    static groupBy(items, fn) {
+        const out = new O2I();
+        let i = 0;
+        for (const item of items)
+            out.getOrM(() => new A2(), fn(item, i++)).push(item);
+        return out;
+    }
     get size() {
         return Reflect.ownKeys(this.#data).length;
     }

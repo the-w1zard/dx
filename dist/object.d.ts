@@ -10,6 +10,8 @@ export declare class O2I<K extends PropertyKey = S, T = A> {
     delete(k: K): B;
     clear(): V;
     forEach(fn: (v: T, k: K, map: this) => void): void;
+    get length(): N;
+    static groupBy<T, K extends PropertyKey>(items: I<T>, fn: (item: T, index: N) => K): O2I<K, A2<T>>;
     get size(): N;
     [Symbol.iterator](): Generator<[K, T]>;
     on(fn: Sub<K, T>): () => V;

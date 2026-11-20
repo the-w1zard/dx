@@ -320,13 +320,13 @@
         "build": "tsc",
         "dev": "rspack serve  --emitDeclarationOnly && rspack build",
         "check": "tsc --noEmit",
-        "*": "npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
+        "*": "pnpm update && npm run build && npm run 1 && npm run 2 && npm run 3 && npm run 4 && npm run 5 && npm run 6 && npm run 7 && npm run 8"
     },
     "devDependencies": {
-        "@rspack/cli": "^2.3.2",
-        "@rspack/core": "^2.3.2",
+        "@rspack/cli": "^2.3.3",
+        "@rspack/core": "^2.3.3",
         "@rspack/dev-server": "^2.2.2",
-        "@the-w1zard/alias_types": "^1.0.15",
+        "@the-w1zard/alias_types": "^1.0.19",
         "@tsconfig/node-lts": "^24.0.1",
         "@types/node": "^24.19.2",
         "jsrepo": "^3.8.3",
