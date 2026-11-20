@@ -1030,7 +1030,6 @@ declare global {
 		// #endregion 
 		//                                                                                              [OBJECT]
 		// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
-  type Sub<K extends PropertyKey, T> = (e: M2Event<K, T>) => void;
 
 
   interface DiffResult<K extends PropertyKey, T> {
