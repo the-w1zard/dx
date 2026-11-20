@@ -1,6 +1,6 @@
 export const rv = (v) => typeof v === "function" ? v() : v;
 export const sameValue = (a, b) => Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
-export class O2I {
+export class O2 {
     #data = Object.create(null);
     f = this.forEachKV; //                                                    [FOR EACH]
     #subs;
@@ -71,7 +71,7 @@ export class O2I {
     }
     #assertNotIterating(op) {
         if (this.#strict && this.#iterating > 0) {
-            throw new Error(`O2I.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
+            throw new Error(`O2.${op}() during iteration. Use filterKV(), collect keys first, or disable $strict().`);
         }
     }
     // IN ORDER TO MATCH MAPS CALL API FOR INSTANT AND EASY CONVERSIONS
@@ -125,10 +125,10 @@ export class O2I {
     forEach(fn) { return this.forEachKV(fn); }
     get length() { return this.size; }
     static groupBy(items, fn) {
-        const out = new O2I();
+        const out = new O2();
         let i = 0;
         for (const item of items)
-            out.getOrM(() => new A2(), fn(item, i++)).push(item);
+            out.getOrM(fn(item, i++), () => new A2()).push(item);
         return out;
     }
     get size() {
@@ -169,7 +169,7 @@ export class O2I {
         }
         return this;
     }
-    s(v, k) {
+    s(k, v) {
         this.#assertNotIterating("s");
         const next = rv(v);
         const has = this.h(k);
@@ -185,7 +185,7 @@ export class O2I {
             return undefined;
         const old = this.g(k);
         const next = fn(old, true);
-        this.s(next, k);
+        this.s(k, next);
         return next;
     }
     d(k) {
@@ -315,7 +315,7 @@ export class O2I {
     swap(value, key) {
         const next = rv(value);
         const previous = this.h(key) ? this.g(key) : next; //       h()/g() kept derived-aware
-        this.s(next, key);
+        this.s(key, next);
         return previous;
     }
     take(k) {
@@ -326,18 +326,18 @@ export class O2I {
     peek(k) {
         return this.h(k) ? this.g(k) : false;
     }
-    getOrI(value, k) {
+    getOrI(k, value) {
         if (this.h(k))
             return this.g(k);
         const next = rv(value);
-        this.s(next, k);
+        this.s(k, next);
         return next;
     }
-    getOrM(make, k) {
+    getOrM(k, make) {
         if (this.h(k))
             return this.g(k);
         const value = make();
-        this.s(value, k);
+        this.s(k, value);
         return value;
     }
     update(k, fn, initial) {
@@ -348,48 +348,48 @@ export class O2I {
                 ? undefined
                 : rv(initial);
         const next = rv(fn(old, has));
-        this.s(next, k);
+        this.s(k, next);
         return next;
     }
-    setIfAbsent(value, k) {
+    setIfAbsent(k, value) {
         if (this.h(k))
             return false;
         const next = rv(value);
-        this.s(next, k);
+        this.s(k, next);
         return true;
     }
-    setIfPresent(value, k) {
+    setIfPresent(k, value) {
         if (!this.h(k))
             return false;
         const next = rv(value);
-        this.s(next, k);
+        this.s(k, next);
         return true;
     }
-    replace(value, k) {
+    replace(k, value) {
         const next = rv(value);
-        return this.setIfPresent(next, k);
+        return this.setIfPresent(k, next);
     }
     inc(key, by = 1) {
         return this.update(key, (old) => ((old ?? 0) + by), 0);
     }
     touch(k) {
-        return this.setIfAbsent(undefined, k);
+        return this.setIfAbsent(k, undefined);
     }
     mapValues(fn) {
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this)
-            out.s(fn(v, k), k);
+            out.s(k, fn(k, v));
         return out;
     }
     mapKeys(fn) {
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this)
-            out.s(v, fn(v, k));
+            out.s(fn(k, v), v);
         return out;
     }
     filterKV(pred) {
         for (const [k, v] of this) {
-            if (!pred(v, k))
+            if (!pred(k, v))
                 this.d(k);
         }
         return this;
@@ -398,44 +398,44 @@ export class O2I {
         return this.filterKV(pred);
     }
     partition(pred) {
-        const yes = new O2I();
-        const no = new O2I();
+        const yes = new O2();
+        const no = new O2();
         for (const [k, v] of this) {
-            (pred(v, k) ? yes : no).s(v, k);
+            (pred(k, v) ? yes : no).s(k, v);
         }
         return [yes, no];
     }
     find(pred) {
         for (const [k, v] of this) {
-            if (pred(v, k))
+            if (pred(k, v))
                 return [k, v];
         }
         return undefined;
     }
     findKey(pred) {
         for (const [k, v] of this) {
-            if (pred(v, k))
+            if (pred(k, v))
                 return k;
         }
         return undefined;
     }
     findValue(pred) {
         for (const [k, v] of this) {
-            if (pred(v, k))
+            if (pred(k, v))
                 return v;
         }
         return undefined;
     }
     some(pred) {
         for (const [k, v] of this) {
-            if (pred(v, k))
+            if (pred(k, v))
                 return true;
         }
         return false;
     }
     every(pred) {
         for (const [k, v] of this) {
-            if (!pred(v, k))
+            if (!pred(k, v))
                 return false;
         }
         return true;
@@ -443,49 +443,49 @@ export class O2I {
     reduce(fn, initial) {
         let acc = initial;
         for (const [k, v] of this)
-            acc = fn(acc, v, k);
+            acc = fn(acc, k, v);
         return acc;
     }
     forEachKV(fn) {
         for (const [k, v] of this)
-            fn(v, k, this);
+            fn(k, v, this);
     }
     invert() {
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this)
             out.s(k, v);
         return out;
     }
     unique(fn) {
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this) {
-            const key = (fn ? fn(v, k) : v);
+            const key = (fn ? fn(k, v) : v);
             if (!out.h(key))
-                out.s(v, key);
+                out.s(key, v);
         }
         return out;
     }
     pick(keys) {
-        const out = new O2I();
+        const out = new O2();
         for (const k of keys) {
             if (this.h(k))
-                out.s(this.g(k), k);
+                out.s(k, this.g(k));
         }
         return out;
     }
     omit(keys) {
         const omitted = new Set(keys);
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this) {
             if (!omitted.has(k))
-                out.s(v, k);
+                out.s(k, v);
         }
         return out;
     }
     merge(other) {
         for (const [k, v] of other) {
             const n = rv(v);
-            this.s(n, k);
+            this.s(k, n);
         }
         return this;
     }
@@ -494,7 +494,7 @@ export class O2I {
             this.c(); //                         (M2's version calls the native Map.clear() here
             for (const [k, v] of entries) { //  — silent, no del events; c() is almost
                 const n = rv(v); //  certainly what was intended, so I used it)
-                this.s(n, k);
+                this.s(k, n);
             }
         });
     }
@@ -515,20 +515,20 @@ export class O2I {
     patch(partial) {
         return this.batch(() => {
             for (const k of Reflect.ownKeys(partial))
-                this.s(partial[k], k);
+                this.s(k, partial[k]);
         });
     }
     toValues() { return A2.from(this.values()); } //                 [TOVALUES]
     toKeys() { return A2.from(this.keys()); } //                       [TOKEYS]
     toArray() { return A2.from(this.entries()); } //             [TOARRAY]
     group(fn) {
-        const out = new O2I();
+        const out = new O2();
         for (const [k, v] of this)
-            out.getOrM(() => new A2(), fn(v, k)).push(v);
+            out.getOrM(fn(v, k), () => new A2()).push(v);
         return out;
     }
     clone() {
-        return new O2I(this);
+        return new O2(this);
     }
     equals(other) {
         if (other === this)
@@ -542,16 +542,16 @@ export class O2I {
         return true;
     }
     static fromObject(obj) {
-        const out = new O2I();
+        const out = new O2();
         out.#data = { ...obj }; //            direct copy, no per-key emits
         return out;
     }
     static fromEntries(entries) {
-        return new O2I(entries);
+        return new O2(entries);
     }
     static from(source) {
-        const out = new O2I();
-        out.#data = source instanceof O2I ? { ...source.#data } : { ...source };
+        const out = new O2();
+        out.#data = source instanceof O2 ? { ...source.#data } : { ...source };
         return out;
     }
 }

@@ -2151,6 +2151,21 @@ const q = new QUAD()
 >
 > [UPDATE] AHH OHHH my god, that was satisfying. Using find and replace to convert every single Map and M2 in the project... it was a lot of them... without modyifing a single callsite. 5700 call sites, untouched.
 
+Performance wise, O2 matches js obj's exactly when both are using the hot path.
+
+```txt
+------------------       O2        ----------------------
+Peak (Best Batch):                      1697.79 M ops/sec
+Average:                                 657.56 M ops/sec
+---------------------------------------------------------
+------------------     JS OBJ      ----------------------
+Peak (Best Batch):                      1697.79 M ops/sec
+Average:                                 557.14 M ops/sec
+---------------------------------------------------------
+```
+
+The average difference is just noise, as the avg bounces a bit.
+
 
 | Function | Title | Description |
 |---|---|---|
@@ -2223,8 +2238,6 @@ const q = new QUAD()
 Examples assume:
 
 ```ts
-import { O2 } from "./o2";
-
 type User = { name: string; age: number };
 const store = new O2<string, number>();
 const users = new O2<string, User>();
@@ -2232,444 +2245,818 @@ const users = new O2<string, User>();
 
 ---
 
-## Subscription
+Yes. The usages should match the actual `O2` implementation. The main correction is **key-first arguments** for `s`, `getOrI`, `getOrM`, `setIfAbsent`, `setIfPresent`, and `replace`. Callback arguments also need to follow the implementation's order.
 
-### `on(fn)` — Subscribe
-```ts
-const unsub = store.on((e) => console.log(e.op, e.k));
-store.s(1, "a");       // logs: "set a"
-unsub();               // stop listening
+Below is an example for **every exported function, constructor, instance method, getter, iterator, and static method** in the `O2` implementation you supplied. All argument orders and callback signatures match the actual code.
+
+## **Exported functions**
+
+### `rv(v)`**&#x20;— Resolve Value or Thunk**
+
+```tsx
+rv(42);                    // 42
+rv(() => 42);              // 42
+rv(() => "hello");         // "hello"
 ```
 
-### `off(fn)` — Unsubscribe
-```ts
+### `sameValue(a, b)`**&#x20;— Compare Values**
+
+```tsx
+sameValue(1, 1);                              // true
+sameValue(NaN, NaN);                          // true
+sameValue(new Date(1000), new Date(1000));    // true
+sameValue({ a: 1 }, { a: 1 });                // false
+```
+
+## **Construction**
+
+### `new O2(entries?)`**&#x20;— Constructor**
+
+```tsx
+const store = new O2<string, number>();
+
+const populated = new O2<string, number>([
+  ["a", 1],
+  ["b", 2],
+]);
+```
+
+### `size`**&#x20;— Number of Entries**
+
+```tsx
+store.size; // 2
+```
+
+### `length`**&#x20;— Size Alias**
+
+```tsx
+store.length; // 2
+```
+
+### `[Symbol.iterator]()`**&#x20;— Default Iterator**
+
+```tsx
+for (const [k, v] of store) {
+  console.log(k, v);
+}
+
+const entries = [...store];
+```
+
+## **Map-Compatible API**
+
+### `get(k)`**&#x20;— Get**
+
+```tsx
+store.get("a"); // 1
+store.get("missing"); // undefined
+```
+
+### `set(k, v)`**&#x20;— Set**
+
+```tsx
+store.set("a", 1);
+store.set("b", () => 2);
+
+store.set("a", 10); // overwrite
+```
+
+### `has(k)`**&#x20;— Has**
+
+```tsx
+store.has("a");       // true
+store.has("missing"); // false
+```
+
+### `delete(k)`**&#x20;— Delete**
+
+```tsx
+store.delete("a"); // true
+store.delete("a"); // false
+```
+
+### `clear()`**&#x20;— Clear**
+
+```tsx
+store.set("a", 1).set("b", 2);
+store.clear();
+
+store.size; // 0
+```
+
+### `forEach(fn)`**&#x20;— Map-Compatible For Each**
+
+```tsx
+store.forEach((k, v, map) => {
+  console.log(k, v, map.size);
+});
+```
+
+### `groupBy(items, fn)`**&#x20;— Static Grouping**
+
+```tsx
+const people = [
+  { name: "Ann", team: "red" },
+  { name: "Bob", team: "blue" },
+  { name: "Sam", team: "red" },
+];
+
+const grouped = O2.groupBy(people, (person, index) => person.team);
+
+// O2 {
+//   red: [Ann, Sam],
+//   blue: [Bob]
+// }
+```
+
+## **Subscription**
+
+### `on(fn)`**&#x20;— Subscribe**
+
+```tsx
+const unsub = store.on((e) => {
+  console.log(e.op, e.k, e.v);
+});
+
+store.s("a", 1);
+
+unsub();
+```
+
+### `off(fn)`**&#x20;— Unsubscribe**
+
+```tsx
 const listener = (e) => console.log(e);
+
 store.on(listener);
 store.off(listener);
 ```
 
----
+## **Batching**
 
-## Batching
+### `batch(fn)`**&#x20;— Batch Mutations**
 
-### `batch(fn)` — Batch
-```ts
+```tsx
 store.batch(() => {
-  store.s(1, "a");
-  store.s(2, "b");
-  store.s(3, "c");
+  store.s("a", 1);
+  store.s("b", 2);
+  store.s("c", 3);
 });
-// subscribers fire once per key, after the batch closes
 ```
 
----
+Subscribers receive the accumulated event for each changed key when the outermost batch closes.
 
-## Core CRUD
+## **Core CRUD**
 
-### `s(v, k)` — Set
-```ts
-store.s(42, "answer");
-store.s(() => 99, "lazy");   // thunk is resolved
+### `s(k, v)`**&#x20;— Set**
+
+```tsx
+store.s("answer", 42);
+store.s("lazy", () => 99);
+
+store.s("a", 1).s("b", 2);
 ```
 
-### `mutate(k, fn)` — Mutate
-```ts
-store.s(10, "counter");
-store.mutate("counter", (old) => old + 5); // 15
-store.mutate("missing", (old) => 0);       // undefined (key absent)
+### `mutate(k, fn)`**&#x20;— Mutate Existing Value**
+
+```tsx
+store.s("counter", 10);
+
+store.mutate("counter", (old, has) => old + 5); // 15
+store.mutate("missing", (old, has) => 0);       // undefined
 ```
 
-### `d(k)` — Delete
-```ts
-store.s(1, "a");
-store.d("a");  // true
-store.d("a");  // false
+`mutate` does not create missing keys.
+
+### `d(k)`**&#x20;— Delete**
+
+```tsx
+store.s("a", 1);
+
+store.d("a"); // true
+store.d("a"); // false
 ```
 
-### `c()` — Clear
-```ts
-store.s(1, "a").s(2, "b");
-store.c();   // now empty; each prior key emits a "del"
+### `c()`**&#x20;— Clear**
+
+```tsx
+store.s("a", 1).s("b", 2);
+
+store.c();
+
+store.size; // 0
 ```
 
-### `g(k)` — Get
-```ts
-store.s(1, "a");
-store.g("a");    // 1
-store.g("zzz");  // undefined
+### `g(k)`**&#x20;— Get**
+
+```tsx
+store.s("a", 1);
+
+store.g("a");       // 1
+store.g("missing"); // undefined
 ```
 
-### `h(k)` — Has
-```ts
-store.h("a");   // true
-store.h("zzz"); // false
+### `h(k)`**&#x20;— Has**
+
+```tsx
+store.h("a");       // true
+store.h("missing"); // false
 ```
 
----
+## **Derived Values**
 
-## Derived Values
+### `dv(k, deps, fn)`**&#x20;— Define Derived Value**
 
-### `dv(k, deps, fn)` — Define Derived
-```ts
+```tsx
 const nums = new O2<string, number>();
-nums.s(2, "a").s(3, "b");
+
+nums.s("a", 2).s("b", 3);
+
 nums.dv("sum", ["a", "b"], (a, b) => a + b);
 
-nums.g("sum");        // 5
-nums.s(10, "a");
-nums.g("sum");        // 13
+nums.g("sum"); // 5
+
+nums.s("a", 10);
+
+nums.g("sum"); // 13
 ```
 
-### `dirty(...keys)` — Mark Dirty
-```ts
+### `dirty(...keys)`**&#x20;— Mark Derived Values Dirty**
+
+```tsx
 nums.dirty("sum");
-nums.g("sum");        // recomputed
+
+nums.g("sum"); // recomputed
 ```
 
----
+## **Debugging / History**
 
-## Debugging / History
+### `$debug(limit?)`**&#x20;— Enable History**
 
-### `$debug(limit?)` — Enable History
-```ts
+```tsx
 store.$debug(50);
-store.s(1, "a");
-store.$history();     // [{ op: "set", k: "a", ... }]
+
+store.s("a", 1);
+store.s("b", 2);
 ```
 
-### `$strict()` — Strict Mode
-```ts
+### `$strict()`**&#x20;— Strict Iteration Mode**
+
+```tsx
 store.$strict();
-for (const [k] of store) {
-  store.s(2, k);      // throws: mutation during iteration
+
+for (const [k, v] of store) {
+  store.s(k, v + 1); // throws
 }
 ```
 
-### `$history()` — History
-```ts
-const events = store.$history();
+### `$history()`**&#x20;— Retrieve History**
+
+```tsx
+const history = store.$history();
+
+console.log(history);
 ```
 
-### `$why(k)` — Why
-```ts
-store.s(1, "a");
-store.$why("a");     // last event for "a"
+### `$why(k)`**&#x20;— Last Event for Key**
+
+```tsx
+store.$debug();
+store.s("a", 1);
+store.s("a", 2);
+
+store.$why("a"); // last event for "a"
 ```
 
-### `$diff(other)` — Diff
-```ts
-const a = O2.fromEntries([["x", 1], ["y", 2]]);
-const b = O2.fromEntries([["x", 1], ["z", 3]]);
-a.$diff(b);   // { add: [["y",2]], del: ["z"], chg: [] }
-```
+### `$diff(other)`**&#x20;— Compare Stores**
 
----
-
-## Iteration
-
-### `entries()` — Entries
-```ts
-for (const [k, v] of store.entries()) console.log(k, v);
-```
-
-### `keys()` — Keys
-```ts
-for (const k of store.keys()) console.log(k);
-```
-
-### `values()` — Values
-```ts
-for (const v of store.values()) console.log(v);
-```
-
-### `forEachKV(fn)` / `f(fn)` — For Each
-```ts
-store.forEachKV((v, k, map) => console.log(k, v));
-store.f((v, k) => console.log(k, v));
-```
-
----
-
-## Convenience
-
-### `swap(value, key)` — Swap
-```ts
-store.s(1, "a");
-store.swap(2, "a");  // returns 1, store["a"] is now 2
-```
-
-### `take(k)` — Take
-```ts
-store.s(7, "a");
-store.take("a");     // 7, and "a" is deleted
-```
-
-### `peek(k)` — Peek
-```ts
-store.s(3, "a");
-store.peek("a");     // 3
-store.peek("zzz");   // false
-```
-
-### `getOrI(value, k)` — Get or Init
-```ts
-store.getOrI(0, "counter");  // sets 0, returns 0
-store.getOrI(0, "counter");  // returns existing
-```
-
-### `getOrM(make, k)` — Get or Make
-```ts
-store.getOrM(() => Date.now(), "createdAt");
-```
-
-### `update(k, fn, initial?)` — Update
-```ts
-store.update("count", (old, has) => (has ? old : 0) + 1, 0);
-```
-
-### `setIfAbsent(value, k)` — Set If Absent
-```ts
-store.setIfAbsent(1, "a");  // true (set)
-store.setIfAbsent(2, "a");  // false (already there)
-```
-
-### `setIfPresent(value, k)` — Set If Present
-```ts
-store.setIfPresent(99, "a");  // true if "a" exists
-```
-
-### `replace(value, k)` — Replace
-```ts
-store.replace(50, "a");  // true only if "a" existed
-```
-
-### `inc(key, by?)` — Increment
-```ts
-store.inc("hits");      // 1
-store.inc("hits", 5);   // 6
-```
-
-### `touch(k)` — Touch
-```ts
-store.touch("seen");    // true, sets undefined
-```
-
----
-
-## Transforms
-
-### `mapValues(fn)` — Map Values
-```ts
-store.s(1, "a").s(2, "b");
-store.mapValues((v) => v * 10);  // O2 { a:10, b:20 }
-```
-
-### `mapKeys(fn)` — Map Keys
-```ts
-store.mapKeys((_v, k) => k.toUpperCase()); // O2 { A:1, B:2 }
-```
-
-### `filterKV(pred)` — Filter (in place)
-```ts
-store.s(1, "a").s(2, "b").s(3, "c");
-store.filterKV((v) => v > 1);   // keeps b, c
-```
-
-### `filterKeys(pred)` — Filter Keys (alias)
-```ts
-store.filterKeys((v) => v % 2 === 0);
-```
-
-### `partition(pred)` — Partition
-```ts
-const [odds, evens] = store.partition((v) => v % 2 === 1);
-```
-
-### `unique(fn?)` — Unique
-```ts
-users.unique((u) => u.name);       // one user per name
-```
-
-### `pick(keys)` — Pick
-```ts
-store.pick(["a", "c"]);   // O2 with only those
-```
-
-### `omit(keys)` — Omit
-```ts
-store.omit(["a"]);        // O2 without "a"
-```
-
-### `invert()` — Invert
-```ts
-store.s(1, "a").s(2, "b");
-store.invert();           // O2 { 1:"a", 2:"b" } (keys <-> values)
-```
-
-### `group(fn)` — Group
-```ts
-const people = new O2<string, { name: string; team: string }>([
-  ["a", { name: "Ann", team: "x" }],
-  ["b", { name: "Bob", team: "y" }],
+```tsx
+const a = O2.fromEntries([
+  ["x", 1],
+  ["y", 2],
 ]);
-people.group((p) => p.team);  // O2<"x"|"y", A2<Person>>
+
+const b = O2.fromEntries([
+  ["x", 1],
+  ["z", 3],
+]);
+
+a.$diff(b);
+
+// {
+//   add: [["y", 2]],
+//   del: ["z"],
+//   chg: []
+// }
 ```
 
----
+`add` contains entries in the calling store that are absent from `other`. `del` contains keys in `other` that are absent from the calling store.
 
-## Search
+## **Iteration**
 
-### `find(pred)` — Find
-```ts
-store.find((v) => v > 1);   // [key, value] | undefined
+### `entries()`**&#x20;— Iterate Entries**
+
+```tsx
+for (const [k, v] of store.entries()) {
+  console.log(k, v);
+}
 ```
 
-### `findKey(pred)` — Find Key
-```ts
-store.findKey((v) => v > 1);
+### `keys()`**&#x20;— Iterate Keys**
+
+```tsx
+for (const k of store.keys()) {
+  console.log(k);
+}
 ```
 
-### `findValue(pred)` — Find Value
-```ts
-store.findValue((v) => v > 1);
+### `values()`**&#x20;— Iterate Values**
+
+```tsx
+for (const v of store.values()) {
+  console.log(v);
+}
 ```
 
-### `some(pred)` — Some
-```ts
-store.some((v) => v > 100);   // false
+### `forEachKV(fn)`**&#x20;— Iterate Key/Value Pairs**
+
+```tsx
+store.forEachKV((k, v, map) => {
+  console.log(k, v, map);
+});
 ```
 
-### `every(pred)` — Every
-```ts
-store.every((v) => v >= 0);
+### `f(fn)`**&#x20;— For Each Alias**
+
+```tsx
+store.f((k, v, map) => {
+  console.log(k, v);
+});
 ```
 
-### `reduce(fn, initial)` — Reduce
-```ts
-store.reduce((acc, v) => acc + v, 0);
+## **Convenience**
+
+### `swap(value, key)`**&#x20;— Replace and Return Previous Value**
+
+```tsx
+store.s("a", 1);
+
+store.swap(2, "a"); // 1
+store.g("a");       // 2
 ```
 
----
+### `take(k)`**&#x20;— Get and Delete**
 
-## Merging / Patching
+```tsx
+store.s("a", 7);
 
-### `merge(other)` — Merge
-```ts
-store.merge([["a", 1], ["b", 2]]);
+store.take("a"); // 7
+store.h("a");    // false
 ```
 
-### `clearAndSet(entries)` — Clear and Set
-```ts
-store.clearAndSet([["x", 1], ["y", 2]]);
+### `peek(k)`**&#x20;— Get or False**
+
+```tsx
+store.s("a", 3);
+
+store.peek("a");       // 3
+store.peek("missing"); // false
 ```
 
-### `patch(partial)` — Patch
-```ts
-store.patch({ a: 10, b: 20 });  // batched
+### `getOrI(k, value)`**&#x20;— Get or Initialize**
+
+```tsx
+store.getOrI("counter", 0); // 0, initializes
+store.getOrI("counter", 5); // 0, existing value
 ```
 
----
+### `getOrM(k, make)`**&#x20;— Get or Make**
 
-## Conversion
+```tsx
+store.getOrM("createdAt", () => Date.now());
 
-### `toObject()` — To Object
-```ts
-store.toObject();       // { a: 1, b: 2 }
+store.getOrM("createdAt", () => Date.now()); // existing value
 ```
 
-### `toObjectFast()` — To Object (Fast)
-```ts
-store.toObjectFast();   // shallow copy, no iteration
+### `update(k, fn, initial?)`**&#x20;— Update or Initialize**
+
+```tsx
+store.update(
+  "count",
+  (old, has) => (has ? old : 0) + 1,
+  0
+);
 ```
 
-### `snapshot()` — Snapshot
-```ts
-const snap = store.snapshot(); // same as toObjectFast
+### `setIfAbsent(k, value)`**&#x20;— Set Only if Missing**
+
+```tsx
+store.setIfAbsent("a", 1); // true
+store.setIfAbsent("a", 2); // false
 ```
 
-### `toJSON()` — toJSON
-```ts
-JSON.stringify(store);  // works via toJSON
+### `setIfPresent(k, value)`**&#x20;— Set Only if Existing**
+
+```tsx
+store.setIfPresent("a", 99); // true if present
+store.setIfPresent("missing", 99); // false
 ```
 
-### `select(fn)` — Select
-```ts
-store.select((data) => data.a + data.b);
+### `replace(k, value)`**&#x20;— Replace Existing Value**
+
+```tsx
+store.replace("a", 50);       // true if present
+store.replace("missing", 50); // false
 ```
 
-### `toValues()` — To Values
-```ts
-store.toValues();       // iterable of values
+### `inc(key, by?)`**&#x20;— Increment**
+
+```tsx
+store.inc("hits");    // 1
+store.inc("hits", 5); // 6
+store.inc("hits", 2); // 8
 ```
 
-### `toKeys()` — To Keys
-```ts
-store.toKeys();         // iterable of keys
+### `touch(k)`**&#x20;— Create Key with Undefined**
+
+```tsx
+store.touch("seen"); // true
+store.h("seen");     // true
+store.g("seen");     // undefined
 ```
 
-### `toArray()` — To Array
-```ts
-store.toArray();        // iterable of [k, v]
+## **Transforms**
+
+### `mapValues(fn)`**&#x20;— Map Values into a New O2**
+
+```tsx
+store.s("a", 1).s("b", 2);
+
+const mapped = store.mapValues((k, v) => v * 10);
+
+// O2 { a: 10, b: 20 }
 ```
 
----
+### `mapKeys(fn)`**&#x20;— Transform Keys into a New O2**
 
-## Misc
+```tsx
+store.s("a", 1).s("b", 2);
 
-### `clone()` — Clone
-```ts
+const mapped = store.mapKeys((k, v) => k.toUpperCase());
+
+// O2 { A: 1, B: 2 }
+```
+
+### `filterKV(pred)`**&#x20;— Filter In Place**
+
+```tsx
+store.s("a", 1).s("b", 2).s("c", 3);
+
+store.filterKV((k, v) => v > 1);
+
+// Keeps b and c
+```
+
+### `filterKeys(pred)`**&#x20;— Filter Alias**
+
+```tsx
+store.filterKeys((k, v) => k !== "a");
+```
+
+### `partition(pred)`**&#x20;— Split into Two O2 Instances**
+
+```tsx
+store.s("a", 1).s("b", 2).s("c", 3);
+
+const [odds, evens] = store.partition(
+  (k, v) => v % 2 === 1
+);
+```
+
+The first result contains matching entries; the second contains nonmatching entries.
+
+### `find(pred)`**&#x20;— Find Entry**
+
+```tsx
+store.find((k, v) => v > 1);
+
+// ["b", 2]
+```
+
+### `findKey(pred)`**&#x20;— Find Key**
+
+```tsx
+store.findKey((k, v) => v > 1);
+
+// "b"
+```
+
+### `findValue(pred)`**&#x20;— Find Value**
+
+```tsx
+store.findValue((k, v) => v > 1);
+
+// 2
+```
+
+### `some(pred)`**&#x20;— Test Whether Any Entry Matches**
+
+```tsx
+store.some((k, v) => v > 100); // false
+```
+
+### `every(pred)`**&#x20;— Test Whether All Entries Match**
+
+```tsx
+store.every((k, v) => v >= 0); // true
+```
+
+### `reduce(fn, initial)`**&#x20;— Reduce Entries**
+
+```tsx
+store.s("a", 10).s("b", 20);
+
+const total = store.reduce(
+  (acc, k, v) => acc + v,
+  0
+);
+
+// 30
+```
+
+### `invert()`**&#x20;— Invert Keys and Values**
+
+```tsx
+store.s("a", 1).s("b", 2);
+
+const inverted = store.invert();
+
+// Intended:
+// O2 { 1: "a", 2: "b" }
+```
+
+ 
+
+
+### `unique(fn?)`**&#x20;— Unique Values by Derived Key**
+
+```tsx
+const users = new O2<string, { name: string; team: string }>([
+  ["u1", { name: "Ann", team: "red" }],
+  ["u2", { name: "Bob", team: "blue" }],
+  ["u3", { name: "Ann", team: "green" }],
+]);
+
+const unique = users.unique((k, user) => user.name);
+
+// One entry per name
+```
+
+Without a callback, the value itself becomes the uniqueness key:
+
+```tsx
+const uniqueValues = store.unique();
+```
+
+### `pick(keys)`**&#x20;— Select Specific Keys**
+
+```tsx
+store.s("a", 1).s("b", 2).s("c", 3);
+
+const selected = store.pick(["a", "c"]);
+
+// O2 { a: 1, c: 3 }
+```
+
+### `omit(keys)`**&#x20;— Exclude Specific Keys**
+
+```tsx
+const remaining = store.omit(["b"]);
+
+// O2 { a: 1, c: 3 }
+```
+
+### `group(fn)`**&#x20;— Group Values**
+
+```tsx
+const people = new O2<string, { name: string; team: string }>([
+  ["a", { name: "Ann", team: "red" }],
+  ["b", { name: "Bob", team: "blue" }],
+  ["c", { name: "Sam", team: "red" }],
+]);
+
+const grouped = people.group((person, key) => person.team);
+
+// O2 {
+//   red: [Ann, Sam],
+//   blue: [Bob]
+// }
+```
+
+Note the callback order here is `(value, key)`, unlike most other transform callbacks.
+
+## **Merging / Patching**
+
+### `merge(other)`**&#x20;— Merge Entries**
+
+```tsx
+store.merge([
+  ["a", 1],
+  ["b", 2],
+]);
+```
+
+### `clearAndSet(entries)`**&#x20;— Clear and Replace Entries**
+
+```tsx
+store.clearAndSet([
+  ["x", 10],
+  ["y", 20],
+]);
+```
+
+### `patch(partial)`**&#x20;— Batch Object Updates**
+
+```tsx
+store.patch({
+  a: 10,
+  b: 20,
+});
+```
+
+## **Conversion**
+
+### `toObject()`**&#x20;— Convert to Plain Object**
+
+```tsx
+store.toObject();
+
+// { a: 1, b: 2 }
+```
+
+### `toObjectFast()`**&#x20;— Fast Shallow Copy**
+
+```tsx
+const object = store.toObjectFast();
+
+// { a: 1, b: 2 }
+```
+
+### `snapshot()`**&#x20;— Snapshot**
+
+```tsx
+const snap = store.snapshot();
+
+// { a: 1, b: 2 }
+```
+
+### `toJSON()`**&#x20;— JSON Serialization**
+
+```tsx
+JSON.stringify(store);
+
+// '{"a":1,"b":2}'
+```
+
+### `select(fn)`**&#x20;— Select from Internal Data**
+
+```tsx
+const result = store.select((data) => {
+  return data.a + data.b;
+});
+```
+
+### `toValues()`**&#x20;— Convert to Values Collection**
+
+```tsx
+const values = store.toValues();
+
+// A2I containing [1, 2]
+```
+
+### `toKeys()`**&#x20;— Convert to Keys Collection**
+
+```tsx
+const keys = store.toKeys();
+
+// A2I containing ["a", "b"]
+```
+
+### `toArray()`**&#x20;— Convert to Entry Collection**
+
+```tsx
+const entries = store.toArray();
+
+// A2I containing [["a", 1], ["b", 2]]
+```
+
+## **Miscellaneous**
+
+### `clone()`**&#x20;— Clone Store**
+
+```tsx
 const copy = store.clone();
+
+copy.s("c", 3);
+
+// Original remains unchanged
 ```
 
-### `equals(other)` — Equals
-```ts
-store.equals(store.clone());  // true
+### `equals(other)`**&#x20;— Compare Stores**
+
+```tsx
+const a = O2.fromEntries([
+  ["x", 1],
+  ["y", 2],
+]);
+
+const b = a.clone();
+
+a.equals(b); // true
+
+b.s("z", 3);
+
+a.equals(b); // false
 ```
 
----
+## **Static Factories**
 
-## Static Factories
+### `O2.fromObject(obj)`**&#x20;— Create from Object**
 
-### `O2.fromObject(obj)` — From Object
-```ts
-const s = O2.fromObject({ a: 1, b: 2 });   // O2<string, number>
+```tsx
+const store = O2.fromObject({
+  a: 1,
+  b: 2,
+});
+
+// O2<string, number>
 ```
 
-### `O2.fromEntries(entries)` — From Entries
-```ts
-const s = O2.fromEntries<string, number>([["a", 1], ["b", 2]]);
+### `O2.fromEntries(entries)`**&#x20;— Create from Entries**
+
+```tsx
+const store = O2.fromEntries<string, number>([
+  ["a", 1],
+  ["b", 2],
+]);
 ```
 
-### `O2.from(source)` — From
-```ts
-const a = O2.fromEntries<string, number>([["a", 1]]);
-const b = O2.from(a);         // copy of an O2
-const c = O2.from({ a: 1 });  // from a plain record
+### `O2.from(source)`**&#x20;— Create from O2 or Record**
+
+```tsx
+const original = O2.fromEntries<string, number>([
+  ["a", 1],
+]);
+
+const copy = O2.from(original);
+
+const fromRecord = O2.from({
+  a: 1,
+  b: 2,
+});
 ```
 
----
+## **Combined Example**
 
-## A realistic combined example
-
-```ts
-type Task = { title: string; done: boolean };
+```tsx
+type Task = {
+  title: string;
+  done: boolean;
+};
 
 const tasks = new O2<string, Task>();
 
+tasks.$debug(100);
+
 const unsub = tasks.on((e) => {
-  if (e.op === "set" || e.op === "upd") console.log("changed:", e.k);
+  if (e.op === "set" || e.op === "upd") {
+    console.log("changed:", e.k);
+  }
 });
 
 tasks.batch(() => {
-  tasks.s({ title: "Write docs", done: false }, "t1");
-  tasks.s({ title: "Ship O2",    done: false }, "t2");
+  tasks.s("t1", { title: "Write docs", done: false });
+  tasks.s("t2", { title: "Ship O2", done: false });
 });
 
-tasks.update("t1", (old) => ({ ...old, done: true }));
-tasks.dv("doneCount", ["t1", "t2"], (a, b) => +a.done + +b.done);
+tasks.update("t1", (old) => ({
+  ...old,
+  done: true,
+}));
 
-console.log(tasks.g("doneCount"));   // 1
-console.log(tasks.snapshot());       // plain object
+tasks.dv(
+  "doneCount",
+  ["t1", "t2"],
+  (a, b) => Number(a.done) + Number(b.done)
+);
+
+console.log(tasks.g("doneCount")); // 1
+
+console.log(tasks.filterKV((k, task) => !task.done));
+
+console.log(tasks.snapshot());
+
+console.log(tasks.$history());
 
 unsub();
 ```

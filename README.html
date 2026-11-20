@@ -2592,6 +2592,30 @@ type <span class="hljs-title class_">QuadSub</span>&lt;V&gt; = <span class="hljs
 <span class="hljs-keyword">const</span> q = <span class="hljs-keyword">new</span> <span class="hljs-title function_">QUAD</span>()
 </code></pre>
 <h2 id="o2--object"><code>O2</code> — Object</h2>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p></p>
+<p>Increasing the DX further, maps call api has been added to O2. Thus making the conversion instant, and painless.</p>
+<ul>
+<li>get</li>
+<li>set</li>
+<li>has</li>
+<li>delete</li>
+<li>clear</li>
+<li>forEach</li>
+</ul>
+<p>Have been added and is now available for use.</p>
+<p>[UPDATE] AHH OHHH my god, that was satisfying. Using find and replace to convert every single Map and M2 in the project... it was a lot of them... without modyifing a single callsite. 5700 call sites, untouched.</p>
+</div>
+<p>Performance wise, O2 matches js obj's exactly when both are using the hot path.</p>
+<pre><code class="language-txt">------------------       O2        ----------------------
+Peak (Best Batch):                      1697.79 M ops/sec
+Average:                                 657.56 M ops/sec
+---------------------------------------------------------
+------------------     JS OBJ      ----------------------
+Peak (Best Batch):                      1697.79 M ops/sec
+Average:                                 557.14 M ops/sec
+---------------------------------------------------------
+</code></pre>
+<p>The average difference is just noise, as the avg bounces a bit.</p>
 <table>
 <thead>
 <tr>
@@ -2920,297 +2944,562 @@ type <span class="hljs-title class_">QuadSub</span>&lt;V&gt; = <span class="hljs
 </table>
 <h3 id="o2-usage-reference-sheet"><code>O2</code> Usage Reference Sheet</h3>
 <p>Examples assume:</p>
-<pre><code class="language-ts"><span class="hljs-keyword">import</span> { <span class="hljs-variable constant_">O2</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./o2&quot;</span>;
-
-<span class="hljs-keyword">type</span> <span class="hljs-title class_">User</span> = { <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">age</span>: <span class="hljs-built_in">number</span> };
+<pre><code class="language-ts"><span class="hljs-keyword">type</span> <span class="hljs-title class_">User</span> = { <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">age</span>: <span class="hljs-built_in">number</span> };
 <span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;();
 <span class="hljs-keyword">const</span> users = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-title class_">User</span>&gt;();
 </code></pre>
 <hr>
-<h2 id="subscription">Subscription</h2>
-<h3 id="onfn--subscribe"><code>on(fn)</code> — Subscribe</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> unsub = store.<span class="hljs-title function_">on</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e.<span class="hljs-property">op</span>, e.<span class="hljs-property">k</span>));
-store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// logs: &quot;set a&quot;</span>
-<span class="hljs-title function_">unsub</span>();               <span class="hljs-comment">// stop listening</span>
+<p>Yes. The usages should match the actual <code>O2</code> implementation. The main correction is <strong>key-first arguments</strong> for <code>s</code>, <code>getOrI</code>, <code>getOrM</code>, <code>setIfAbsent</code>, <code>setIfPresent</code>, and <code>replace</code>. Callback arguments also need to follow the implementation's order.</p>
+<p>Below is an example for <strong>every exported function, constructor, instance method, getter, iterator, and static method</strong> in the <code>O2</code> implementation you supplied. All argument orders and callback signatures match the actual code.</p>
+<h2 id="exported-functions"><strong>Exported functions</strong></h2>
+<h3 id="rvv--resolve-value-or-thunk"><code>rv(v)</code><strong> — Resolve Value or Thunk</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-title function_">rv</span>(<span class="hljs-number">42</span>);                    <span class="hljs-comment">// 42</span>
+<span class="hljs-title function_">rv</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-number">42</span>);              <span class="hljs-comment">// 42</span>
+<span class="hljs-title function_">rv</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;hello&quot;</span>);         <span class="hljs-comment">// &quot;hello&quot;</span>
 </code></pre>
-<h3 id="offfn--unsubscribe"><code>off(fn)</code> — Unsubscribe</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> <span class="hljs-title function_">listener</span> = (<span class="hljs-params">e</span>) =&gt; <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e);
+<h3 id="samevaluea-b--compare-values"><code>sameValue(a, b)</code><strong> — Compare Values</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-title function_">sameValue</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);                              <span class="hljs-comment">// true</span>
+<span class="hljs-title function_">sameValue</span>(<span class="hljs-title class_">NaN</span>, <span class="hljs-title class_">NaN</span>);                          <span class="hljs-comment">// true</span>
+<span class="hljs-title function_">sameValue</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(<span class="hljs-number">1000</span>), <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(<span class="hljs-number">1000</span>));    <span class="hljs-comment">// true</span>
+<span class="hljs-title function_">sameValue</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> }, { <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> });                <span class="hljs-comment">// false</span>
+</code></pre>
+<h2 id="construction"><strong>Construction</strong></h2>
+<h3 id="new-o2entries--constructor"><code>new O2(entries?)</code><strong> — Constructor</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, number&gt;();
+
+<span class="hljs-keyword">const</span> populated = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, number&gt;([
+  [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>],
+]);
+</code></pre>
+<h3 id="size--number-of-entries"><code>size</code><strong> — Number of Entries</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-property">size</span>; <span class="hljs-comment">// 2</span>
+</code></pre>
+<h3 id="length--size-alias"><code>length</code><strong> — Size Alias</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-property">length</span>; <span class="hljs-comment">// 2</span>
+</code></pre>
+<h3 id="symboliterator--default-iterator"><code>[Symbol.iterator]()</code><strong> — Default Iterator</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k, v] <span class="hljs-keyword">of</span> store) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v);
+}
+
+<span class="hljs-keyword">const</span> entries = [...store];
+</code></pre>
+<h2 id="map-compatible-api"><strong>Map-Compatible API</strong></h2>
+<h3 id="getk--get"><code>get(k)</code><strong> — Get</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;missing&quot;</span>); <span class="hljs-comment">// undefined</span>
+</code></pre>
+<h3 id="setk-v--set"><code>set(k, v)</code><strong> — Set</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+store.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-function">() =&gt;</span> <span class="hljs-number">2</span>);
+
+store.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">10</span>); <span class="hljs-comment">// overwrite</span>
+</code></pre>
+<h3 id="hask--has"><code>has(k)</code><strong> — Has</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">has</span>(<span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">has</span>(<span class="hljs-string">&quot;missing&quot;</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="deletek--delete"><code>delete(k)</code><strong> — Delete</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">delete</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">delete</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="clear--clear"><code>clear()</code><strong> — Clear</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+store.<span class="hljs-title function_">clear</span>();
+
+store.<span class="hljs-property">size</span>; <span class="hljs-comment">// 0</span>
+</code></pre>
+<h3 id="foreachfn--map-compatible-for-each"><code>forEach(fn)</code><strong> — Map-Compatible For Each</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">k, v, map</span>) =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v, map.<span class="hljs-property">size</span>);
+});
+</code></pre>
+<h3 id="groupbyitems-fn--static-grouping"><code>groupBy(items, fn)</code><strong> — Static Grouping</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> people = [
+  { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;red&quot;</span> },
+  { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;blue&quot;</span> },
+  { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Sam&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;red&quot;</span> },
+];
+
+<span class="hljs-keyword">const</span> grouped = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">groupBy</span>(people, <span class="hljs-function">(<span class="hljs-params">person, index</span>) =&gt;</span> person.<span class="hljs-property">team</span>);
+
+<span class="hljs-comment">// O2 {</span>
+<span class="hljs-comment">//   red: [Ann, Sam],</span>
+<span class="hljs-comment">//   blue: [Bob]</span>
+<span class="hljs-comment">// }</span>
+</code></pre>
+<h2 id="subscription"><strong>Subscription</strong></h2>
+<h3 id="onfn--subscribe"><code>on(fn)</code><strong> — Subscribe</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> unsub = store.<span class="hljs-title function_">on</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e.<span class="hljs-property">op</span>, e.<span class="hljs-property">k</span>, e.<span class="hljs-property">v</span>);
+});
+
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+
+<span class="hljs-title function_">unsub</span>();
+</code></pre>
+<h3 id="offfn--unsubscribe"><code>off(fn)</code><strong> — Unsubscribe</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> <span class="hljs-title function_">listener</span> = (<span class="hljs-params">e</span>) =&gt; <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(e);
+
 store.<span class="hljs-title function_">on</span>(listener);
 store.<span class="hljs-title function_">off</span>(listener);
 </code></pre>
-<hr>
-<h2 id="batching">Batching</h2>
-<h3 id="batchfn--batch"><code>batch(fn)</code> — Batch</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">batch</span>(<span class="hljs-function">() =&gt;</span> {
-  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
-  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;c&quot;</span>);
+<h2 id="batching"><strong>Batching</strong></h2>
+<h3 id="batchfn--batch-mutations"><code>batch(fn)</code><strong> — Batch Mutations</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">batch</span>(<span class="hljs-function">() =&gt;</span> {
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+  store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>);
 });
-<span class="hljs-comment">// subscribers fire once per key, after the batch closes</span>
 </code></pre>
-<hr>
-<h2 id="core-crud">Core CRUD</h2>
-<h3 id="sv-k--set"><code>s(v, k)</code> — Set</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">42</span>, <span class="hljs-string">&quot;answer&quot;</span>);
-store.<span class="hljs-title function_">s</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-number">99</span>, <span class="hljs-string">&quot;lazy&quot;</span>);   <span class="hljs-comment">// thunk is resolved</span>
+<p>Subscribers receive the accumulated event for each changed key when the outermost batch closes.</p>
+<h2 id="core-crud"><strong>Core CRUD</strong></h2>
+<h3 id="sk-v--set"><code>s(k, v)</code><strong> — Set</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;answer&quot;</span>, <span class="hljs-number">42</span>);
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;lazy&quot;</span>, <span class="hljs-function">() =&gt;</span> <span class="hljs-number">99</span>);
+
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
 </code></pre>
-<h3 id="mutatek-fn--mutate"><code>mutate(k, fn)</code> — Mutate</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">10</span>, <span class="hljs-string">&quot;counter&quot;</span>);
-store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> old + <span class="hljs-number">5</span>); <span class="hljs-comment">// 15</span>
-store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;missing&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> <span class="hljs-number">0</span>);       <span class="hljs-comment">// undefined (key absent)</span>
+<h3 id="mutatek-fn--mutate-existing-value"><code>mutate(k, fn)</code><strong> — Mutate Existing Value</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-number">10</span>);
+
+store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old, has</span>) =&gt;</span> old + <span class="hljs-number">5</span>); <span class="hljs-comment">// 15</span>
+store.<span class="hljs-title function_">mutate</span>(<span class="hljs-string">&quot;missing&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old, has</span>) =&gt;</span> <span class="hljs-number">0</span>);       <span class="hljs-comment">// undefined</span>
 </code></pre>
-<h3 id="dk--delete"><code>d(k)</code> — Delete</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true</span>
-store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// false</span>
+<p><code>mutate</code> does not create missing keys.</p>
+<h3 id="dk--delete"><code>d(k)</code><strong> — Delete</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+
+store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">d</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// false</span>
 </code></pre>
-<h3 id="c--clear"><code>c()</code> — Clear</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
-store.<span class="hljs-title function_">c</span>();   <span class="hljs-comment">// now empty; each prior key emits a &quot;del&quot;</span>
+<h3 id="c--clear"><code>c()</code><strong> — Clear</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+
+store.<span class="hljs-title function_">c</span>();
+
+store.<span class="hljs-property">size</span>; <span class="hljs-comment">// 0</span>
 </code></pre>
-<h3 id="gk--get"><code>g(k)</code> — Get</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;a&quot;</span>);    <span class="hljs-comment">// 1</span>
-store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;zzz&quot;</span>);  <span class="hljs-comment">// undefined</span>
+<h3 id="gk--get"><code>g(k)</code><strong> — Get</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;missing&quot;</span>); <span class="hljs-comment">// undefined</span>
 </code></pre>
-<h3 id="hk--has"><code>h(k)</code> — Has</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;a&quot;</span>);   <span class="hljs-comment">// true</span>
-store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;zzz&quot;</span>); <span class="hljs-comment">// false</span>
+<h3 id="hk--has"><code>h(k)</code><strong> — Has</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;missing&quot;</span>); <span class="hljs-comment">// false</span>
 </code></pre>
-<hr>
-<h2 id="derived-values">Derived Values</h2>
-<h3 id="dvk-deps-fn--define-derived"><code>dv(k, deps, fn)</code> — Define Derived</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> nums = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;();
-nums.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;b&quot;</span>);
+<h2 id="derived-values"><strong>Derived Values</strong></h2>
+<h3 id="dvk-deps-fn--define-derived-value"><code>dv(k, deps, fn)</code><strong> — Define Derived Value</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> nums = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, number&gt;();
+
+nums.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">2</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">3</span>);
+
 nums.<span class="hljs-title function_">dv</span>(<span class="hljs-string">&quot;sum&quot;</span>, [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>], <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a + b);
 
-nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// 5</span>
-nums.<span class="hljs-title function_">s</span>(<span class="hljs-number">10</span>, <span class="hljs-string">&quot;a&quot;</span>);
-nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// 13</span>
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>); <span class="hljs-comment">// 5</span>
+
+nums.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">10</span>);
+
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>); <span class="hljs-comment">// 13</span>
 </code></pre>
-<h3 id="dirtykeys--mark-dirty"><code>dirty(...keys)</code> — Mark Dirty</h3>
-<pre><code class="language-ts">nums.<span class="hljs-title function_">dirty</span>(<span class="hljs-string">&quot;sum&quot;</span>);
-nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>);        <span class="hljs-comment">// recomputed</span>
+<h3 id="dirtykeys--mark-derived-values-dirty"><code>dirty(...keys)</code><strong> — Mark Derived Values Dirty</strong></h3>
+<pre><code class="language-tsx">nums.<span class="hljs-title function_">dirty</span>(<span class="hljs-string">&quot;sum&quot;</span>);
+
+nums.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;sum&quot;</span>); <span class="hljs-comment">// recomputed</span>
 </code></pre>
-<hr>
-<h2 id="debugging--history">Debugging / History</h2>
-<h3 id="debuglimit--enable-history"><code>$debug(limit?)</code> — Enable History</h3>
-<pre><code class="language-ts">store.$debug(<span class="hljs-number">50</span>);
-store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.$history();     <span class="hljs-comment">// [{ op: &quot;set&quot;, k: &quot;a&quot;, ... }]</span>
+<h2 id="debugging--history"><strong>Debugging / History</strong></h2>
+<h3 id="debuglimit--enable-history"><code>$debug(limit?)</code><strong> — Enable History</strong></h3>
+<pre><code class="language-tsx">store.$debug(<span class="hljs-number">50</span>);
+
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
 </code></pre>
-<h3 id="strict--strict-mode"><code>$strict()</code> — Strict Mode</h3>
-<pre><code class="language-ts">store.$strict();
-<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k] <span class="hljs-keyword">of</span> store) {
-  store.<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, k);      <span class="hljs-comment">// throws: mutation during iteration</span>
+<h3 id="strict--strict-iteration-mode"><code>$strict()</code><strong> — Strict Iteration Mode</strong></h3>
+<pre><code class="language-tsx">store.$strict();
+
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k, v] <span class="hljs-keyword">of</span> store) {
+  store.<span class="hljs-title function_">s</span>(k, v + <span class="hljs-number">1</span>); <span class="hljs-comment">// throws</span>
 }
 </code></pre>
-<h3 id="history--history"><code>$history()</code> — History</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> events = store.$history();
-</code></pre>
-<h3 id="whyk--why"><code>$why(k)</code> — Why</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.$why(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// last event for &quot;a&quot;</span>
-</code></pre>
-<h3 id="diffother--diff"><code>$diff(other)</code> — Diff</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>]]);
-<span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-number">3</span>]]);
-a.$diff(b);   <span class="hljs-comment">// { add: [[&quot;y&quot;,2]], del: [&quot;z&quot;], chg: [] }</span>
-</code></pre>
-<hr>
-<h2 id="iteration">Iteration</h2>
-<h3 id="entries--entries"><code>entries()</code> — Entries</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k, v] <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">entries</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v);
-</code></pre>
-<h3 id="keys--keys"><code>keys()</code> — Keys</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> k <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">keys</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k);
-</code></pre>
-<h3 id="values--values"><code>values()</code> — Values</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> v <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">values</span>()) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v);
-</code></pre>
-<h3 id="foreachkvfn--ffn--for-each"><code>forEachKV(fn)</code> / <code>f(fn)</code> — For Each</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">forEachKV</span>(<span class="hljs-function">(<span class="hljs-params">v, k, map</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v));
-store.<span class="hljs-title function_">f</span>(<span class="hljs-function">(<span class="hljs-params">v, k</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v));
-</code></pre>
-<hr>
-<h2 id="convenience">Convenience</h2>
-<h3 id="swapvalue-key--swap"><code>swap(value, key)</code> — Swap</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.<span class="hljs-title function_">swap</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// returns 1, store[&quot;a&quot;] is now 2</span>
-</code></pre>
-<h3 id="takek--take"><code>take(k)</code> — Take</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">7</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.<span class="hljs-title function_">take</span>(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// 7, and &quot;a&quot; is deleted</span>
-</code></pre>
-<h3 id="peekk--peek"><code>peek(k)</code> — Peek</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;a&quot;</span>);
-store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;a&quot;</span>);     <span class="hljs-comment">// 3</span>
-store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;zzz&quot;</span>);   <span class="hljs-comment">// false</span>
-</code></pre>
-<h3 id="getorivalue-k--get-or-init"><code>getOrI(value, k)</code> — Get or Init</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;counter&quot;</span>);  <span class="hljs-comment">// sets 0, returns 0</span>
-store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;counter&quot;</span>);  <span class="hljs-comment">// returns existing</span>
-</code></pre>
-<h3 id="getormmake-k--get-or-make"><code>getOrM(make, k)</code> — Get or Make</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">getOrM</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>(), <span class="hljs-string">&quot;createdAt&quot;</span>);
-</code></pre>
-<h3 id="updatek-fn-initial--update"><code>update(k, fn, initial?)</code> — Update</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">update</span>(<span class="hljs-string">&quot;count&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old, has</span>) =&gt;</span> (has ? old : <span class="hljs-number">0</span>) + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);
-</code></pre>
-<h3 id="setifabsentvalue-k--set-if-absent"><code>setIfAbsent(value, k)</code> — Set If Absent</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true (set)</span>
-store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// false (already there)</span>
-</code></pre>
-<h3 id="setifpresentvalue-k--set-if-present"><code>setIfPresent(value, k)</code> — Set If Present</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">setIfPresent</span>(<span class="hljs-number">99</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true if &quot;a&quot; exists</span>
-</code></pre>
-<h3 id="replacevalue-k--replace"><code>replace(value, k)</code> — Replace</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">replace</span>(<span class="hljs-number">50</span>, <span class="hljs-string">&quot;a&quot;</span>);  <span class="hljs-comment">// true only if &quot;a&quot; existed</span>
-</code></pre>
-<h3 id="inckey-by--increment"><code>inc(key, by?)</code> — Increment</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>);      <span class="hljs-comment">// 1</span>
-store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>, <span class="hljs-number">5</span>);   <span class="hljs-comment">// 6</span>
-</code></pre>
-<h3 id="touchk--touch"><code>touch(k)</code> — Touch</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">touch</span>(<span class="hljs-string">&quot;seen&quot;</span>);    <span class="hljs-comment">// true, sets undefined</span>
-</code></pre>
-<hr>
-<h2 id="transforms">Transforms</h2>
-<h3 id="mapvaluesfn--map-values"><code>mapValues(fn)</code> — Map Values</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
-store.<span class="hljs-title function_">mapValues</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v * <span class="hljs-number">10</span>);  <span class="hljs-comment">// O2 { a:10, b:20 }</span>
-</code></pre>
-<h3 id="mapkeysfn--map-keys"><code>mapKeys(fn)</code> — Map Keys</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">mapKeys</span>(<span class="hljs-function">(<span class="hljs-params">_v, k</span>) =&gt;</span> k.<span class="hljs-title function_">toUpperCase</span>()); <span class="hljs-comment">// O2 { A:1, B:2 }</span>
-</code></pre>
-<h3 id="filterkvpred--filter-in-place"><code>filterKV(pred)</code> — Filter (in place)</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;c&quot;</span>);
-store.<span class="hljs-title function_">filterKV</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);   <span class="hljs-comment">// keeps b, c</span>
-</code></pre>
-<h3 id="filterkeyspred--filter-keys-alias"><code>filterKeys(pred)</code> — Filter Keys (alias)</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">filterKeys</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v % <span class="hljs-number">2</span> === <span class="hljs-number">0</span>);
-</code></pre>
-<h3 id="partitionpred--partition"><code>partition(pred)</code> — Partition</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> [odds, evens] = store.<span class="hljs-title function_">partition</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v % <span class="hljs-number">2</span> === <span class="hljs-number">1</span>);
-</code></pre>
-<h3 id="uniquefn--unique"><code>unique(fn?)</code> — Unique</h3>
-<pre><code class="language-ts">users.<span class="hljs-title function_">unique</span>(<span class="hljs-function">(<span class="hljs-params">u</span>) =&gt;</span> u.<span class="hljs-property">name</span>);       <span class="hljs-comment">// one user per name</span>
-</code></pre>
-<h3 id="pickkeys--pick"><code>pick(keys)</code> — Pick</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">pick</span>([<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>]);   <span class="hljs-comment">// O2 with only those</span>
-</code></pre>
-<h3 id="omitkeys--omit"><code>omit(keys)</code> — Omit</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">omit</span>([<span class="hljs-string">&quot;a&quot;</span>]);        <span class="hljs-comment">// O2 without &quot;a&quot;</span>
-</code></pre>
-<h3 id="invert--invert"><code>invert()</code> — Invert</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">s</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;a&quot;</span>).<span class="hljs-title function_">s</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;b&quot;</span>);
-store.<span class="hljs-title function_">invert</span>();           <span class="hljs-comment">// O2 { 1:&quot;a&quot;, 2:&quot;b&quot; } (keys &lt;-&gt; values)</span>
-</code></pre>
-<h3 id="groupfn--group"><code>group(fn)</code> — Group</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> people = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, { <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">team</span>: <span class="hljs-built_in">string</span> }&gt;([
-  [<span class="hljs-string">&quot;a&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;x&quot;</span> }],
-  [<span class="hljs-string">&quot;b&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;y&quot;</span> }],
-]);
-people.<span class="hljs-title function_">group</span>(<span class="hljs-function">(<span class="hljs-params">p</span>) =&gt;</span> p.<span class="hljs-property">team</span>);  <span class="hljs-comment">// O2&lt;&quot;x&quot;|&quot;y&quot;, A2&lt;Person&gt;&gt;</span>
-</code></pre>
-<hr>
-<h2 id="search">Search</h2>
-<h3 id="findpred--find"><code>find(pred)</code> — Find</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">find</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);   <span class="hljs-comment">// [key, value] | undefined</span>
-</code></pre>
-<h3 id="findkeypred--find-key"><code>findKey(pred)</code> — Find Key</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">findKey</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
-</code></pre>
-<h3 id="findvaluepred--find-value"><code>findValue(pred)</code> — Find Value</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">findValue</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
-</code></pre>
-<h3 id="somepred--some"><code>some(pred)</code> — Some</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">some</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt; <span class="hljs-number">100</span>);   <span class="hljs-comment">// false</span>
-</code></pre>
-<h3 id="everypred--every"><code>every(pred)</code> — Every</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">every</span>(<span class="hljs-function">(<span class="hljs-params">v</span>) =&gt;</span> v &gt;= <span class="hljs-number">0</span>);
-</code></pre>
-<h3 id="reducefn-initial--reduce"><code>reduce(fn, initial)</code> — Reduce</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">acc, v</span>) =&gt;</span> acc + v, <span class="hljs-number">0</span>);
-</code></pre>
-<hr>
-<h2 id="merging--patching">Merging / Patching</h2>
-<h3 id="mergeother--merge"><code>merge(other)</code> — Merge</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">merge</span>([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>]]);
-</code></pre>
-<h3 id="clearandsetentries--clear-and-set"><code>clearAndSet(entries)</code> — Clear and Set</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">clearAndSet</span>([[<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>]]);
-</code></pre>
-<h3 id="patchpartial--patch"><code>patch(partial)</code> — Patch</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">patch</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">10</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">20</span> });  <span class="hljs-comment">// batched</span>
-</code></pre>
-<hr>
-<h2 id="conversion">Conversion</h2>
-<h3 id="toobject--to-object"><code>toObject()</code> — To Object</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">toObject</span>();       <span class="hljs-comment">// { a: 1, b: 2 }</span>
-</code></pre>
-<h3 id="toobjectfast--to-object-fast"><code>toObjectFast()</code> — To Object (Fast)</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">toObjectFast</span>();   <span class="hljs-comment">// shallow copy, no iteration</span>
-</code></pre>
-<h3 id="snapshot--snapshot"><code>snapshot()</code> — Snapshot</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> snap = store.<span class="hljs-title function_">snapshot</span>(); <span class="hljs-comment">// same as toObjectFast</span>
-</code></pre>
-<h3 id="tojson--tojson"><code>toJSON()</code> — toJSON</h3>
-<pre><code class="language-ts"><span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(store);  <span class="hljs-comment">// works via toJSON</span>
-</code></pre>
-<h3 id="selectfn--select"><code>select(fn)</code> — Select</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">select</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> data.<span class="hljs-property">a</span> + data.<span class="hljs-property">b</span>);
-</code></pre>
-<h3 id="tovalues--to-values"><code>toValues()</code> — To Values</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">toValues</span>();       <span class="hljs-comment">// iterable of values</span>
-</code></pre>
-<h3 id="tokeys--to-keys"><code>toKeys()</code> — To Keys</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">toKeys</span>();         <span class="hljs-comment">// iterable of keys</span>
-</code></pre>
-<h3 id="toarray--to-array"><code>toArray()</code> — To Array</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">toArray</span>();        <span class="hljs-comment">// iterable of [k, v]</span>
-</code></pre>
-<hr>
-<h2 id="misc">Misc</h2>
-<h3 id="clone--clone"><code>clone()</code> — Clone</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> copy = store.<span class="hljs-title function_">clone</span>();
-</code></pre>
-<h3 id="equalsother--equals"><code>equals(other)</code> — Equals</h3>
-<pre><code class="language-ts">store.<span class="hljs-title function_">equals</span>(store.<span class="hljs-title function_">clone</span>());  <span class="hljs-comment">// true</span>
-</code></pre>
-<hr>
-<h2 id="static-factories">Static Factories</h2>
-<h3 id="o2fromobjectobj--from-object"><code>O2.fromObject(obj)</code> — From Object</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> s = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromObject</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span> });   <span class="hljs-comment">// O2&lt;string, number&gt;</span>
-</code></pre>
-<h3 id="o2fromentriesentries--from-entries"><code>O2.fromEntries(entries)</code> — From Entries</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> s = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>]]);
-</code></pre>
-<h3 id="o2fromsource--from"><code>O2.from(source)</code> — From</h3>
-<pre><code class="language-ts"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;([[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>]]);
-<span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>(a);         <span class="hljs-comment">// copy of an O2</span>
-<span class="hljs-keyword">const</span> c = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>({ <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> });  <span class="hljs-comment">// from a plain record</span>
-</code></pre>
-<hr>
-<h2 id="a-realistic-combined-example">A realistic combined example</h2>
-<pre><code class="language-ts"><span class="hljs-keyword">type</span> <span class="hljs-title class_">Task</span> = { <span class="hljs-attr">title</span>: <span class="hljs-built_in">string</span>; <span class="hljs-attr">done</span>: <span class="hljs-built_in">boolean</span> };
+<h3 id="history--retrieve-history"><code>$history()</code><strong> — Retrieve History</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> history = store.$history();
 
-<span class="hljs-keyword">const</span> tasks = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-title class_">Task</span>&gt;();
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(history);
+</code></pre>
+<h3 id="whyk--last-event-for-key"><code>$why(k)</code><strong> — Last Event for Key</strong></h3>
+<pre><code class="language-tsx">store.$debug();
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">2</span>);
+
+store.$why(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// last event for &quot;a&quot;</span>
+</code></pre>
+<h3 id="diffother--compare-stores"><code>$diff(other)</code><strong> — Compare Stores</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>],
+]);
+
+<span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-number">3</span>],
+]);
+
+a.$diff(b);
+
+<span class="hljs-comment">// {</span>
+<span class="hljs-comment">//   add: [[&quot;y&quot;, 2]],</span>
+<span class="hljs-comment">//   del: [&quot;z&quot;],</span>
+<span class="hljs-comment">//   chg: []</span>
+<span class="hljs-comment">// }</span>
+</code></pre>
+<p><code>add</code> contains entries in the calling store that are absent from <code>other</code>. <code>del</code> contains keys in <code>other</code> that are absent from the calling store.</p>
+<h2 id="iteration"><strong>Iteration</strong></h2>
+<h3 id="entries--iterate-entries"><code>entries()</code><strong> — Iterate Entries</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [k, v] <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">entries</span>()) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v);
+}
+</code></pre>
+<h3 id="keys--iterate-keys"><code>keys()</code><strong> — Iterate Keys</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> k <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">keys</span>()) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k);
+}
+</code></pre>
+<h3 id="values--iterate-values"><code>values()</code><strong> — Iterate Values</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> v <span class="hljs-keyword">of</span> store.<span class="hljs-title function_">values</span>()) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(v);
+}
+</code></pre>
+<h3 id="foreachkvfn--iterate-keyvalue-pairs"><code>forEachKV(fn)</code><strong> — Iterate Key/Value Pairs</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">forEachKV</span>(<span class="hljs-function">(<span class="hljs-params">k, v, map</span>) =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v, map);
+});
+</code></pre>
+<h3 id="ffn--for-each-alias"><code>f(fn)</code><strong> — For Each Alias</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">f</span>(<span class="hljs-function">(<span class="hljs-params">k, v, map</span>) =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(k, v);
+});
+</code></pre>
+<h2 id="convenience"><strong>Convenience</strong></h2>
+<h3 id="swapvalue-key--replace-and-return-previous-value"><code>swap(value, key)</code><strong> — Replace and Return Previous Value</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>);
+
+store.<span class="hljs-title function_">swap</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// 2</span>
+</code></pre>
+<h3 id="takek--get-and-delete"><code>take(k)</code><strong> — Get and Delete</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">7</span>);
+
+store.<span class="hljs-title function_">take</span>(<span class="hljs-string">&quot;a&quot;</span>); <span class="hljs-comment">// 7</span>
+store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;a&quot;</span>);    <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="peekk--get-or-false"><code>peek(k)</code><strong> — Get or False</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">3</span>);
+
+store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;a&quot;</span>);       <span class="hljs-comment">// 3</span>
+store.<span class="hljs-title function_">peek</span>(<span class="hljs-string">&quot;missing&quot;</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="getorik-value--get-or-initialize"><code>getOrI(k, value)</code><strong> — Get or Initialize</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-number">0</span>); <span class="hljs-comment">// 0, initializes</span>
+store.<span class="hljs-title function_">getOrI</span>(<span class="hljs-string">&quot;counter&quot;</span>, <span class="hljs-number">5</span>); <span class="hljs-comment">// 0, existing value</span>
+</code></pre>
+<h3 id="getormk-make--get-or-make"><code>getOrM(k, make)</code><strong> — Get or Make</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">getOrM</span>(<span class="hljs-string">&quot;createdAt&quot;</span>, <span class="hljs-function">() =&gt;</span> <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>());
+
+store.<span class="hljs-title function_">getOrM</span>(<span class="hljs-string">&quot;createdAt&quot;</span>, <span class="hljs-function">() =&gt;</span> <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()); <span class="hljs-comment">// existing value</span>
+</code></pre>
+<h3 id="updatek-fn-initial--update-or-initialize"><code>update(k, fn, initial?)</code><strong> — Update or Initialize</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">update</span>(
+  <span class="hljs-string">&quot;count&quot;</span>,
+  <span class="hljs-function">(<span class="hljs-params">old, has</span>) =&gt;</span> (has ? old : <span class="hljs-number">0</span>) + <span class="hljs-number">1</span>,
+  <span class="hljs-number">0</span>
+);
+</code></pre>
+<h3 id="setifabsentk-value--set-only-if-missing"><code>setIfAbsent(k, value)</code><strong> — Set Only if Missing</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>); <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">setIfAbsent</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">2</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="setifpresentk-value--set-only-if-existing"><code>setIfPresent(k, value)</code><strong> — Set Only if Existing</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">setIfPresent</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">99</span>); <span class="hljs-comment">// true if present</span>
+store.<span class="hljs-title function_">setIfPresent</span>(<span class="hljs-string">&quot;missing&quot;</span>, <span class="hljs-number">99</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="replacek-value--replace-existing-value"><code>replace(k, value)</code><strong> — Replace Existing Value</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">50</span>);       <span class="hljs-comment">// true if present</span>
+store.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&quot;missing&quot;</span>, <span class="hljs-number">50</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="inckey-by--increment"><code>inc(key, by?)</code><strong> — Increment</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>);    <span class="hljs-comment">// 1</span>
+store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>, <span class="hljs-number">5</span>); <span class="hljs-comment">// 6</span>
+store.<span class="hljs-title function_">inc</span>(<span class="hljs-string">&quot;hits&quot;</span>, <span class="hljs-number">2</span>); <span class="hljs-comment">// 8</span>
+</code></pre>
+<h3 id="touchk--create-key-with-undefined"><code>touch(k)</code><strong> — Create Key with Undefined</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">touch</span>(<span class="hljs-string">&quot;seen&quot;</span>); <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">h</span>(<span class="hljs-string">&quot;seen&quot;</span>);     <span class="hljs-comment">// true</span>
+store.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;seen&quot;</span>);     <span class="hljs-comment">// undefined</span>
+</code></pre>
+<h2 id="transforms"><strong>Transforms</strong></h2>
+<h3 id="mapvaluesfn--map-values-into-a-new-o2"><code>mapValues(fn)</code><strong> — Map Values into a New O2</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+
+<span class="hljs-keyword">const</span> mapped = store.<span class="hljs-title function_">mapValues</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v * <span class="hljs-number">10</span>);
+
+<span class="hljs-comment">// O2 { a: 10, b: 20 }</span>
+</code></pre>
+<h3 id="mapkeysfn--transform-keys-into-a-new-o2"><code>mapKeys(fn)</code><strong> — Transform Keys into a New O2</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+
+<span class="hljs-keyword">const</span> mapped = store.<span class="hljs-title function_">mapKeys</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> k.<span class="hljs-title function_">toUpperCase</span>());
+
+<span class="hljs-comment">// O2 { A: 1, B: 2 }</span>
+</code></pre>
+<h3 id="filterkvpred--filter-in-place"><code>filterKV(pred)</code><strong> — Filter In Place</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>);
+
+store.<span class="hljs-title function_">filterKV</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// Keeps b and c</span>
+</code></pre>
+<h3 id="filterkeyspred--filter-alias"><code>filterKeys(pred)</code><strong> — Filter Alias</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">filterKeys</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> k !== <span class="hljs-string">&quot;a&quot;</span>);
+</code></pre>
+<h3 id="partitionpred--split-into-two-o2-instances"><code>partition(pred)</code><strong> — Split into Two O2 Instances</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>);
+
+<span class="hljs-keyword">const</span> [odds, evens] = store.<span class="hljs-title function_">partition</span>(
+  <span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v % <span class="hljs-number">2</span> === <span class="hljs-number">1</span>
+);
+</code></pre>
+<p>The first result contains matching entries; the second contains nonmatching entries.</p>
+<h3 id="findpred--find-entry"><code>find(pred)</code><strong> — Find Entry</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">find</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// [&quot;b&quot;, 2]</span>
+</code></pre>
+<h3 id="findkeypred--find-key"><code>findKey(pred)</code><strong> — Find Key</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">findKey</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// &quot;b&quot;</span>
+</code></pre>
+<h3 id="findvaluepred--find-value"><code>findValue(pred)</code><strong> — Find Value</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">findValue</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt; <span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// 2</span>
+</code></pre>
+<h3 id="somepred--test-whether-any-entry-matches"><code>some(pred)</code><strong> — Test Whether Any Entry Matches</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">some</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt; <span class="hljs-number">100</span>); <span class="hljs-comment">// false</span>
+</code></pre>
+<h3 id="everypred--test-whether-all-entries-match"><code>every(pred)</code><strong> — Test Whether All Entries Match</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">every</span>(<span class="hljs-function">(<span class="hljs-params">k, v</span>) =&gt;</span> v &gt;= <span class="hljs-number">0</span>); <span class="hljs-comment">// true</span>
+</code></pre>
+<h3 id="reducefn-initial--reduce-entries"><code>reduce(fn, initial)</code><strong> — Reduce Entries</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">10</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">20</span>);
+
+<span class="hljs-keyword">const</span> total = store.<span class="hljs-title function_">reduce</span>(
+  <span class="hljs-function">(<span class="hljs-params">acc, k, v</span>) =&gt;</span> acc + v,
+  <span class="hljs-number">0</span>
+);
+
+<span class="hljs-comment">// 30</span>
+</code></pre>
+<h3 id="invert--invert-keys-and-values"><code>invert()</code><strong> — Invert Keys and Values</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>);
+
+<span class="hljs-keyword">const</span> inverted = store.<span class="hljs-title function_">invert</span>();
+
+<span class="hljs-comment">// Intended:</span>
+<span class="hljs-comment">// O2 { 1: &quot;a&quot;, 2: &quot;b&quot; }</span>
+</code></pre>
+<h3 id="uniquefn--unique-values-by-derived-key"><code>unique(fn?)</code><strong> — Unique Values by Derived Key</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> users = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, { <span class="hljs-attr">name</span>: string; <span class="hljs-attr">team</span>: string }&gt;([
+  [<span class="hljs-string">&quot;u1&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;red&quot;</span> }],
+  [<span class="hljs-string">&quot;u2&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;blue&quot;</span> }],
+  [<span class="hljs-string">&quot;u3&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;green&quot;</span> }],
+]);
+
+<span class="hljs-keyword">const</span> unique = users.<span class="hljs-title function_">unique</span>(<span class="hljs-function">(<span class="hljs-params">k, user</span>) =&gt;</span> user.<span class="hljs-property">name</span>);
+
+<span class="hljs-comment">// One entry per name</span>
+</code></pre>
+<p>Without a callback, the value itself becomes the uniqueness key:</p>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> uniqueValues = store.<span class="hljs-title function_">unique</span>();
+</code></pre>
+<h3 id="pickkeys--select-specific-keys"><code>pick(keys)</code><strong> — Select Specific Keys</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>).<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>);
+
+<span class="hljs-keyword">const</span> selected = store.<span class="hljs-title function_">pick</span>([<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>]);
+
+<span class="hljs-comment">// O2 { a: 1, c: 3 }</span>
+</code></pre>
+<h3 id="omitkeys--exclude-specific-keys"><code>omit(keys)</code><strong> — Exclude Specific Keys</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> remaining = store.<span class="hljs-title function_">omit</span>([<span class="hljs-string">&quot;b&quot;</span>]);
+
+<span class="hljs-comment">// O2 { a: 1, c: 3 }</span>
+</code></pre>
+<h3 id="groupfn--group-values"><code>group(fn)</code><strong> — Group Values</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> people = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, { <span class="hljs-attr">name</span>: string; <span class="hljs-attr">team</span>: string }&gt;([
+  [<span class="hljs-string">&quot;a&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ann&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;red&quot;</span> }],
+  [<span class="hljs-string">&quot;b&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;blue&quot;</span> }],
+  [<span class="hljs-string">&quot;c&quot;</span>, { <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Sam&quot;</span>, <span class="hljs-attr">team</span>: <span class="hljs-string">&quot;red&quot;</span> }],
+]);
+
+<span class="hljs-keyword">const</span> grouped = people.<span class="hljs-title function_">group</span>(<span class="hljs-function">(<span class="hljs-params">person, key</span>) =&gt;</span> person.<span class="hljs-property">team</span>);
+
+<span class="hljs-comment">// O2 {</span>
+<span class="hljs-comment">//   red: [Ann, Sam],</span>
+<span class="hljs-comment">//   blue: [Bob]</span>
+<span class="hljs-comment">// }</span>
+</code></pre>
+<p>Note the callback order here is <code>(value, key)</code>, unlike most other transform callbacks.</p>
+<h2 id="merging--patching"><strong>Merging / Patching</strong></h2>
+<h3 id="mergeother--merge-entries"><code>merge(other)</code><strong> — Merge Entries</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">merge</span>([
+  [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>],
+]);
+</code></pre>
+<h3 id="clearandsetentries--clear-and-replace-entries"><code>clearAndSet(entries)</code><strong> — Clear and Replace Entries</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">clearAndSet</span>([
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">10</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">20</span>],
+]);
+</code></pre>
+<h3 id="patchpartial--batch-object-updates"><code>patch(partial)</code><strong> — Batch Object Updates</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">patch</span>({
+  <span class="hljs-attr">a</span>: <span class="hljs-number">10</span>,
+  <span class="hljs-attr">b</span>: <span class="hljs-number">20</span>,
+});
+</code></pre>
+<h2 id="conversion"><strong>Conversion</strong></h2>
+<h3 id="toobject--convert-to-plain-object"><code>toObject()</code><strong> — Convert to Plain Object</strong></h3>
+<pre><code class="language-tsx">store.<span class="hljs-title function_">toObject</span>();
+
+<span class="hljs-comment">// { a: 1, b: 2 }</span>
+</code></pre>
+<h3 id="toobjectfast--fast-shallow-copy"><code>toObjectFast()</code><strong> — Fast Shallow Copy</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> object = store.<span class="hljs-title function_">toObjectFast</span>();
+
+<span class="hljs-comment">// { a: 1, b: 2 }</span>
+</code></pre>
+<h3 id="snapshot--snapshot"><code>snapshot()</code><strong> — Snapshot</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> snap = store.<span class="hljs-title function_">snapshot</span>();
+
+<span class="hljs-comment">// { a: 1, b: 2 }</span>
+</code></pre>
+<h3 id="tojson--json-serialization"><code>toJSON()</code><strong> — JSON Serialization</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(store);
+
+<span class="hljs-comment">// &#x27;{&quot;a&quot;:1,&quot;b&quot;:2}&#x27;</span>
+</code></pre>
+<h3 id="selectfn--select-from-internal-data"><code>select(fn)</code><strong> — Select from Internal Data</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> result = store.<span class="hljs-title function_">select</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> data.<span class="hljs-property">a</span> + data.<span class="hljs-property">b</span>;
+});
+</code></pre>
+<h3 id="tovalues--convert-to-values-collection"><code>toValues()</code><strong> — Convert to Values Collection</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> values = store.<span class="hljs-title function_">toValues</span>();
+
+<span class="hljs-comment">// A2I containing [1, 2]</span>
+</code></pre>
+<h3 id="tokeys--convert-to-keys-collection"><code>toKeys()</code><strong> — Convert to Keys Collection</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> keys = store.<span class="hljs-title function_">toKeys</span>();
+
+<span class="hljs-comment">// A2I containing [&quot;a&quot;, &quot;b&quot;]</span>
+</code></pre>
+<h3 id="toarray--convert-to-entry-collection"><code>toArray()</code><strong> — Convert to Entry Collection</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> entries = store.<span class="hljs-title function_">toArray</span>();
+
+<span class="hljs-comment">// A2I containing [[&quot;a&quot;, 1], [&quot;b&quot;, 2]]</span>
+</code></pre>
+<h2 id="miscellaneous"><strong>Miscellaneous</strong></h2>
+<h3 id="clone--clone-store"><code>clone()</code><strong> — Clone Store</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> copy = store.<span class="hljs-title function_">clone</span>();
+
+copy.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>);
+
+<span class="hljs-comment">// Original remains unchanged</span>
+</code></pre>
+<h3 id="equalsother--compare-stores"><code>equals(other)</code><strong> — Compare Stores</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromEntries</span>([
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-number">2</span>],
+]);
+
+<span class="hljs-keyword">const</span> b = a.<span class="hljs-title function_">clone</span>();
+
+a.<span class="hljs-title function_">equals</span>(b); <span class="hljs-comment">// true</span>
+
+b.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-number">3</span>);
+
+a.<span class="hljs-title function_">equals</span>(b); <span class="hljs-comment">// false</span>
+</code></pre>
+<h2 id="static-factories"><strong>Static Factories</strong></h2>
+<h3 id="o2fromobjectobj--create-from-object"><code>O2.fromObject(obj)</code><strong> — Create from Object</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> store = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">fromObject</span>({
+  <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">b</span>: <span class="hljs-number">2</span>,
+});
+
+<span class="hljs-comment">// O2&lt;string, number&gt;</span>
+</code></pre>
+<h3 id="o2fromentriesentries--create-from-entries"><code>O2.fromEntries(entries)</code><strong> — Create from Entries</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> store = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;string, number&gt;([
+  [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>],
+  [<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>],
+]);
+</code></pre>
+<h3 id="o2fromsource--create-from-o2-or-record"><code>O2.from(source)</code><strong> — Create from O2 or Record</strong></h3>
+<pre><code class="language-tsx"><span class="hljs-keyword">const</span> original = <span class="hljs-variable constant_">O2</span>.<span class="hljs-property">fromEntries</span>&lt;string, number&gt;([
+  [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>],
+]);
+
+<span class="hljs-keyword">const</span> copy = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>(original);
+
+<span class="hljs-keyword">const</span> fromRecord = <span class="hljs-variable constant_">O2</span>.<span class="hljs-title function_">from</span>({
+  <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">b</span>: <span class="hljs-number">2</span>,
+});
+</code></pre>
+<h2 id="combined-example"><strong>Combined Example</strong></h2>
+<pre><code class="language-tsx">type <span class="hljs-title class_">Task</span> = {
+  <span class="hljs-attr">title</span>: string;
+  <span class="hljs-attr">done</span>: boolean;
+};
+
+<span class="hljs-keyword">const</span> tasks = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">O2</span>&lt;string, <span class="hljs-title class_">Task</span>&gt;();
+
+tasks.$debug(<span class="hljs-number">100</span>);
 
 <span class="hljs-keyword">const</span> unsub = tasks.<span class="hljs-title function_">on</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
-  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;set&quot;</span> || e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;upd&quot;</span>) <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;changed:&quot;</span>, e.<span class="hljs-property">k</span>);
+  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;set&quot;</span> || e.<span class="hljs-property">op</span> === <span class="hljs-string">&quot;upd&quot;</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;changed:&quot;</span>, e.<span class="hljs-property">k</span>);
+  }
 });
 
 tasks.<span class="hljs-title function_">batch</span>(<span class="hljs-function">() =&gt;</span> {
-  tasks.<span class="hljs-title function_">s</span>({ <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Write docs&quot;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> }, <span class="hljs-string">&quot;t1&quot;</span>);
-  tasks.<span class="hljs-title function_">s</span>({ <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Ship O2&quot;</span>,    <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> }, <span class="hljs-string">&quot;t2&quot;</span>);
+  tasks.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;t1&quot;</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Write docs&quot;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> });
+  tasks.<span class="hljs-title function_">s</span>(<span class="hljs-string">&quot;t2&quot;</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Ship O2&quot;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span> });
 });
 
-tasks.<span class="hljs-title function_">update</span>(<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> ({ ...old, <span class="hljs-attr">done</span>: <span class="hljs-literal">true</span> }));
-tasks.<span class="hljs-title function_">dv</span>(<span class="hljs-string">&quot;doneCount&quot;</span>, [<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-string">&quot;t2&quot;</span>], <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> +a.<span class="hljs-property">done</span> + +b.<span class="hljs-property">done</span>);
+tasks.<span class="hljs-title function_">update</span>(<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-function">(<span class="hljs-params">old</span>) =&gt;</span> ({
+  ...old,
+  <span class="hljs-attr">done</span>: <span class="hljs-literal">true</span>,
+}));
 
-<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;doneCount&quot;</span>));   <span class="hljs-comment">// 1</span>
-<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">snapshot</span>());       <span class="hljs-comment">// plain object</span>
+tasks.<span class="hljs-title function_">dv</span>(
+  <span class="hljs-string">&quot;doneCount&quot;</span>,
+  [<span class="hljs-string">&quot;t1&quot;</span>, <span class="hljs-string">&quot;t2&quot;</span>],
+  <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> <span class="hljs-title class_">Number</span>(a.<span class="hljs-property">done</span>) + <span class="hljs-title class_">Number</span>(b.<span class="hljs-property">done</span>)
+);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">g</span>(<span class="hljs-string">&quot;doneCount&quot;</span>)); <span class="hljs-comment">// 1</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">filterKV</span>(<span class="hljs-function">(<span class="hljs-params">k, task</span>) =&gt;</span> !task.<span class="hljs-property">done</span>));
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.<span class="hljs-title function_">snapshot</span>());
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(tasks.$history());
 
 <span class="hljs-title function_">unsub</span>();
 </code></pre>

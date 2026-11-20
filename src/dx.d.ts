@@ -1030,122 +1030,111 @@ declare global {
 		// #endregion 
 		//                                                                                              [OBJECT]
 		// #region ══════════════════════════════════════════════════════════════════════════════════════════════════════ 
+		interface DiffResult<K extends PropertyKey, T> {
+			add: AR<[K, T]>;
+			del: AR<K>;
+			chg: AR<[K, T, T]>;
+		}
+		// ─────────────────────────────────────────────────────────────
+		// O2 public interface
+		// ─────────────────────────────────────────────────────────────
+		interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
+			get(k: K): T | UD;
+			set(k: K, v: UF<T>): this;
+			has(k: K): B;
+			delete(k: K): B;
+			clear(): V;
+			forEach(fn: (k: K, v: T, map: this) => void): void;
 
+			readonly size: N;
+			readonly length: N;
 
-  interface DiffResult<K extends PropertyKey, T> {
-	add: AR<[K, T]>;
-	del: AR<K>;
-	chg: AR<[K, T, T]>; // [key, thisValue, otherValue]
-}
+			on(fn: Sub<K, T>): () => V;
+			off(fn: Sub<K, T>): V;
 
-// ─────────────────────────────────────────────────────────────
-// O2 public interface
-// ─────────────────────────────────────────────────────────────
-  interface O2<K extends PropertyKey = S, T = A> extends Iterable<[K, T]> {
-	get(k: K): T | UD
-	set(k: K, v: UF<T>): this
-	has(k: K): B 
-	delete(k: K): B
-	clear(): V
-	forEach(fn: (v: T, k: K, map: this) => void): void
-	// ── shape ────────────────────────────────────────────────
-	readonly size: N;
+			batch(fn: () => V): this;
 
-	// ── subscription ─────────────────────────────────────────
-	on(fn: Sub<K, T>): () => V;
-	off(fn: Sub<K, T>): V;
+			s(k: K, v: UF<T>): this;
+			mutate(k: K, fn: (old: T, has: true) => T): T | UD;
+			d(k: K): B;
+			c(): V;
 
-	// ── batching ─────────────────────────────────────────────
-	batch(fn: () => V): this;
+			g(k: K): T | UD;
+			h(k: K): B;
 
-	// ── core CRUD ────────────────────────────────────────────
-	s(v: UF<T>, k: K): this;                                   // set
-	mutate(k: K, fn: (old: T, has: true) => T): T | UD;
-	d(k: K): B;                                                // delete
-	c(): V;                                                    // clear
+			dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this;
+			dirty(...keys: AR<K>): this;
 
-	g(k: K): T | UD;                                           // get (derived-aware)
-	h(k: K): B;                                                // has (derived-aware)
+			$debug(limit?: N): this;
+			$strict(): this;
+			$history(): M2Event<K, T>[];
+			$why(k: K): M2Event<K, T> | UD;
+			$diff(other: O2<K, T>): DiffResult<K, T>;
 
-	// ── derived ──────────────────────────────────────────────
-	dv(k: K, deps: AR<K>, fn: (...vals: AR<T>) => T): this;
-	dirty(...keys: AR<K>): this;
+			entries(): Generator<[K, T]>;
+			keys(): Generator<K>;
+			values(): Generator<T>;
+			[Symbol.iterator](): Generator<[K, T]>;
 
-	// ── debugging / history ──────────────────────────────────
-	$debug(limit?: N): this;
-	$strict(): this;
-	$history(): M2Event<K, T>[];
-	$why(k: K): M2Event<K, T> | UD;
-	$diff(other: O2<K, T>): DiffResult<K, T>;
+			f: (fn: (k: K, v: T, map: this) => void) => void;
+			forEachKV(fn: (k: K, v: T, map: this) => void): void;
 
-	// ── iteration ────────────────────────────────────────────
-	entries(): Generator<[K, T]>;
-	keys(): Generator<K>;
-	values(): Generator<T>;
-	f: (fn: (v: T, k: K, map: this) => void) => V;             // alias of forEachKV
-	forEachKV(fn: (v: T, k: K, map: this) => void): V;
+			swap(value: UF<T>, key: K): T | UD;
+			take(k: K): T | UD;
+			peek(k: K): T | false;
+			getOrI(k: K, value: UF<T>): T;
+			getOrM(k: K, make: () => T): T;
+			update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T;
+			setIfAbsent(k: K, value: UF<T>): B;
+			setIfPresent(k: K, value: UF<T>): B;
+			replace(k: K, value: UF<T>): B;
+			inc(key: K, by?: N): N;
+			touch(k: K): B;
 
-	// ── common convenience ───────────────────────────────────
-	swap(value: UF<T>, key: K): T | UD;
-	take(k: K): T | UD;
-	peek(k: K): T | false;
-	getOrI(value: UF<T>, k: K): T;
-	getOrM(make: () => T, k: K): T;
-	update(k: K, fn: (old: T, has: B) => T, initial?: UF<T>): T;
-	setIfAbsent(value: UF<T>, k: K): B;
-	setIfPresent(value: UF<T>, k: K): B;
-	replace(value: UF<T>, k: K): B;
-	inc(key: K, by?: N): N;
-	touch(k: K): B;
+			mapValues<G>(fn: (k: K, v: T) => G): O2<K, G>;
+			mapKeys<G extends PropertyKey>(fn: (k: K, v: T) => G): O2<G, T>;
+			filterKV(pred: (k: K, v: T) => B): this;
+			filterKeys(pred: (k: K, v: T) => B): this;
+			partition(pred: (k: K, v: T) => B): [O2<K, T>, O2<K, T>];
+			unique<G extends PropertyKey>(fn?: (k: K, v: T) => G): O2<G, T>;
+			pick(keys: Iterable<K>): O2<K, T>;
+			omit(keys: Iterable<K>): O2<K, T>;
+			invert(): O2<A, K>;
+			group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, A2<T>>;
 
-	// ── transforms (return new O2) ───────────────────────────
-	mapValues<G>(fn: (v: T, k: K) => G): O2<K, G>;
-	mapKeys<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, T>;
-	filterKV(pred: (v: T, k: K) => B): this;
-	filterKeys(pred: (v: T, k: K) => B): this;
-	partition(pred: (v: T, k: K) => B): [O2<K, T>, O2<K, T>];
-	unique<G extends PropertyKey>(fn?: (v: T, k: K) => G): O2<G, T>;
-	pick(keys: Iterable<K>): O2<K, T>;
-	omit(keys: Iterable<K>): O2<K, T>;
-	invert(): O2<A, K>;
-	group<G extends PropertyKey>(fn: (v: T, k: K) => G): O2<G, A2<T>>;
+			find(pred: (k: K, v: T) => B): [K, T] | UD;
+			findKey(pred: (k: K, v: T) => B): K | UD;
+			findValue(pred: (k: K, v: T) => B): T | UD;
+			some(pred: (k: K, v: T) => B): B;
+			every(pred: (k: K, v: T) => B): B;
+			reduce<G>(fn: (acc: G, k: K, v: T) => G, initial: G): G;
 
-	// ── search / query ───────────────────────────────────────
-	find(pred: (v: T, k: K) => B): [K, T] | UD;
-	findKey(pred: (v: T, k: K) => B): K | UD;
-	findValue(pred: (v: T, k: K) => B): T | UD;
-	some(pred: (v: T, k: K) => B): B;
-	every(pred: (v: T, k: K) => B): B;
-	reduce<G>(fn: (acc: G, v: T, k: K) => G, initial: G): G;
+			merge(other: Iterable<readonly [K, T]>): this;
+			clearAndSet(entries: Iterable<readonly [K, T]>): this;
+			patch(partial: Readonly<Partial<Record<K, T>>>): this;
 
-	// ── merging ──────────────────────────────────────────────
-	merge(other: Iterable<readonly [K, T]>): this;
-	clearAndSet(entries: Iterable<readonly [K, T]>): this;
-	patch(partial: Readonly<Partial<Record<K, T>>>): this;
+			toObject(): OB<T>;
+			toObjectFast(): OB<T>;
+			snapshot(): OB<T>;
+			toJSON(): OB<T>;
+			select<G>(fn: (data: Readonly<Record<K, T>>) => G): G;
+			toValues(): A2I<T>;
+			toKeys(): A2I<K>;
+			toArray(): A2I<[K, T]>;
 
-	// ── conversion ───────────────────────────────────────────
-	toObject(): OB<T>;
-	toObjectFast(): OB<T>;
-	snapshot(): OB<T>;
-	toJSON(): OB<T>;
-	select<G>(fn: (data: Readonly<Record<K, T>>) => G): G;
-	toValues(): A2I<T>;
-	toKeys(): A2I<K>;
-	toArray(): A2I<[K, T]>;
-
-	// ── misc ─────────────────────────────────────────────────
-	clone(): this;
-	equals(other: O2<K, T>): B;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Static factory shape (for typing a class reference)
-// ─────────────────────────────────────────────────────────────
-  interface IO2Constructor {
-	fromObject<X extends OB<A>>(obj: X): O2<S, X[keyof X]>;
-	fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2<K, T>;
-	from<K extends PropertyKey, T>(source: O2<K, T> | Readonly<Record<K, T>>): O2<K, T>;
-}
+			clone(): this;
+			equals(other: O2<K, T>): B;
+		}
+		// ─────────────────────────────────────────────────────────────
+		// Static factory shape (for typing a class reference)
+		// ─────────────────────────────────────────────────────────────
+		interface IO2Constructor {
+			fromObject<X extends OB<A>>(obj: X): O2<S, X[keyof X]>;
+			fromEntries<K extends PropertyKey, T>(entries: I<readonly [K, T]>): O2<K, T>;
+			from<K extends PropertyKey, T>(
+				source: O2<K, T> | Readonly<Record<K, T>>
+			): O2<K, T>;
+		}
 		interface O2I extends O2 {}
 		// #endregion 
 		//                                                                                             [PROMISE]
