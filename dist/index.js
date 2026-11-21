@@ -1,3 +1,4 @@
+import "@the-w1zard/alias_types";
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
