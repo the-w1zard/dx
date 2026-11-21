@@ -3,7 +3,7 @@ const DEF_M = "master";
 const DEF_S = "slave";
 export const rv = (v) => typeof v === "function" ? v() : v;
 export const sameValue = (a, b) => Object.is(a, b) || (a instanceof Date && b instanceof Date && +a === +b);
-class QUAD {
+export class QUAD {
     #root = Object.create(null);
     #subRoot = Object.create(null);
     _bear = Object.create(null);

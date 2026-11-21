@@ -58,9 +58,10 @@ import { CBORI, CBORValue  } from "./cbor";
 import { STracer, STracer  as STracerI} from "./set_tracer";
 import { OTracer, OTracer  as OTracerI} from "./object_tracer";
 import { type MaybePromise, MaybePromise as MaybePromisei } from './maybe_promise'
-
+import { QUAD as QUADI} from './nested_hot_path'
 const nestedInstace =  new nestedi()
 if (typeof globalThis !== 'undefined') {
+globalThis.QUAD = QUADI;
 globalThis.MaybePromise = MaybePromisei;
 globalThis.CBOR = CBORI;
 globalThis.AVRO = BINARY_AVROI;
@@ -131,6 +132,7 @@ globalThis.OTracer = OTracerI
 export {
     STracer,
     OTracer, 
+    QUAD as QUADI,
     MaybePromisei as MaybePromise,
     AVROWriterI as  AVROWriter,
      AVROReaderI as AVROReader,
@@ -176,6 +178,7 @@ declare global {
 		================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
 		type MaybePromise<R = any> = R;
 		var MaybePromise: typeof MaybePromisei;
+		var QUAD: typeof QUADI;
 		var B2B: typeof B2BI; // BOOLEAN BINARY
 	
 		var M2: typeof M2I; // map

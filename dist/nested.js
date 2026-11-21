@@ -1,3 +1,4 @@
+import { M2 } from './map';
 const cache = new M2();
 export class nestedi {
     r = 'ROOT';

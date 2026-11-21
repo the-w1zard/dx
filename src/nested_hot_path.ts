@@ -6,7 +6,7 @@ export const sameValue = (a: A, b: A): B =>    Object.is(a, b) || (a instanceof 
 type QuadSub<V> = (v: V | UD) => void;
 
 
-class QUAD<V = A> {
+export class QUAD<V = A> {
 	#root: Record<S, Record<S, Record<S, Record<S, V>>>> = Object.create(null);
 	#subRoot: Record<S, Record<S, Record<S, Record<S, Set<QuadSub<V>>>>>> = Object.create(null);
 	_bear: Record<string, V> = Object.create(null);
