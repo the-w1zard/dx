@@ -1,3 +1,4 @@
+// dx.d.ts
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
@@ -9,7 +10,7 @@ import { D2I, R2I, R2II } from "./date";
 import { ER2I } from './error'
 import { I2I } from "./iterator";
 import { N2I } from "./number";
-import { O2I } from "./object";
+import { O2 as O2I } from "./object";
 import { P2I } from "./promise";
 import { escapeRegex, REC2, RECC2 } from './reg_ex'
 import { SET2I } from "./set";
@@ -21,7 +22,7 @@ import { USP2I } from "./url_search_params";
 import { ALL_MAPS, nestedi } from './nested'
 import { WM2I } from "./weak_map";
 import { WS2I } from "./weak_set";
-import { MaybePromisei, type MaybePromise } from './index'
+import { type MaybePromise, MaybePromise as MaybePromisei } from './maybe_promise'
 import { callIf as callIfi} from './dlc/call_if'
 import { clamp as clampi} from './dlc/clamp'
 import { createLiveScope as createLiveScopei} from './dlc/create_live_scope'

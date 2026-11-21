@@ -58,9 +58,7 @@ import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BI
 import { CBORI } from "./cbor";
 import { STracer, STracer as STracerI } from "./set_tracer";
 import { OTracer, OTracer as OTracerI } from "./object_tracer";
-export function MaybePromisei(v) {
-    return v !== undefined ? v : Promise.resolve(v);
-}
+import { MaybePromise as MaybePromisei } from './maybe_promise';
 const nestedInstace = new nestedi();
 if (typeof globalThis !== 'undefined') {
     globalThis.MaybePromise = MaybePromisei;
@@ -129,4 +127,4 @@ if (typeof globalThis !== 'undefined') {
     globalThis.STracer = STracerI;
     globalThis.OTracer = OTracerI;
 }
-export { STracer, OTracer, AVROWriterI as AVROWriter, AVROReaderI as AVROReader, BINARY_AVROI as AVRO, CBORI as CBOR, MDisruptorI as MDisruptor, MTracerI as MTracer, M2RI as M2R, M2DI as M2D, M2BINI as M2BIN, A2I as A2, B2BI as B2B, D2I as D2, ER2I as ER2, I2I as I2, M2BI as M2B, M2, N2I as N2, O2I as O2, P2I as P2, REC2 as RE2, RECC2 as RES2, SET2I as SET2, SET2BI as SET2B, SOA_CODEC, soa_codeci as soa_codec, S2I as S2, U82I as U82, USP2I as USP2, WM2I as WM2, WS2I as WS2, R2I as R2, R2II as R2I };
+export { STracer, OTracer, MaybePromisei as MaybePromise, AVROWriterI as AVROWriter, AVROReaderI as AVROReader, BINARY_AVROI as AVRO, CBORI as CBOR, MDisruptorI as MDisruptor, MTracerI as MTracer, M2RI as M2R, M2DI as M2D, M2BINI as M2BIN, A2I as A2, B2BI as B2B, D2I as D2, ER2I as ER2, I2I as I2, M2BI as M2B, M2, N2I as N2, O2I as O2, P2I as P2, REC2 as RE2, RECC2 as RES2, SET2I as SET2, SET2BI as SET2B, SOA_CODEC, soa_codeci as soa_codec, S2I as S2, U82I as U82, USP2I as USP2, WM2I as WM2, WS2I as WS2, R2I as R2, R2II as R2I };

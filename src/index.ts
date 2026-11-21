@@ -58,11 +58,8 @@ import { AVROWriter as AVROWriterI, AVROReader as AVROReaderI, BINARY_AVRO as BI
 import { CBORI, CBORValue  } from "./cbor";
 import { STracer, STracer  as STracerI} from "./set_tracer";
 import { OTracer, OTracer  as OTracerI} from "./object_tracer";
+import { type MaybePromise, MaybePromise as MaybePromisei } from './maybe_promise'
 
-export type MaybePromise<R = any> = R;
-export function MaybePromisei<R = any>(v: R): MaybePromise {
-    return v !== undefined ? v as R : Promise.resolve(v) as Promise<R> 
-}
 const nestedInstace =  new nestedi()
 if (typeof globalThis !== 'undefined') {
 globalThis.MaybePromise = MaybePromisei;
@@ -132,20 +129,10 @@ globalThis.STracer = STracerI
 globalThis.OTracer = OTracerI
 }
 
-
-
-
-
-
-
-
-
-
-
-
 export {
     STracer,
     OTracer, 
+    MaybePromisei as MaybePromise,
     AVROWriterI as  AVROWriter,
      AVROReaderI as AVROReader,
      BINARY_AVROI as AVRO,
