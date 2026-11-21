@@ -1,6 +1,6 @@
 {
     "name": "@the-w1zard/dx",
-    "version": "1.0.40",
+    "version": "1.0.41",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -10,7 +10,6 @@
             "default": "./dist/index.js",
             "import": "./dist/index.js"
         },
-     
         "./array": {
             "types": "./dist/array.d.ts",
             "import": "./dist/array.js",
