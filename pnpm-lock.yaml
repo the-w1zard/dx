@@ -28,8 +28,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(@rspack/core@2.3.3)
       '@the-w1zard/alias_types':
-        specifier: ^1.0.22
-        version: 1.0.22(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))
+        specifier: ^1.0.23
+        version: 1.0.23(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))
       '@tsconfig/node-lts':
         specifier: ^24.0.1
         version: 24.0.1
@@ -344,8 +344,8 @@ packages:
       selfsigned:
         optional: true
 
-  '@the-w1zard/alias_types@1.0.22':
-    resolution: {integrity: sha512-V8KOWiDVCJSIaBHo/CV5pge2EmWkY4EkcvEFcdGKiktewG3ug+FKykZEr7mBzYxuM3RZMFCxzX7X3UOIYNCJfg==}
+  '@the-w1zard/alias_types@1.0.23':
+    resolution: {integrity: sha512-4SAFwCeU59/VkkzEBfFRmtCeJ2fnHDIrASwj8Z7eOJ+PgUTFGcqFEIYknpxoyUVxl5yCV2/2phlhZQjBSYFg8g==}
 
   '@tsconfig/node-lts@24.0.1':
     resolution: {integrity: sha512-xo+1KtV5zVb90fyyeglG1n5cqg3cQXLlCkEpLptYlZUNk28xmwhuD5GmxoXwmrVtUTvaMyclun9kAd0TK7H+Pg==}
@@ -647,7 +647,7 @@ snapshots:
       '@rspack/core': 2.3.3
       '@rspack/dev-middleware': 2.0.6(@rspack/core@2.3.3)
 
-  '@the-w1zard/alias_types@1.0.22(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))':
+  '@the-w1zard/alias_types@1.0.23(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))':
     dependencies:
       '@babel/parser': 8.1.3
       '@babel/traverse': 8.1.3
