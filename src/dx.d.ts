@@ -1,4 +1,5 @@
-// dx.d.ts
+/**
+ * // dx.d.ts
 import { M2RI } from "./map_rows";
 import { M2DI } from "./map_dense";
 import { M2BINI } from "./map_bin";
@@ -60,13 +61,7 @@ import { STracer, STracer  as STracerI} from "./set_tracer";
 import { OTracer, OTracer  as OTracerI} from "./object_tracer";
 export {};
 declare global {
-	/*  ==========================================================================================================================
-		 The entire goal is to take what is already available and give them the upgrades / updates that they need to improve the 
-		 ux/dx. That is it.
-		 Not to wildy go off and create 400 fn's to throw on.
-		 Create a class, extends the original api and throw it into global this so it is accessible without the need of importing
-		 it.
-		================================================================================== ⇦✦──⇦✦──✦──✦──← 'pew pew' 🧙 [UX/DX] */
+	
 		type MaybePromise<R = any> = R;
 		var MaybePromise: typeof MaybePromisei;
 		var B2B: typeof B2BI; // BOOLEAN BINARY
@@ -268,66 +263,33 @@ declare global {
 		
 		interface nestedi<K = A, V = A> extends nested<K, V> {}
 		interface IMDisruptor<K = any, V = any> {
-			/** Number of live entries currently addressable via the index. */
 			readonly size: number;
 		
-			/** Retrieve the decoded value for `key`, or `undefined` if absent/tombstoned. */
 			get(key: K): V | undefined;
 		
-			/** Whether `key` currently resolves to a live (non-tombstoned) slot. */
 			has(key: K): boolean;
 		
-			/**
-			 * Insert or overwrite `key`.
-			 * Values must be plain data (no functions); they are encoded on write.
-			 * Returns `this` for chaining.
-			 */
 			set(key: K, value: V): this;
-		
-			/** Remove `key` from the index. Returns `true` if it was present. */
 			delete(key: K): boolean;
-		
-			/** Drop every index entry (ring slots are reclaimed lazily). */
 			clear(): void;
-		
-			/** Snapshot of all live `[key, value]` pairs, values decoded. */
 			entries(): [K, V][];
 		}
 		interface MDisruptorI<K = any, V = any> extends IMDisruptor<K, V> {}
 		interface IMTracer<K = any, V = any> {
-			/**
-			 * Number of completed laps around the dial. Increments once each
-			 * time the active lane fills and the dial advances. Never resets
-			 * (even on `clear()` — see note below).
-			 */
+		
 			readonly revolution: number;
 	
-			/**
-			 * How full the *active* lane is, in `[0, 1]`. Values approaching 1
-			 * mean the dial is about to tick over. This is the queue-depth
-			 * signal a producer can use for backpressure.
-			 */
+		
 			readonly pressure: number;
-	
-			/** Insert or overwrite `key` in the active lane (encoded on write). */
 			set(key: K, value: V): void;
 	
-			/** Retrieve the decoded value for `key`, or `undefined` if absent/aged out. */
 			get(key: K): V | undefined;
 	
-			/** Whether `key` currently resolves to a live value. */
 			has(key: K): boolean;
 	
-			/** Remove `key` from the index. Returns `true` if it was present. */
 			delete(key: K): boolean;
 	
-			/**
-			 * Drop all index entries and reset every lane. `dial` returns to 0.
-			 * Does **not** reset `revolution` — the tracer particle keeps ticking.
-			 */
 			clear(): void;
-	
-			/** Snapshot of all live `[key, value]` pairs, values decoded. */
 			entries(): [K, V][];
 		}
 		interface MTracerI<K = any, V = any> extends IMTracer<K, V> {}
@@ -339,102 +301,49 @@ declare global {
 		interface AVROReaderI extends IAVROReader {}
 		
 		interface ICBORI {
-			/**
-			 * Encode `msg` to CBOR bytes.
-			 *
-			 * - If `msg` is already a `Uint8Array`, it is returned **as-is**
-			 *   (assumed pre-encoded; no re-encoding, no validation).
-			 * - On encode failure, returns an encoded error frame
-			 *   `{ type: "error", error: "Encoding failed", id }`.
-			 */
+			
 			encode_msg(msg: CBORValue): Uint8Array;
 		
-			/**
-			 * Decode CBOR bytes to a `CBORValue`.
-			 *
-			 * - Accepts `Uint8Array` or Node `Buffer`.
-			 * - Returns `null` on any failure path; never throws.
-			 * - Rejects trailing bytes.
-			 */
+			
 			decode_msg(raw: unknown): CBORValue | null;
 		}
 		interface CBORI extends ICBORI {}
 	
-		/**
-	 * Public contract for STracer<V>.
-	 *
-	 * A bounded, rotating set of V with Set-like semantics (SameValueZero
-	 * membership, no duplicates). Members are stored by reference in a ring
-	 * of "lanes"; the index map records each member's { lane, seq } so
-	 * membership can be re-validated against the live ring.
-	 */
+		
 	interface STracerI<V = any> {
-		/** Fraction of the active lane's capacity that has been written (0..1). */
 		readonly pressure: number;
 	
-		/** Number of members currently in the index (may include stale entries not yet purged). */
 		readonly size: number;
 	
-		/** Add a member. No-op if already present. Returns this for chaining. */
 		add(value: V): this;
 	
-		/** Remove a member. Returns true if it was present in the index. */
 		delete(value: V): boolean;
 	
-		/** Remove all members, reset every lane, and reset the dial to 0. */
 		clear(): void;
-	
-		/** Returns true only if the member is indexed AND its lane slot is still live. */
 		has(value: V): boolean;
 	
-		/** Invoke cb for each live member (per has()). */
 		forEach(cb: (value: V) => void): void;
-	
-		/** Iterate live members (per has()). */
 		[Symbol.iterator](): Iterator<V>;
 	}
 	interface STracer<V = any> extends STracerI<V> {}
-	/** Shape of a single ring-buffer cell. */
 	type Slot<P> = {
 		sequence: number;
 		key: unknown;
 		payload: P | undefined;
 		tombstone: boolean;
 	};
-	
-	/** Location of a key within the lane ring. */
 	interface IndexEntry {
 		lane: number;
 		seq: number;
 	}
 	
-	/**
-	 * Public contract for OTracer<V>.
-	 *
-	 * A bounded, rotating key→value store with object-style access via Proxy.
-	 * Each key maps to { lane, seq } in an index; reads re-validate the slot
-	 * before returning. Writes are deep-cloned unless skipEncode is set.
-	 * Dangerous keys (__proto__, constructor, prototype) are blocked.
-	 */
+	
 	 interface OTracerI<V = any> {
-		/** Number of dial wraps so far (increments each time a lane fills). */
 		readonly revolution: A;
 	
-		/** Fraction of the active lane's capacity written (0..1). Not a declared member — exposed via Proxy get. */
 		readonly pressure: A;
 	
-		/**
-		 * Proxy-backed access: `tracer.foo = value` writes, `tracer.foo` reads.
-		 * Reading a missing/expired key yields `undefined`.
-		 */
-	
-		/**
-		 * Non-declared surface exposed by the Proxy handler, for documentation:
-		 *  - `key in tracer`        → true iff live value exists
-		 *  - `delete tracer[key]`   → removes index entry, returns boolean
-		 *  - `Object.keys(tracer)`  → live keys only
-		 *  - `Object.getOwnPropertyDescriptor(tracer, key)` → descriptor or undefined
-		 */
+		
 	}
 	interface OTracer<V = any> extends OTracerI<V> {}
 	
@@ -1546,7 +1455,6 @@ declare global {
 			replace(key: H, value: T): B;
 			touch(key: H): B;
 		
-			/** Registry-backed methods retain strong references to keys and can prevent garbage collection. */
 			readonly tracked?: B;
 			readonly trackedSize?: N;
 			track(key: H): this;
@@ -1562,3 +1470,4 @@ declare global {
 		
 }
 	
+ */
