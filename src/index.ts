@@ -132,7 +132,7 @@ globalThis.OTracer = OTracerI
 export {
     STracer,
     OTracer, 
-    QUAD as QUADI,
+    QUADI as QUAD,
     MaybePromisei as MaybePromise,
     AVROWriterI as  AVROWriter,
      AVROReaderI as AVROReader,
